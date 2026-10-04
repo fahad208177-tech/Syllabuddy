@@ -48,7 +48,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: radial-gradient(800px 420px at 50% 0%, rgba(0, 202, 255, .07), transparent 70%), #05080f; border: 1px solid rgba(255,255,255,.05); scroll-behavior: smooth; }
 .lightbar { height: 4px; margin: 10px 18% 0; border-radius: 4px; background: rgba(0, 202, 255, .15); transition: background .3s; }
 
-.welcome { text-align: center; padding: 40px 10px 10px; transition: opacity .3s; }
+.screen { display: flex; flex-direction: column; }
+.welcome { text-align: center; padding: 20px 10px; margin: auto 0; transition: opacity .3s; }
 .welcome h1 { font-size: 36px; margin: 26px 0 8px; letter-spacing: -0.8px; }
 .welcome p { color: var(--muted); margin: 0 0 26px; font-size: 16px; }
 .try { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 720px; margin: 0 auto; }
@@ -128,7 +129,7 @@ body.speaking .lightbar { background: var(--cyan); box-shadow: 0 0 18px var(--cy
 .revise li.empty { color: var(--muted); border-style: dashed; }
 .steps { margin: 12px 0 0; padding-left: 18px; color: #c6d1e4; font-size: 13px; line-height: 1.5; }
 .steps li { margin-bottom: 6px; }
-.meta { margin-top: 10px; font-size: 12px; color: #5f6d86; font-family: Consolas, monospace; }
+.meta { margin-top: 10px; font-size: 12px; color: #5f6d86; font-family: Consolas, monospace; white-space: pre-line; overflow-wrap: anywhere; }
 .ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; color: var(--muted); }
 .ghost:hover { color: var(--ink); border-color: rgba(255,255,255,.25); }
 .ghost.wide { padding: 11px; border-radius: 14px; }
