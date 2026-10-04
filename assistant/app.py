@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import json
 import os
-from contextlib import AsyncExitStack
+from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 
 from starlette.applications import Starlette
@@ -81,7 +81,19 @@ async def health(_request: Request) -> JSONResponse:
                          "mcp_ok": mcp_ok, "tools": tools})
 
 
-app = Starlette(routes=[
+@asynccontextmanager
+async def lifespan(_app):
+    """Open one MCP connection at startup so the first question isn't the slow one."""
+    try:
+        async with AsyncExitStack() as stack:
+            client = await assistant._connect(stack, "warm-up")
+            await client.list_tools()
+    except Exception:  # noqa: BLE001 - the health check reports it properly
+        pass
+    yield
+
+
+app = Starlette(lifespan=lifespan, routes=[
     Route("/", index),
     Route("/api/ask", ask, methods=["POST"]),
     Route("/api/reset", reset, methods=["POST"]),

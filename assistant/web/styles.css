@@ -87,6 +87,9 @@ body.speaking .lightbar { background: var(--cyan); box-shadow: 0 0 18px var(--cy
 .tool-text b { color: #cfe3ff; font-weight: 600; }
 .tool-ms { color: #5f6d86; }
 .turn.answer { align-self: stretch; }
+.turn.pending { align-self: flex-start; color: var(--muted); font-size: 14px; padding-left: 2px; animation: rise .25s ease-out both, breathe 1.4s ease-in-out infinite; }
+.turn.note { align-self: flex-start; font-size: 12px; color: var(--amber); border: 1px solid rgba(255, 194, 92, .3); border-radius: 8px; padding: 5px 10px; }
+@keyframes breathe { 50% { opacity: .45; } }
 .say { font-size: 25px; line-height: 1.38; margin: 4px 0 0; letter-spacing: -0.2px; font-weight: 500; }
 .turn.error .say { color: var(--red); font-size: 17px; }
 

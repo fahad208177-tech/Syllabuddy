@@ -87,6 +87,8 @@ still fully working through MCP. For natural conversation, pick a brain in
 | Groq / any OpenAI-compatible API | `SYLLABUDDY_BRAIN=openai`, `SYLLABUDDY_LLM_BASE_URL`, `SYLLABUDDY_LLM_API_KEY`, `SYLLABUDDY_LLM_MODEL` |
 | Ollama (fully local) | `SYLLABUDDY_BRAIN=openai`, `SYLLABUDDY_LLM_BASE_URL=http://localhost:11434/v1`, a tool-calling model |
 
+**Speed.** A turn is about 2 s of model time plus a few milliseconds of MCP. Groq's free tier allows roughly two turns a minute (8,000 tokens per minute), so rapid-fire questions wait. When the model is rate-limited or down, that turn is answered straight from the syllabus by the offline brain instead of failing. Bedrock has no such limit.
+
 Voice input needs Chrome or Edge. Hold the mic button, or hold Space, to talk. You can always type instead.
 
 ### Use Syllabuddy from any MCP client
@@ -119,7 +121,7 @@ Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", o
 ## Tests
 
 ```bash
-pytest -q                         # 79 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, Bedrock plumbing, web API
+pytest -q                         # 82 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, Bedrock plumbing, web API
 python scripts/eval_examinable.py # every Excluded bullet and every objective title in the syllabus (942 cases)
 python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app

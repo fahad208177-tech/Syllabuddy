@@ -142,3 +142,30 @@ def test_compact_shrinks_old_tool_results_only():
     old, new = json.loads(out[1]["content"]), json.loads(out[3]["content"])
     assert old == {"verdict": "excluded", "objective": {"objective_id": "9758.3.3", "title": "3D vectors"}}
     assert new == card
+
+
+def test_tool_schemas_are_simplified_for_every_model():
+    from assistant.agent import _simplify_schema
+
+    raw = {"type": "object", "title": "check_examinableArguments", "properties": {
+        "topic": {"title": "Topic", "type": "string"},
+        "subject": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": None, "title": "Subject"}},
+        "required": ["topic"]}
+    assert _simplify_schema(raw) == {"type": "object", "properties": {
+        "topic": {"type": "string"}, "subject": {"type": "string"}}, "required": ["topic"]}
+
+
+class BrokenBrain:
+    name = "broken"
+
+    async def chat(self, messages, tools):
+        raise RuntimeError("429 rate limited")
+
+
+def test_falls_back_to_syllabus_when_model_fails(server_url):
+    events = collect(Assistant(BrokenBrain(), server_url), "fb", "fallback-test",
+                     "Is the shortest distance between two skew lines in the H2 Maths syllabus?")
+    kinds = [e["type"] for e in events]
+    assert kinds[0] == "status" and kinds[-1] == "answer"
+    assert next(e for e in events if e["type"] == "tool_result")["result"]["verdict"] == "excluded"
+    assert events[-1]["brain"] == "offline"

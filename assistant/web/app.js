@@ -127,6 +127,15 @@
 
     const results = [];
     let toolRow = null;
+    // A visible "still working" line, since a model call can take a few seconds.
+    const pending = el("li", "turn pending", "Thinking…");
+    feed.append(pending);
+    const started = Date.now();
+    const tick = setInterval(() => {
+      const s = Math.round((Date.now() - started) / 1000);
+      if (s >= 2) pending.textContent = `Thinking… ${s}s`;
+    }, 500);
+    const settle = () => { clearInterval(tick); pending.remove(); };
     try {
       const res = await fetch("/api/ask", { method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, session, student }) });
@@ -146,14 +155,17 @@
           const ev = JSON.parse(line);
           if (ev.type === "tool_call") {
             toolRow = $("#tplTool").content.firstElementChild.cloneNode(true);
+            feed.insertBefore(toolRow, pending);
             const args = Object.entries(ev.arguments || {}).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(", ");
             const t = toolRow.querySelector(".tool-text");
             t.append("Syllabuddy · ", el("b", null, ev.name), `(${args})`);
-            feed.append(toolRow);
+          } else if (ev.type === "status") {
+            feed.insertBefore(el("li", "turn note", ev.message), pending);
           } else if (ev.type === "tool_result") {
             results.push(ev);
             if (toolRow) { toolRow.classList.add("done"); toolRow.querySelector(".tool-ms").textContent = `${ev.ms} ms`; }
           } else if (ev.type === "answer" || ev.type === "error") {
+            settle();
             const ans = $("#tplAnswer").content.firstElementChild.cloneNode(true);
             ans.querySelector(".say").textContent = ev.type === "answer" ? ev.text : ev.message;
             if (ev.type === "error") ans.classList.add("error");
@@ -169,12 +181,14 @@
         }
       }
     } catch (err) {
+      settle();
       const ans = $("#tplAnswer").content.firstElementChild.cloneNode(true);
       ans.classList.add("error");
       ans.querySelector(".say").textContent = "Something went wrong: " + err.message;
       feed.append(ans);
       setState(null);
     } finally {
+      settle();
       busy = false;
       scrollDown();
       refreshRevision();

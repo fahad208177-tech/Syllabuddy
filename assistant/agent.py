@@ -32,6 +32,7 @@ from mcp.shared._httpx_utils import create_mcp_http_client
 
 MCP_URL = os.environ.get("SYLLABUDDY_MCP_URL", "http://127.0.0.1:8765/mcp")
 MAX_TOOL_ROUNDS = 4
+MAX_RETRY_WAIT = float(os.environ.get("SYLLABUDDY_MAX_RETRY_WAIT", "12"))
 MAX_HISTORY = 12
 
 SYSTEM_PROMPT = """\
@@ -97,13 +98,17 @@ class OpenAICompatibleBrain:
         if self.reasoning_effort:
             payload["reasoning_effort"] = self.reasoning_effort
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+        waited = 0.0
         async with httpx.AsyncClient(timeout=60) as http:
-            for attempt in range(4):
+            while True:
                 response = await http.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
-                if response.status_code not in (429, 500, 502, 503) or attempt == 3:
+                delay = _retry_after(response)
+                # Free tiers rate-limit by tokens per minute. Wait as asked, but never so
+                # long that a voice turn feels frozen; past that, the agent falls back.
+                if response.status_code not in (429, 500, 502, 503) or waited + delay > MAX_RETRY_WAIT:
                     break
-                # Free tiers rate-limit by tokens per minute; wait as long as the API asks.
-                await asyncio.sleep(min(_retry_after(response), 20))
+                await asyncio.sleep(delay)
+                waited += delay
         if response.status_code >= 400:
             raise RuntimeError(f"{self.name} returned {response.status_code}: {response.text[:300]}")
         message = response.json()["choices"][0]["message"]
@@ -292,6 +297,7 @@ class Assistant:
         self.brain = brain or make_brain()
         self.mcp_url = mcp_url
         self.sessions: dict[str, list[dict[str, Any]]] = {}
+        self.fallback = OfflineBrain()
 
     async def _connect(self, stack: AsyncExitStack, student: str) -> Client:
         http = await stack.enter_async_context(create_mcp_http_client(headers={"X-Syllabuddy-Student": student}))
@@ -301,7 +307,7 @@ class Assistant:
     def _tool_specs(listed) -> list[dict[str, Any]]:
         specs = []
         for tool in listed.tools:
-            schema = dict(tool.input_schema if hasattr(tool, "input_schema") else tool.inputSchema)
+            schema = _simplify_schema(dict(tool.input_schema if hasattr(tool, "input_schema") else tool.inputSchema))
             schema.setdefault("type", "object")
             schema.setdefault("properties", {})
             specs.append({"name": tool.name, "description": tool.description or "", "parameters": schema})
@@ -324,17 +330,24 @@ class Assistant:
                 yield {"type": "error", "message": f"Couldn't reach the Syllabuddy MCP server at {self.mcp_url} ({error})."}
                 return
 
+            brain = self.brain
             for _round in range(MAX_TOOL_ROUNDS + 1):
                 messages = [{"role": "system", "content": SYSTEM_PROMPT}] + _compact(history[-MAX_HISTORY:])
                 try:
-                    reply = await self.brain.chat(messages, tools)
+                    reply = await brain.chat(messages, tools)
                 except Exception as error:  # noqa: BLE001
-                    yield {"type": "error", "message": f"The model ({self.brain.name}) failed: {error}"}
-                    return
+                    if isinstance(brain, OfflineBrain):
+                        yield {"type": "error", "message": f"The model ({brain.name}) failed: {error}"}
+                        return
+                    # Rate-limited or down: answer this turn straight from the syllabus
+                    # rather than leaving the student with nothing.
+                    yield {"type": "status", "message": f"{brain.name} unavailable, answering from the syllabus directly"}
+                    brain = self.fallback
+                    reply = await brain.chat(messages, tools)
                 if not reply.tool_calls or _round == MAX_TOOL_ROUNDS:
                     text = _clean_for_speech(reply.text) or "Sorry, I didn't catch that."
                     history.append({"role": "assistant", "content": text})
-                    yield {"type": "answer", "text": text, "brain": self.brain.name,
+                    yield {"type": "answer", "text": text, "brain": brain.name,
                            "seconds": round(time.perf_counter() - started, 2)}
                     return
 
@@ -356,6 +369,28 @@ class Assistant:
 
 
 # ---- helpers -------------------------------------------------------------------------
+
+def _simplify_schema(node: Any) -> Any:
+    """Flatten pydantic's JSON Schema into the plain subset every model accepts.
+
+    ``str | None = None`` arrives as ``anyOf: [string, null]`` with ``default:
+    null``. Some Bedrock models reject null types in tool schemas, and the
+    titles only cost tokens, so optional fields become plain optional fields.
+    """
+    if isinstance(node, list):
+        return [_simplify_schema(n) for n in node]
+    if not isinstance(node, dict):
+        return node
+    node = {k: v for k, v in node.items() if k != "title"}
+    options = node.get("anyOf")
+    if isinstance(options, list):
+        non_null = [o for o in options if not (isinstance(o, dict) and o.get("type") == "null")]
+        if len(non_null) == 1 and len(non_null) < len(options):
+            node = {k: v for k, v in node.items() if k != "anyOf"} | non_null[0]
+    if node.get("default", "") is None:
+        node.pop("default")
+    return {k: _simplify_schema(v) for k, v in node.items()}
+
 
 def _result_data(result) -> dict[str, Any]:
     structured = getattr(result, "structured_content", None) or getattr(result, "structuredContent", None)
