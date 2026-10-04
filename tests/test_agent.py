@@ -189,3 +189,19 @@ def test_turn_deadline_falls_back_instead_of_hanging(server_url, monkeypatch):
                      "Is the shortest distance between two skew lines in the H2 Maths syllabus?")
     assert _time.perf_counter() - started < 15
     assert events[-1]["type"] == "answer" and events[-1]["brain"] == "offline"
+
+
+@pytest.mark.parametrize("utterance, tool, args", [
+    ("Quiz me on 9758.3.3", "start_quiz", {"objective_id": "9758.3.3"}),
+    ("What does 9758.3.3 require?", "get_objective", {"objective_id": "9758.3.3"}),
+    ("Is anything excluded from 9478.9.d?", "get_objective", {"objective_id": "9478.9.d"}),
+    ("Quiz me again", "start_quiz", {}),
+])
+def test_offline_brain_understands_follow_up_chips(utterance, tool, args):
+    reply = asyncio.run(OfflineBrain().chat([{"role": "user", "content": utterance}], []))
+    assert reply.tool_calls[0].name == tool and reply.tool_calls[0].arguments == args
+
+
+def test_offline_get_objective_speech(server_url):
+    events = collect(Assistant(OfflineBrain(), server_url), "go", "go-test", "What does 9758.3.3 require?")
+    assert events[-1]["text"].startswith("Objective 9758.3.3") and "skew" in events[-1]["text"]

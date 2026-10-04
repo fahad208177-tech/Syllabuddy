@@ -56,6 +56,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .chip { border: 1px solid var(--line); background: var(--panel); padding: 10px 16px; border-radius: 99px; font-size: 14px; color: #cfe3ff; transition: border-color .2s, background .2s; }
 .chip:hover { border-color: rgba(0, 202, 255, .5); background: rgba(0, 202, 255, .08); }
 .has-turns .welcome { display: none; }
+.follow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip.small { font-size: 13px; padding: 7px 13px; }
 
 /* light ring orb */
 .orb { width: 132px; height: 132px; margin: 0 auto; border-radius: 50%; position: relative;

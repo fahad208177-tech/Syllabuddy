@@ -95,6 +95,41 @@
     return null;
   }
 
+  // ---- follow-up suggestions, so a student always knows what they can say next
+  function followUps(tool, r) {
+    if (!r || r.error) return [];
+    const o = r.objective || (r.objectives && r.objectives[0]) || r.quiz_objective || null;
+    const id = o && o.objective_id;
+    switch (tool) {
+      case "check_examinable":
+        if (r.verdict === "excluded") return [`What does ${id} require?`, `Quiz me on ${id}`];
+        if (r.verdict === "examinable") return [`Quiz me on ${id}`, `Is anything excluded from ${id}?`];
+        return ["What subjects do you know?"];
+      case "find_objective":
+      case "get_objective":
+        return id ? [`Quiz me on ${id}`, `Is anything excluded from ${id}?`] : [];
+      case "start_quiz":
+        return ["I don't know"];
+      case "record_quiz_result":
+        return ["Quiz me again", "What should I revise first?"];
+      case "my_revision_list":
+        return (r.revise_first || []).length ? ["Quiz me on my weakest topic"] : ["Quiz me on H2 Physics"];
+      default:
+        return [];
+    }
+  }
+
+  function suggestionRow(items) {
+    const row = el("div", "follow");
+    for (const text of items) {
+      const b = el("button", "chip small", text);
+      b.type = "button";
+      b.addEventListener("click", () => ask(text));
+      row.append(b);
+    }
+    return row;
+  }
+
   // ---- speech out
   let voice = null;
   function pickVoice() {
@@ -183,6 +218,12 @@
             for (let i = results.length - 1; i >= 0; i--) {
               const card = cardFor(results[i].name, results[i].result, ev.type === "answer" ? ev.text : "");
               if (card) { ans.append(card); break; }
+            }
+            if (ev.type === "answer" && results.length) {
+              const last = results[results.length - 1];
+              const next = followUps(last.name, last.result);
+              document.querySelectorAll(".follow").forEach((f) => f.remove());  // only the latest stays
+              if (next.length) ans.append(suggestionRow(next));
             }
             feed.append(ans);
             if (ev.type === "answer") speak(ev.text); else setState(null);

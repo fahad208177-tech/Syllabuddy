@@ -196,7 +196,8 @@ class OfflineBrain:
 
     name = "offline"
     QUIZ = re.compile(r"\b(quiz|test me|ask me)\b", re.I)
-    REVISE = re.compile(r"\b(revise|revision|weak|how am i doing|struggl)", re.I)
+    OBJECTIVE_ID = re.compile(r"\b\d{4}(?:\.[0-9a-z]+)+\b", re.I)
+    REVISE =re.compile(r"\b(revise|revision|weak|how am i doing|struggl)", re.I)
     EXAMINABLE = re.compile(r"\b(syllabus|examinable|on (the|my) exam|tested|need to (know|study|learn)|come out)\b", re.I)
     SUBJECT = re.compile(r"\b((?:h[12]\s+)?(?:maths?|mathematics|physics|chem(?:istry)?|bio(?:logy)?|computing|"
                          r"econs?|economics|geog(?:raphy)?|history))\b", re.I)
@@ -219,8 +220,12 @@ class OfflineBrain:
             correct = _overlap(text, " ".join(quiz["syllabus_requires"])) >= 0.25
             return BrainReply(tool_calls=[ToolCall(call_id, "record_quiz_result",
                                                    {"objective_id": quiz["objective_id"], "correct": correct})])
+        objective = self.OBJECTIVE_ID.search(text)
         if self.QUIZ.search(text):
-            return BrainReply(tool_calls=[ToolCall(call_id, "start_quiz", {"subject": subject} if subject else {})])
+            args = {"objective_id": objective.group(0)} if objective else ({"subject": subject} if subject else {})
+            return BrainReply(tool_calls=[ToolCall(call_id, "start_quiz", args)])
+        if objective:
+            return BrainReply(tool_calls=[ToolCall(call_id, "get_objective", {"objective_id": objective.group(0)})])
         if self.REVISE.search(text):
             return BrainReply(tool_calls=[ToolCall(call_id, "my_revision_list", {})])
         topic = self.SUBJECT.sub(" ", self.FILLER.sub(" ", text)).strip(" ,") or text
@@ -265,6 +270,14 @@ class OfflineBrain:
                 return "You don't have any history yet. Ask me some questions or try a quiz first."
             top = items[0]
             return f"Start with objective {top['objective_id']}, {top['title']}. You've got {len(items)} topics on your list."
+        if tool == "get_objective":
+            requires = result.get("syllabus_requires") or []
+            excluded = result.get("excluded") or []
+            said = f"Objective {result['objective_id']}, {result['title']}. "
+            said += f"The syllabus asks you to cover {len(requires)} point{'s' if len(requires) != 1 else ''}, shown on screen. "
+            said += (f"It excludes {excluded[0]}." if len(excluded) == 1 else
+                     f"It excludes {len(excluded)} things: {'; '.join(excluded)}." if excluded else "Nothing is excluded.")
+            return said
         if tool == "list_subjects":
             names = sorted({s["subject"] for s in result.get("subjects", [])})
             return "I know the syllabus for " + ", ".join(names[:-1]) + f" and {names[-1]}."
