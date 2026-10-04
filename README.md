@@ -2,17 +2,22 @@
 
 **Ask Alexa what's on your exam, and get the syllabus answer, not a guess.**
 
-Syllabuddy is an MCP server that answers A-Level students' most common question,
-*"is this even in the syllabus?"*, straight from the official exam syllabus. It
-ships with a simulated Alexa+ experience: you speak, Alexa+ calls Syllabuddy over
-MCP (Streamable HTTP), and it answers out loud with the objective code and the
+Syllabuddy is an MCP server that answers students' most common question,
+*"is this even on my exam?"*, straight from the official syllabus. It covers
+**24 US AP courses** (College Board Course and Exam Descriptions), **Canada's
+Alberta Diploma** Physics 30 and Chemistry 30, and the **Singapore-Cambridge
+A-Level**: 2,381 learning objectives across 40 subjects. It ships with a
+simulated Alexa+ experience: you speak, Alexa+ calls Syllabuddy over MCP
+(Streamable HTTP), and it answers out loud with the objective code and the
 syllabus's own wording on screen.
 
-> **Student:** "Is the shortest distance between two skew lines on the H2 Maths exam?"
+> **Student:** "Is the ratio test on the AP Calculus AB exam?"
 >
-> **Alexa+** → `check_examinable(topic="shortest distance between two skew lines", subject="H2 Maths")`
+> **Alexa+** → `check_examinable(topic="ratio test", subject="AP Calc AB")`
 >
-> **Alexa+:** "No, it's not examinable. Objective 9758.3.3 explicitly excludes the shortest distance between two skew lines."
+> **Alexa+:** "No, the ratio test is only assessed on the AP Calculus BC exam."
+>
+> **Student:** "What about BC?" → "Yes, it's topic 10.8 of AP Calculus BC, Ratio Test for Convergence."
 
 Built for the **Alexa+ track** of the Amazon Developer Hackathon (Build, Ship, Shape, 2026).
 
@@ -26,10 +31,21 @@ guess confidently. The real answer is usually one bullet point, on one page of a
 40-page PDF, under *Excluded*.
 
 Syllabuddy never guesses about the syllabus. Its tools don't call a language
-model at all: they search **916 learning objectives parsed deterministically from
-the official SEAB syllabus PDFs** (14 subjects, H1 and H2), including every
-"Include" and "Exclude" list, and return the exact wording with its source page.
-The assistant only does the talking.
+model at all: they search **2,381 learning objectives parsed deterministically
+from the official documents**, including every exclusion statement, every "bc
+only" marker and every boundary statement, and return the exact wording with its
+source page. The assistant only does the talking.
+
+| Exam | Subjects | Objectives | Source |
+|---|---|---|---|
+| **AP** (US, College Board) | 24: Calculus AB and BC, Precalculus, Statistics, Physics 1, 2, C: Mechanics, C: E&M, Chemistry, Biology, Environmental Science, CS A, CS Principles, Psychology, Macro, Micro, US Gov, Comparative Gov, US History, World History, European History, Human Geography, African American Studies, Music Theory | 1,447 | Course and Exam Descriptions |
+| **Alberta Diploma** (Canada) | Physics 30, Chemistry 30 | 18 general outcomes, 124 knowledge outcomes | Alberta Education Programs of Study |
+| **Singapore-Cambridge A-Level** | 14 (H1/H2 sciences, maths, computing, humanities) | 916 | SEAB syllabus PDFs |
+
+AP courses with no content topics (world languages, English Language and
+Literature, Seminar, Research, Art and Design) and Art History (a list of
+artworks rather than objectives) are not included. Alberta Biology 30 and
+Mathematics 30-1 are not included yet: their documents refuse automated download.
 
 It also remembers what Alexa+ can't: **which objectives you personally keep
 getting wrong**, so "what should I revise first?" has a real answer.
@@ -38,6 +54,10 @@ getting wrong**, so "what should I revise first?" has a real answer.
 
 | Say | Syllabuddy tool | What happens |
 |---|---|---|
+| "Is the ratio test on the AP Calculus AB exam?" | `check_examinable` | **Excluded**: BC only (the CED marks it "bc only") |
+| "Do I need the epsilon-delta definition of a limit for AP Calc?" | `check_examinable` | **Excluded**, quoting the CED's exclusion statement (CALCAB-1.2) |
+| "Is Big-O notation on AP CS Principles?" | `check_examinable` | **Excluded**: "formal analysis of algorithms (Big-O)... outside the scope" |
+| "Is the photoelectric effect on the Physics 30 diploma?" | `check_examinable` | **Examinable**, Alberta outcome PHYS30-C2 |
 | "Is the shortest distance between two skew lines on the H2 Maths exam?" | `check_examinable` | **Excluded**, quoting 9758.3.3 |
 | "Do I need to know Type II error?" | `check_examinable` | **Excluded**, quoting the packed bullet in 9758.6.5 |
 | "Is hypothesis testing examinable?" | `check_examinable` | **Examinable**, objective 9758.6.5 |
@@ -58,7 +78,7 @@ flowchart LR
     A -- "spoken reply + card" --> W
 ```
 
-1. **Parsing (deterministic).** `syllabus_core/syllabus/` has one parser per syllabus layout. Single-column science and maths syllabuses are read line by line. Multi-column History, Geography and Economics tables are split back into columns before parsing. `syllabus_core/pdf_text.py` repairs scrambled glyph order and recovers super- and subscripts (`ax^2`, `u_{n+1}`) from font size and baseline.
+1. **Parsing (deterministic).** `syllabus_core/syllabus/` has one parser per document layout. `ap_ced.py` reads every AP Course and Exam Description: it locates the learning-objective and essential-knowledge columns on each page from their headings (facing pages are mirrored), handles three generations of codes (`LIM-1.A`, `1.1.A`, history `KC-4.1.IV.C`), captures exclusion and physics boundary statements, turns "bc only" content into AP Calculus AB exclusions, regroups CS Principles by its at-a-glance tables, and strips footers, formula alt text and letter-spacing damage. `alberta.py` reads the 30-level general and knowledge outcomes. For the Singapore A-Level, Single-column science and maths syllabuses are read line by line. Multi-column History, Geography and Economics tables are split back into columns before parsing. `syllabus_core/pdf_text.py` repairs scrambled glyph order and recovers super- and subscripts (`ax^2`, `u_{n+1}`) from font size and baseline.
 2. **Retrieval.** BM25 and dense embeddings (`BAAI/bge-small-en-v1.5`, in-process ONNX) are fused with Reciprocal Rank Fusion. The best cosine similarity gives a calibrated confidence: below 0.58 is treated as off-syllabus.
 3. **Examinability.** Every "Excluded" bullet is indexed on its own, and packed bullets are split into clauses. An exclusion wins only when it matches the question better than anything *included*, and only inside its own topic. That is why "hypothesis testing" is examinable even though correlation's objective excludes "hypothesis tests". Short technical terms ("Type II error") are also matched word for word, because they embed poorly.
 4. **MCP server.** `mcp_server/server.py` exposes 9 tools via the official MCP Python SDK. It negotiates spec **2025-11-25** over Streamable HTTP (2026-07-28 is also supported). Once warm, tool calls took 14 to 300 ms in testing on a 2-core laptop, inside Alexa+'s 500 ms budget. Query embedding dominates that time, so a normal server is faster.
@@ -117,13 +137,14 @@ only as a hash.
 | `my_revision_list()` | Objectives to revise first, ranked by wrong answers, then repeated questions |
 | `clear_my_history(confirm?)` | Deletes everything stored about the student. Two steps enforced by the server, so a model can't delete without the student confirming |
 
-Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", or a code like "9729".
+Subjects can be named loosely: "AP Calc AB", "APUSH", "AP Chem", "stats", "Physics C E&M", "Physics 30", "H2 Maths", "econs", or a code like "9729" or "CALCBC". Plain names ("chem", "physics") mean the Singapore A-Level unless "AP", "30" or "Alberta" is said.
 
 ## Tests
 
 ```bash
-pytest -q                         # 90 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, fallbacks, web API
-python scripts/eval_examinable.py # every Excluded bullet and every objective title in the syllabus (942 cases)
+pytest -q                         # 131 tests: AP, Alberta and A-Level answers, student paraphrases, MCP over HTTP, agent loop, fallbacks, web API
+python scripts/eval_all.py        # tests every one of the 2,381 objectives (writes artifacts/eval_report.md)
+python scripts/eval_examinable.py # Singapore A-Level only: every Excluded bullet and objective title (942 cases)
 python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app
 python scripts/ui_check.py        # drives the UI in Chrome (needs playwright)
@@ -131,7 +152,9 @@ python scripts/record_demo.py     # records the demo script as artifacts/demo_ca
 python scripts/check_bedrock.py   # optional: verifies AWS credentials and a real Bedrock tool call
 ```
 
-**Accuracy.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
+**Every objective, every exam** (`scripts/eval_all.py`, 2,381 objectives, about 9 minutes): data quality 100% (no PDF debris, empty or duplicate objectives), every objective's title comes back `examinable` (2,265/2,266; "Rivals on the World Stage" is too abstract and returns `unclear`), every exclusion statement comes back `excluded` (131/131), and each objective's own first requirement finds it in the top 3 for 99% (93% first). Most top-3 misses are AP Calculus topics that share identical learning objectives (topics 10.1 to 10.8 all say "Determine whether a series converges or diverges").
+
+**Singapore A-Level detail.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
 
 **Question-to-objective matching** (`python scripts/eval_retrieval.py`, 51 labelled questions carried over from the original tutor): with the subject given, 86% top-1 and MRR 0.925, and the right objective is in the top 3 every time (`find_objective` returns 3). The remaining top-1 misses are sibling objectives in the same topic, for example "construct and use rate equations" ranked above "explain and use the terms rate of reaction, order...".
 
@@ -148,7 +171,8 @@ mcp_server/        MCP server (Streamable HTTP) and its 9 tools
 syllabus_core/     parsers, retrieval, examinability logic, per-student progress
 assistant/         simulated Alexa+: agent (MCP client + brains) and voice web UI
 skills/syllabuddy/ Agent Skill for any skills-compatible agent
-data/              syllabus.json (916 objectives), corrections.json (6 PDF-mangled bullets, fixed), precomputed embeddings
+data/              syllabus.json (Singapore, 916), ap_syllabus.json (AP, 1,447), alberta_syllabus.json (18),
+                   corrections.json (6 PDF-mangled bullets, fixed), precomputed embeddings
 scripts/           build_syllabus.py (PDFs → JSON), live and UI checks
 tests/             pytest suite
 ```
@@ -166,14 +190,18 @@ tests/             pytest suite
 ## Built before vs during the hackathon
 
 - **Before (31 Aug 2026):** the syllabus parsers, `syllabus.json`, and the hybrid retrieval, from my earlier A-Level tutor project.
-- **During:** the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
+- **During:** the AP parser (24 courses, 1,447 objectives) and Alberta parser; the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
 
 ## Notes on data
 
-`data/syllabus.json` is derived from the publicly available SEAB A-Level syllabus
-documents, for educational use. The PDFs themselves are not redistributed. To
-rebuild, download them into `syllabus_pdfs/` and run `python scripts/build_syllabus.py`.
-Syllabuddy is not affiliated with or endorsed by SEAB, Cambridge, or Amazon.
+The data files are derived from publicly available documents, for educational
+use: SEAB A-Level syllabuses, College Board AP Course and Exam Descriptions (©
+College Board) and Alberta Education Programs of Study. The PDFs themselves are
+not redistributed; objectives keep their source page so every answer can be
+checked. To rebuild, download the PDFs into `syllabus_pdfs/` (see the docstrings
+of `scripts/build_syllabus.py`, `build_ap.py` and `build_alberta.py`) and run those
+scripts. Syllabuddy is not affiliated with or endorsed by SEAB, Cambridge, the
+College Board, Alberta Education, or Amazon.
 "Alexa+" here refers to a simulated experience built for the hackathon's Alexa+ track.
 
 ## License

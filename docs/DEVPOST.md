@@ -10,17 +10,19 @@ I'd already built a tutor that parses the official syllabus. The Alexa+ track ma
 
 ## What it does
 
-Syllabuddy is an MCP server that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it.
+Syllabuddy is an MCP server that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,381 learning objectives across 40 subjects.
 
-> "Is the shortest distance between two skew lines on the H2 Maths exam?"
+> "Is the ratio test on the AP Calculus AB exam?"
 >
-> "No, it's not examinable. Objective 9758.3.3 explicitly excludes the shortest distance between two skew lines."
+> "No, the ratio test is only assessed on the AP Calculus BC exam."
+>
+> "What about BC?" / "Yes, it's topic 10.8 of AP Calculus BC, Ratio Test for Convergence."
 
 It tells you whether a topic is examinable, which objective a question belongs to and what that objective requires, quizzes you out loud, and remembers which objectives *you* keep getting wrong, so "what should I revise first?" has a real answer. Alexa+ remembers your shoe size; Syllabuddy remembers your weak spots.
 
 ## How I built it
 
-**The syllabus, without an LLM.** The syllabus is the one thing that must never be hallucinated, so it's parsed deterministically from the official SEAB PDFs: 916 learning objectives across 14 subjects, each with its code, what's included, what's excluded, and the source page.
+**The syllabus, without an LLM.** The syllabus is the one thing that must never be hallucinated, so it's parsed deterministically from the official documents: the College Board's AP Course and Exam Descriptions, Alberta Education's Programs of Study and the SEAB A-Level syllabuses. Each objective keeps its code, what's included, what's excluded, and the source page. One parser reads every AP course, because the College Board uses the same page layout everywhere.
 
 **Matching questions.** A hybrid search (BM25 plus `bge-small` embeddings, fused with Reciprocal Rank Fusion) finds the closest objective. The best cosine similarity $c$ acts as a confidence score, calibrated on real questions:
 
@@ -57,6 +59,16 @@ and only inside its own topic.
 
 **Getting onto Alexa+ from Singapore.** Alexa+ isn't available here. The Alexa AI CLI isn't on public npm, isn't supported on Windows, and needs an AWS account approved by an Amazon Solutions Architect. So I built the simulated Alexa+ experience the track allows, and kept the server standards-based so it's ready to deploy as a real add-on.
 
+**Mirrored pages.** AP documents put the learning objectives on the left on one page and on the right on the next. Fixed column positions read half the pages wrong, so the parser finds each page's columns from its own headings.
+
+**Three kinds of AP codes, and one course with no topic headers.** Calculus uses `LIM-1.A`, the newer sciences use `1.1.A`, and the history courses use "Unit 4: Learning Objective H" with `KC-4.1.IV.C` codes. CS Principles prints no topic headers at all, only an at-a-glance table, so its objectives are regrouped from that table.
+
+**Hidden text.** Formula images carry accessibility text spelled in fragments ("O p en b rac k et R eq u a l s..."), and one PDF uses a control character instead of spaces. Checking every one of the 2,381 objectives for debris is what found these.
+
+**"BC only" is a real exclusion.** The Calculus document marks content "bc only", so for AP Calculus AB those topics are excluded; that's the most useful answer an AB student can get.
+
+**A live bug: Big-O.** Testing by voice, "Is Big-O notation on AP CS Principles?" came back examinable, though the document says formal Big-O analysis is out of scope. The words didn't match ("notation" isn't in the exclusion, and "big" also appears in "big data"). Now a distinctive term that a subject mentions only in an exclusion decides the answer.
+
 ## What I learned
 
 - An AI reads each tool's description to decide when and how to call it. Writing "pass the topic as specifically as the student said it" fixed a real bug.
@@ -67,5 +79,5 @@ and only inside its own topic.
 ## What's next
 
 - Deploy the server and add OAuth account linking to publish a real Alexa+ add-on.
-- More exams with published syllabuses, like Cambridge International A Levels and AP courses.
+- More exams: Alberta Biology 30 and Mathematics 30-1, Cambridge International A Levels, and other provinces.
 - Quizzes drawn from past papers for each objective.

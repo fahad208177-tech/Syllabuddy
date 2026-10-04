@@ -23,10 +23,12 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "artifacts"
 SIZE = {"width": 1600, "height": 900}
 SCRIPT = [
-    "Is the shortest distance between two skew lines on the H2 Maths exam?",
-    "What about the distance from a point to a plane?",
-    "Do I need to know Type II error for H2 Maths?",
-    "Quiz me on H2 Physics",
+    "Is the ratio test on the AP Calculus AB exam?",
+    "What about BC?",
+    "Do I need the epsilon-delta definition of a limit for AP Calc?",
+    "Is Big-O notation on AP Computer Science Principles?",
+    "Is the photoelectric effect on the Physics 30 diploma exam?",
+    "Quiz me on AP Physics 1",
     None,  # answer the quiz (filled in below)
     "What should I revise first?",
 ]

@@ -79,3 +79,13 @@ def test_every_exam_is_loaded(svc):
     levels = {s.level for s in svc.subjects}
     assert {"AP", "Alberta Diploma", "H1", "H2"} <= levels
     assert sum(1 for s in svc.subjects if s.level == "AP") == 24
+
+
+@pytest.mark.parametrize("topic, subject, verdict", [
+    # Found live: the CSP CED excludes "formal analysis of algorithms (Big-O)"
+    ("Big-O notation", "AP Computer Science Principles", "excluded"),
+    ("big data", "AP CSP", "examinable"),
+    ("algorithmic efficiency", "AP CSP", "examinable"),
+])
+def test_distinctive_terms(svc, topic, subject, verdict):
+    assert svc.check_examinable(topic, subject)["verdict"] == verdict

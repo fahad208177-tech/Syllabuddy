@@ -378,9 +378,27 @@ class SyllabusService:
         # under the Vectors topic matches "triple product of vectors". Inclusions get
         # the same context, which keeps "complex numbers" examinable even though
         # "complex numbers in polar form" is excluded.
-        if any(words <= self._words[id(inc)] for inc in self.inclusions if in_scope(inc)):
+        inclusions = [inc for inc in self.inclusions if in_scope(inc)]
+        # Whole hyphenated terms only serve the distinctive-term check below; "is it
+        # taught?" uses the plain words ("x- or y-axis" teaches the x-axis too).
+        base = frozenset(w for w in words if "-" not in w) or words
+        if any(base <= self._words[id(inc)] for inc in inclusions):
             return None
-        matches = [exc for exc in self.exclusions if in_scope(exc) and words <= self._words[id(exc)]]
+        exclusions = [exc for exc in self.exclusions if in_scope(exc)]
+        matches = [exc for exc in exclusions if base <= self._words[id(exc)]]
+        if not matches and subject_ids:
+            # A distinctive term: one the subject mentions only in an exclusion and
+            # nowhere in what it teaches ("Big-O" in AP CS Principles, "ratio test"
+            # in AP Calculus AB). Then the exclusion answers the question even if
+            # the student's other words ("notation") differ.
+            taught = frozenset().union(*(self._words[id(inc)] for inc in inclusions)) if inclusions else frozenset()
+            distinctive = {w for w in words - taught if len(w) > 3}
+            rest = words - distinctive
+            # ...unless the rest of the question is itself something taught:
+            # "volume of revolution about the x-axis" is taught, whatever "x-axis" says.
+            rest_taught = len(rest) >= 2 and any(rest <= self._words[id(inc)] for inc in inclusions)
+            if distinctive and not rest_taught:
+                matches = [exc for exc in exclusions if distinctive & self._words[id(exc)]]
         # The shortest clause is the most specific statement of the exclusion.
         return min(matches, key=lambda exc: len(exc.text)) if matches else None
 
@@ -542,4 +560,6 @@ def _content_words(text: str) -> frozenset[str]:
         if w in STOPWORDS or w in _GENERIC or (len(w) == 1 and not w.isdigit()):
             continue
         words.append(_stem(w))
+    # Hyphenated terms also count whole: "Big-O" is not "big" (as in "big data").
+    words += [w for w in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)+", text) if len(w) > 3]
     return frozenset(words)
