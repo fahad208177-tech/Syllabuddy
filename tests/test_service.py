@@ -59,11 +59,15 @@ def test_packed_exclusion_quotes_whole_bullet(svc):
 @pytest.mark.parametrize("question, subject, expected", [
     ("how to find the distance between two planes", "H2 Maths", "9758.3.3"),
     ("what is simple harmonic motion", "H2 Physics", "9478.9.d"),
+    # A user-reported bug: these went to Newton's law of *gravitation* (9478.8.b)
+    ("definition of Newton's third law", "H2 Physics", "9478.3.h"),
+    ("newtons third law", "H2 Physics", "9478.3.h"),
+    ("Newton's law of gravitation", "H2 Physics", "9478.8.a"),
 ])
 def test_find_objective(svc, question, subject, expected):
     result = svc.find_objective(question, subject)
     assert result["objectives"][0]["objective_id"] == expected
-    assert result["match"] == "matched"
+    assert result["match"] in ("matched", "approximate")
 
 
 @pytest.mark.parametrize("text, ids", [

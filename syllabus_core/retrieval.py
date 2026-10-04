@@ -57,8 +57,28 @@ class Hit(Generic[ItemT]):
     similarity: float = 0.0
 
 
+# Spelling variants that should count as the same word for keyword matching.
+# Applied to syllabus text and questions alike, so both sides always agree.
+ORDINALS = {"first": "1st", "second": "2nd", "third": "3rd"}
+POSSESSIVE = re.compile(r"['’]s\b")
+
+
+def _normalise_word(word: str) -> str:
+    word = ORDINALS.get(word, word)
+    # "newtons" ~ "Newton's" ~ "Newton", "laws" ~ "law"
+    if len(word) > 4 and word.endswith("s") and not word.endswith(("ss", "us", "is")):
+        word = word[:-1]
+    return word
+
+
+# How a question is framed, not what it is about. "Definition of Newton's third
+# law" must not match "...the definition of gravitational field strength".
+# ("state" stays: it is also physics, as in "equation of state".)
+FRAMING = frozenset({"definition", "define", "defined", "meaning", "mean", "explain", "explanation", "describe"})
+
+
 def tokenize(text: str) -> list[str]:
-    return TOKEN.findall(text.lower())
+    return [_normalise_word(w) for w in TOKEN.findall(POSSESSIVE.sub("", text.lower())) if w not in FRAMING]
 
 
 class LexicalIndex(Generic[ItemT]):

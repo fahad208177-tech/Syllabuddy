@@ -55,7 +55,13 @@
     return card;
   }
 
-  function cardFor(tool, r) {
+  // The card must show the objective the spoken answer actually cites. A search
+  // returns several candidates and the assistant may rightly pick the second.
+  function citedIn(text, objectives) {
+    return objectives.find((o) => o && text.includes(o.objective_id)) || null;
+  }
+
+  function cardFor(tool, r, answer = "") {
     if (!r || r.error) return null;
     if (tool === "check_examinable") {
       const o = r.objective || r.closest_objective;
@@ -63,7 +69,11 @@
       return objectiveCard(o, r.verdict, VERDICT_LABEL[r.verdict] || r.verdict, r.excluded_item, !!r.objective);
     }
     if (tool === "find_objective" && r.objectives && r.objectives.length) {
-      return objectiveCard(r.objectives[0], r.match, VERDICT_LABEL[r.match]);
+      const cited = citedIn(answer, r.objectives);
+      if (!cited && answer && /\b\d{4}\.[0-9a-z]+/i.test(answer)) return null;  // cites something not shown here
+      const o = cited || r.objectives[0];
+      // Only the top result carries full requires/excludes; others show the header.
+      return objectiveCard(o, r.match, VERDICT_LABEL[r.match], null, !!o.syllabus_requires);
     }
     if (tool === "get_objective" && r.objective_id) return objectiveCard(r, "matched", "Objective");
     if (tool === "start_quiz" && r.quiz_objective) {
@@ -171,7 +181,7 @@
             if (ev.type === "error") ans.classList.add("error");
             // Show the card for the most informative tool result of this turn.
             for (let i = results.length - 1; i >= 0; i--) {
-              const card = cardFor(results[i].name, results[i].result);
+              const card = cardFor(results[i].name, results[i].result, ev.type === "answer" ? ev.text : "");
               if (card) { ans.append(card); break; }
             }
             feed.append(ans);
