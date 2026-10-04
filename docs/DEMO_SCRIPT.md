@@ -16,6 +16,11 @@ the first answer isn't slow.
 | 2:00–2:30 | Split screen: `mcp_server/server.py` tool list + `pytest -q` passing | "It's a standard MCP server over Streamable HTTP, spec 2025-11-25. No LLM inside the tools: 916 objectives parsed from the official PDFs. The brain is Amazon Bedrock." Show `.env` with `SYLLABUDDY_BRAIN=bedrock` (hide keys!). |
 | 2:30–2:40 | README roadmap | "Next: account linking and a real Alexa+ add-on, and more exams beyond Singapore." |
 
+Shortcut: `python scripts/record_demo.py` (with the app running) records a clean
+1600×900 capture of the real app answering this exact script and saves
+`artifacts/demo_capture.mp4`. It's silent, so add your voice-over and the
+code and test shots on top.
+
 Checklist before recording:
 - [ ] Brain set to Bedrock (for the AWS Builder entry) or Groq. Check the status pill and the "brain:" line.
 - [ ] Browser zoom 110–125% so text is readable in the video.

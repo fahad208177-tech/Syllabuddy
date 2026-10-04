@@ -127,6 +127,8 @@ python scripts/eval_examinable.py # every Excluded bullet and every objective ti
 python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app
 python scripts/ui_check.py        # drives the UI in Chrome (needs playwright)
+python scripts/record_demo.py     # records the demo script as artifacts/demo_capture.mp4
+python scripts/check_bedrock.py   # verifies AWS credentials, model access and a real tool call
 ```
 
 **Accuracy.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
