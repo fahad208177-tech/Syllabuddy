@@ -41,7 +41,7 @@ $$
 
 and only inside its own topic.
 
-**The MCP server.** Eight tools built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
+**The MCP server.** Nine tools built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
 
 **The simulated Alexa+.** A web app with voice in and voice out. Behind it, an agent connects to the MCP server as a real MCP client, hands the tool list to a model, runs the tool calls, and speaks a short answer while the screen shows the syllabus card. The model is swappable: Amazon Bedrock (Converse API), any OpenAI-compatible API, or an offline mode that needs no keys at all. There's also an Agent Skill that teaches any agent how to use the tools.
 

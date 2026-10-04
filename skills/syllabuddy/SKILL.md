@@ -21,6 +21,7 @@ excluded, that is the syllabus's own wording.
 | "What should I revise?", "How am I doing?" | `my_revision_list()` |
 | "What subjects / topics do you know?" | `list_subjects()`, `list_topics(subject)` |
 | A specific objective id like 9758.3.3 | `get_objective(objective_id)` |
+| "Delete my history" | `clear_my_history(confirm=true)`, only after the student confirms |
 
 ## Rules
 

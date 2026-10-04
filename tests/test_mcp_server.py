@@ -12,7 +12,7 @@ from mcp.shared._httpx_utils import create_mcp_http_client
 from assistant.agent import _result_data
 
 EXPECTED_TOOLS = {"check_examinable", "find_objective", "get_objective", "list_subjects", "list_topics",
-                  "start_quiz", "record_quiz_result", "my_revision_list"}
+                  "start_quiz", "record_quiz_result", "my_revision_list", "clear_my_history"}
 
 
 async def _call(url, student, calls):
@@ -75,3 +75,12 @@ def test_history_is_per_student(server_url):
 def test_quiz_comes_back_to_weak_spot(server_url):
     [(quiz, _)] = run(_call(server_url, "alice", [("start_quiz", {"subject": "H2 Physics"})]))
     assert quiz["quiz_objective"]["objective_id"] == "9478.9.d"
+
+
+def test_clear_history_needs_confirmation(server_url):
+    run(_call(server_url, "carol", [("record_quiz_result", {"objective_id": "9478.9.d", "correct": False})]))
+    [(refused, _)] = run(_call(server_url, "carol", [("clear_my_history", {"confirm": False})]))
+    assert refused["deleted"] is False
+    [(done, _), (after, _)] = run(_call(server_url, "carol", [("clear_my_history", {"confirm": True}),
+                                                             ("my_revision_list", {})]))
+    assert done["deleted"] is True and after["stats"] == {"asked": 0, "quizzed": 0, "right": 0}

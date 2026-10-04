@@ -35,6 +35,14 @@ async def index(_request: Request) -> FileResponse:
     return FileResponse(WEB / "index.html")
 
 
+async def privacy(_request: Request) -> FileResponse:
+    return FileResponse(WEB / "privacy.html")
+
+
+async def terms(_request: Request) -> FileResponse:
+    return FileResponse(WEB / "terms.html")
+
+
 async def ask(request: Request) -> StreamingResponse | JSONResponse:
     body = await request.json()
     text = str(body.get("text", "")).strip()[:500]
@@ -99,6 +107,10 @@ app = Starlette(lifespan=lifespan, routes=[
     Route("/api/reset", reset, methods=["POST"]),
     Route("/api/revision", revision),
     Route("/api/health", health),
+    Route("/privacy", privacy),
+    Route("/terms", terms),
+    # Icons referenced by alexa-addon/addon.json.
+    Mount("/static/addon", StaticFiles(directory=Path(__file__).parent.parent / "alexa-addon" / "media"), name="addon"),
     Mount("/static", StaticFiles(directory=WEB), name="static"),
 ])
 

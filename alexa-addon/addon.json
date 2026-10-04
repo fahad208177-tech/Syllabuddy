@@ -1,0 +1,74 @@
+{
+  "manifestVersion": "1.0",
+  "storeListing": {
+    "distributionCountries": [
+      "US"
+    ],
+    "locales": {
+      "en-US": {
+        "default": "DEFAULT",
+        "name": {
+          "value": "Syllabuddy"
+        },
+        "shortDescription": "Ask what's on your A-Level exam. Answers come from the official syllabus, with the objective code.",
+        "fullDescription": "Syllabuddy answers the question every A-Level student asks: is this even in the syllabus? It checks the official Singapore-Cambridge syllabus (916 learning objectives across Physics, Chemistry, Biology, Mathematics, Computing, Economics, Geography and History) and tells you whether a topic is examinable, explicitly excluded, or not covered, quoting the syllabus wording and objective code. It can also quiz you out loud and remember which objectives you keep getting wrong, so 'what should I revise first?' has a real answer.",
+        "examplePhrases": [
+          "Ask Syllabuddy if the shortest distance between skew lines is on the H2 Maths exam",
+          "Do I need to know Type II error for H2 Maths?",
+          "Quiz me on H2 Physics",
+          "What should I revise first?"
+        ],
+        "privacyAndCompliance": {
+          "privacyPolicyUrl": "https://YOUR-SYLLABUDDY-HOST/privacy",
+          "termsOfUseUrl": "https://YOUR-SYLLABUDDY-HOST/terms"
+        },
+        "mediaAssets": {
+          "icons": {
+            "light": [
+              {
+                "size": "72x72",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-72x72.png"
+              },
+              {
+                "size": "64x64",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-64x64.png"
+              },
+              {
+                "size": "88x88",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-88x88.png"
+              },
+              {
+                "size": "126x126",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-126x126.png"
+              },
+              {
+                "size": "180x180",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-180x180.png"
+              },
+              {
+                "size": "241x241",
+                "uri": "https://YOUR-SYLLABUDDY-HOST/static/addon/icon-241x241.png"
+              }
+            ],
+            "dark": []
+          },
+          "carouselImages": [],
+          "bannerImages": []
+        }
+      }
+    }
+  },
+  "integrations": [
+    {
+      "type": "MCP",
+      "config": {
+        "endpoints": {
+          "default": {
+            "type": "HTTPS",
+            "uri": "https://YOUR-SYLLABUDDY-HOST/mcp"
+          }
+        }
+      }
+    }
+  ]
+}

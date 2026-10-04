@@ -61,7 +61,7 @@ flowchart LR
 1. **Parsing (deterministic).** `syllabus_core/syllabus/` has one parser per syllabus layout. Single-column science and maths syllabuses are read line by line. Multi-column History, Geography and Economics tables are split back into columns before parsing. `syllabus_core/pdf_text.py` repairs scrambled glyph order and recovers super- and subscripts (`ax^2`, `u_{n+1}`) from font size and baseline.
 2. **Retrieval.** BM25 and dense embeddings (`BAAI/bge-small-en-v1.5`, in-process ONNX) are fused with Reciprocal Rank Fusion. The best cosine similarity gives a calibrated confidence: below 0.58 is treated as off-syllabus.
 3. **Examinability.** Every "Excluded" bullet is indexed on its own, and packed bullets are split into clauses. An exclusion wins only when it matches the question better than anything *included*, and only inside its own topic. That is why "hypothesis testing" is examinable even though correlation's objective excludes "hypothesis tests". Short technical terms ("Type II error") are also matched word for word, because they embed poorly.
-4. **MCP server.** `mcp_server/server.py` exposes 8 tools via the official MCP Python SDK. It negotiates spec **2025-11-25** over Streamable HTTP (2026-07-28 is also supported). Once warm, tool calls took 14 to 300 ms in testing on a 2-core laptop, inside Alexa+'s 500 ms budget. Query embedding dominates that time, so a normal server is faster.
+4. **MCP server.** `mcp_server/server.py` exposes 9 tools via the official MCP Python SDK. It negotiates spec **2025-11-25** over Streamable HTTP (2026-07-28 is also supported). Once warm, tool calls took 14 to 300 ms in testing on a 2-core laptop, inside Alexa+'s 500 ms budget. Query embedding dominates that time, so a normal server is faster.
 5. **Simulated Alexa+.** `assistant/` is a Starlette app with a voice UI (Web Speech API), an agent that connects to the MCP server as a real MCP client, and a swappable model ("brain").
 
 ## Quick start
@@ -115,6 +115,7 @@ only as a hash.
 | `start_quiz(subject?, objective_id?)` | Picks your weakest (or an unseen) objective to quiz on |
 | `record_quiz_result(objective_id, correct, note?)` | Saves the result to your history |
 | `my_revision_list()` | Objectives to revise first, ranked by wrong answers, then repeated questions |
+| `clear_my_history(confirm)` | Deletes everything stored about the student, after they confirm |
 
 Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", or a code like "9729".
 
@@ -141,7 +142,7 @@ tool-result message shapes.
 ## Project layout
 
 ```
-mcp_server/        MCP server (Streamable HTTP) and its 8 tools
+mcp_server/        MCP server (Streamable HTTP) and its 9 tools
 syllabus_core/     parsers, retrieval, examinability logic, per-student progress
 assistant/         simulated Alexa+: agent (MCP client + brains) and voice web UI
 skills/syllabuddy/ Agent Skill for any skills-compatible agent
@@ -149,6 +150,10 @@ data/              syllabus.json (916 objectives), corrections.json (6 PDF-mangl
 scripts/           build_syllabus.py (PDFs → JSON), live and UI checks
 tests/             pytest suite
 ```
+
+## Real Alexa+ add-on package
+
+`alexa-addon/addon.json` follows the MCP Toolkit manifest format: store listing, 4 example phrases, privacy and terms URLs (served at `/privacy` and `/terms`), and icons at all 6 required sizes (`alexa-addon/media/`). Replace `YOUR-SYLLABUDDY-HOST` with the deployed HTTPS host, then `alexa-ai deploy`. That needs Amazon's allow-listed Alexa AI CLI and OAuth 2.1 account linking; see the roadmap and [docs/FRICTION_LOG.md](docs/FRICTION_LOG.md).
 
 ## Roadmap
 
@@ -159,7 +164,7 @@ tests/             pytest suite
 ## Built before vs during the hackathon
 
 - **Before (31 Aug 2026):** the syllabus parsers, `syllabus.json`, and the hybrid retrieval, from my earlier A-Level tutor project.
-- **During:** the MCP server and all 8 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with Bedrock, OpenAI-compatible and offline brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
+- **During:** the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with Bedrock, OpenAI-compatible and offline brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
 
 ## Notes on data
 

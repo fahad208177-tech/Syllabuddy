@@ -133,6 +133,8 @@ body.speaking .lightbar { background: var(--cyan); box-shadow: 0 0 18px var(--cy
 .ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; color: var(--muted); }
 .ghost:hover { color: var(--ink); border-color: rgba(255,255,255,.25); }
 .ghost.wide { padding: 11px; border-radius: 14px; }
+.legal { margin: 2px 4px; font-size: 12px; color: #5f6d86; text-align: center; }
+.legal a { color: #8d9ab3; }
 
 /* composer */
 .composer { display: flex; gap: 10px; align-items: center; margin-top: 12px; }

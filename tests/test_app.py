@@ -52,3 +52,24 @@ def test_ids_are_sanitised(client):
 def test_revision_endpoint_goes_through_mcp(client):
     revision = client.get("/api/revision", params={"student": "fresh-student"}).json()
     assert revision["revise_first"] == [] and revision["stats"]["asked"] == 0
+
+
+def test_privacy_terms_and_addon_icons(client):
+    assert "clear_my_history" in client.get("/privacy").text
+    assert client.get("/terms").status_code == 200
+    icon = client.get("/static/addon/icon-241x241.png")
+    assert icon.status_code == 200 and icon.headers["content-type"] == "image/png"
+
+
+def test_addon_manifest_is_valid():
+    import json
+    from pathlib import Path
+
+    manifest = json.loads((Path(__file__).parent.parent / "alexa-addon" / "addon.json").read_text(encoding="utf-8"))
+    listing = manifest["storeListing"]["locales"]["en-US"]
+    assert manifest["manifestVersion"] == "1.0"
+    assert len(listing["shortDescription"]) <= 123 and len(listing["fullDescription"]) <= 4000
+    assert 3 <= len(listing["examplePhrases"]) <= 4 and all(len(p) <= 200 for p in listing["examplePhrases"])
+    sizes = {i["size"] for i in listing["mediaAssets"]["icons"]["light"]}
+    assert sizes == {"72x72", "64x64", "88x88", "126x126", "180x180", "241x241"}
+    assert manifest["integrations"][0]["type"] == "MCP"

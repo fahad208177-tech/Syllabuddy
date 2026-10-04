@@ -8,7 +8,7 @@
 - **Would I build with it again?** Yes, once access is open. MCP makes it low-risk because nothing is Alexa-specific until deployment.
 
 ## Model Context Protocol (Streamable HTTP, Python SDK 2.3)
-- **Used for:** the Syllabuddy server (8 tools) and the agent's client.
+- **Used for:** the Syllabuddy server (9 tools) and the agent's client.
 - **Worked well:** per-request headers on the context made per-student history easy; tool schemas are generated from type hints and docstrings.
 - **Needs work:** the v1 to v2 rename (FastMCP to MCPServer) breaks most online examples.
 
