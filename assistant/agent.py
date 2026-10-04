@@ -33,6 +33,10 @@ from mcp.shared._httpx_utils import create_mcp_http_client
 MCP_URL = os.environ.get("SYLLABUDDY_MCP_URL", "http://127.0.0.1:8765/mcp")
 MAX_TOOL_ROUNDS = 4
 MAX_RETRY_WAIT = float(os.environ.get("SYLLABUDDY_MAX_RETRY_WAIT", "12"))
+# A voice turn must never hang: one slow model call times out, and a whole turn
+# that runs long finishes from the syllabus via the fallback brain.
+MODEL_TIMEOUT = float(os.environ.get("SYLLABUDDY_MODEL_TIMEOUT", "20"))
+TURN_DEADLINE = float(os.environ.get("SYLLABUDDY_TURN_DEADLINE", "40"))
 MAX_HISTORY = 12
 
 SYSTEM_PROMPT = """\
@@ -99,7 +103,7 @@ class OpenAICompatibleBrain:
             payload["reasoning_effort"] = self.reasoning_effort
         headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
         waited = 0.0
-        async with httpx.AsyncClient(timeout=60) as http:
+        async with httpx.AsyncClient(timeout=MODEL_TIMEOUT) as http:
             while True:
                 response = await http.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
                 delay = _retry_after(response)
@@ -333,8 +337,12 @@ class Assistant:
             brain = self.brain
             for _round in range(MAX_TOOL_ROUNDS + 1):
                 messages = [{"role": "system", "content": SYSTEM_PROMPT}] + _compact(history[-MAX_HISTORY:])
+                if brain is not self.fallback and time.perf_counter() - started > TURN_DEADLINE:
+                    yield {"type": "status", "message": "Taking too long, answering from the syllabus directly"}
+                    brain = self.fallback
                 try:
-                    reply = await brain.chat(messages, tools)
+                    remaining = max(TURN_DEADLINE - (time.perf_counter() - started), 5)
+                    reply = await asyncio.wait_for(brain.chat(messages, tools), timeout=remaining)
                 except Exception as error:  # noqa: BLE001
                     if isinstance(brain, OfflineBrain):
                         yield {"type": "error", "message": f"The model ({brain.name}) failed: {error}"}
@@ -347,6 +355,7 @@ class Assistant:
                 if not reply.tool_calls or _round == MAX_TOOL_ROUNDS:
                     text = _clean_for_speech(reply.text) or "Sorry, I didn't catch that."
                     history.append({"role": "assistant", "content": text})
+                    print(f"[turn] {time.perf_counter() - started:5.1f}s {brain.name:28s} {utterance[:60]!r}", flush=True)
                     yield {"type": "answer", "text": text, "brain": brain.name,
                            "seconds": round(time.perf_counter() - started, 2)}
                     return

@@ -169,3 +169,23 @@ def test_falls_back_to_syllabus_when_model_fails(server_url):
     assert kinds[0] == "status" and kinds[-1] == "answer"
     assert next(e for e in events if e["type"] == "tool_result")["result"]["verdict"] == "excluded"
     assert events[-1]["brain"] == "offline"
+
+
+class SlowBrain:
+    name = "slow"
+
+    async def chat(self, messages, tools):
+        await asyncio.sleep(30)
+
+
+def test_turn_deadline_falls_back_instead_of_hanging(server_url, monkeypatch):
+    import time as _time
+
+    import assistant.agent as agent
+
+    monkeypatch.setattr(agent, "TURN_DEADLINE", 1.0)
+    started = _time.perf_counter()
+    events = collect(Assistant(SlowBrain(), server_url), "slow", "slow-test",
+                     "Is the shortest distance between two skew lines in the H2 Maths syllabus?")
+    assert _time.perf_counter() - started < 15
+    assert events[-1]["type"] == "answer" and events[-1]["brain"] == "offline"
