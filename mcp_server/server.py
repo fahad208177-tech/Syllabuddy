@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import os
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -225,19 +226,40 @@ def my_revision_list(ctx: Context | None = None) -> dict[str, Any]:
             "note": None if items else "No history yet. Ask some questions or try a quiz first."}
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False))
-def clear_my_history(confirm: bool, ctx: Context | None = None) -> dict[str, Any]:
+# Deletion is confirmed by the server, not by trusting the model: the first call
+# only arms a request, and only a later call (after the student has had time to
+# say yes) deletes. A model that calls twice in one breath gets refused.
+CONFIRM_MIN_SECONDS = 3.0
+CONFIRM_MAX_SECONDS = 120.0
+_pending_deletes: dict[str, float] = {}
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, idempotentHint=False, openWorldHint=False))
+def clear_my_history(confirm: bool = False, ctx: Context | None = None) -> dict[str, Any]:
     """Delete everything Syllabuddy has stored about this student (questions, quiz results).
 
-    Only call when the student clearly asks to delete or reset their history, and
-    pass confirm=true only after they have confirmed. This cannot be undone.
-
-    Args:
-        confirm: Must be true; the student has confirmed they want their history deleted.
+    Two steps, enforced by the server. First call: nothing is deleted; ask the
+    student to confirm, using the counts returned. After the student says yes
+    in a later turn, call again with confirm=true. If they say no, call with
+    confirm=false to cancel.
     """
-    if not confirm:
-        return {"deleted": False, "note": "Ask the student to confirm first, then call again with confirm=true."}
     sid = student_id(ctx)
+    now = time.monotonic()
+    requested = _pending_deletes.get(sid)
+    stats = progress().stats(sid)
+
+    if requested is None or now - requested > CONFIRM_MAX_SECONDS:
+        _pending_deletes[sid] = now
+        return {"deleted": False, "needs_confirmation": True, "stats": stats,
+                "say": f"Ask the student to confirm deleting {stats['asked']} questions and "
+                       f"{stats['quizzed']} quiz results. This cannot be undone."}
+    if not confirm:
+        _pending_deletes.pop(sid, None)
+        return {"deleted": False, "cancelled": True}
+    if now - requested < CONFIRM_MIN_SECONDS:
+        return {"deleted": False, "needs_confirmation": True,
+                "say": "Wait for the student to answer before deleting."}
+    _pending_deletes.pop(sid, None)
     progress().clear(sid)
     return {"deleted": True, "stats": progress().stats(sid)}
 

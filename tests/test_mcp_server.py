@@ -77,10 +77,24 @@ def test_quiz_comes_back_to_weak_spot(server_url):
     assert quiz["quiz_objective"]["objective_id"] == "9478.9.d"
 
 
-def test_clear_history_needs_confirmation(server_url):
+def test_clear_history_is_confirmed_by_the_server(server_url):
     run(_call(server_url, "carol", [("record_quiz_result", {"objective_id": "9478.9.d", "correct": False})]))
-    [(refused, _)] = run(_call(server_url, "carol", [("clear_my_history", {"confirm": False})]))
-    assert refused["deleted"] is False
+    # A model that "confirms" on its own, twice in a row, deletes nothing.
+    [(first, _), (second, _)] = run(_call(server_url, "carol", [("clear_my_history", {"confirm": True}),
+                                                               ("clear_my_history", {"confirm": True})]))
+    assert first["deleted"] is False and first["needs_confirmation"] is True
+    assert first["stats"]["quizzed"] == 1
+    assert second["deleted"] is False
+    time.sleep(3.2)  # the student answers
     [(done, _), (after, _)] = run(_call(server_url, "carol", [("clear_my_history", {"confirm": True}),
                                                              ("my_revision_list", {})]))
     assert done["deleted"] is True and after["stats"] == {"asked": 0, "quizzed": 0, "right": 0}
+
+
+def test_clear_history_can_be_cancelled(server_url):
+    run(_call(server_url, "dave", [("record_quiz_result", {"objective_id": "9478.9.d", "correct": True})]))
+    [(armed, _), (cancelled, _)] = run(_call(server_url, "dave", [("clear_my_history", {}),
+                                                                  ("clear_my_history", {"confirm": False})]))
+    assert armed["needs_confirmation"] and cancelled["cancelled"]
+    [(after, _)] = run(_call(server_url, "dave", [("my_revision_list", {})]))
+    assert after["stats"]["quizzed"] == 1

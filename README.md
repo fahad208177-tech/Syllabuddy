@@ -115,7 +115,7 @@ only as a hash.
 | `start_quiz(subject?, objective_id?)` | Picks your weakest (or an unseen) objective to quiz on |
 | `record_quiz_result(objective_id, correct, note?)` | Saves the result to your history |
 | `my_revision_list()` | Objectives to revise first, ranked by wrong answers, then repeated questions |
-| `clear_my_history(confirm)` | Deletes everything stored about the student, after they confirm |
+| `clear_my_history(confirm?)` | Deletes everything stored about the student. Two steps enforced by the server, so a model can't delete without the student confirming |
 
 Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", or a code like "9729".
 
