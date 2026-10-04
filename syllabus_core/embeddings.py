@@ -79,7 +79,9 @@ class FastEmbedClient:
 
             Path(self._cache_dir).mkdir(parents=True, exist_ok=True)
             try:
-                self._embedder = TextEmbedding(self.model, cache_dir=self._cache_dir)
+                local = ensure_local_model(self.model, self._cache_dir)
+                extra = {"specific_model_path": str(local)} if local else {}
+                self._embedder = TextEmbedding(self.model, cache_dir=self._cache_dir, **extra)
             except Exception as error:  # model download or ONNX startup failure
                 raise EmbeddingUnavailable(
                     f"Could not load embedding model '{self.model}': {error}"
@@ -92,6 +94,61 @@ class FastEmbedClient:
             return [vector.tolist() for vector in embedder.embed(texts)]
         except Exception as error:
             raise EmbeddingUnavailable(f"Embedding failed: {error}") from error
+
+
+# Where the default model's ONNX files live. Fetched directly over HTTPS rather
+# than through fastembed's Hugging Face downloader, which on Windows without
+# symlink support stalled for minutes and then failed to find
+# special_tokens_map.json in a fresh clone.
+LOCAL_MODELS = {
+    DEFAULT_EMBEDDING_MODEL: (
+        "https://huggingface.co/Qdrant/bge-small-en-v1.5-onnx-Q/resolve/main/",
+        ("config.json", "special_tokens_map.json", "tokenizer.json", "tokenizer_config.json", "model_optimized.onnx"),
+    ),
+}
+
+
+def ensure_local_model(model: str, cache_dir: str | Path) -> Path | None:
+    """Download ``model``'s files once into ``cache_dir`` and return the folder.
+
+    Returns None for models not listed in LOCAL_MODELS, which then fall back to
+    fastembed's own downloader.
+    """
+    if model not in LOCAL_MODELS:
+        return None
+    base_url, files = LOCAL_MODELS[model]
+    folder = Path(cache_dir) / model.replace("/", "--")
+    missing = [name for name in files if not (folder / name).exists()]
+    if not missing:
+        return folder
+    folder.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading embedding model {model} (~66 MB, first run only)...", flush=True)
+    for name in missing:
+        _download(base_url + name, folder / name)
+    return folder
+
+
+def _download(url: str, target: Path, attempts: int = 3) -> None:
+    partial = target.with_suffix(target.suffix + ".part")
+    for attempt in range(1, attempts + 1):
+        try:
+            request = urllib.request.Request(url, headers={"User-Agent": "syllabuddy"})
+            with urllib.request.urlopen(request, timeout=60) as response, open(partial, "wb") as out:
+                total = int(response.headers.get("Content-Length") or 0)
+                done, last = 0, -1
+                while chunk := response.read(1 << 20):
+                    out.write(chunk)
+                    done += len(chunk)
+                    percent = done * 100 // total if total else -1
+                    if total > 5_000_000 and percent // 10 != last:
+                        last = percent // 10
+                        print(f"  {target.name}: {percent}%", flush=True)
+            partial.replace(target)  # atomic: a half-downloaded file never looks complete
+            return
+        except (OSError, urllib.error.URLError) as error:
+            if attempt == attempts:
+                raise EmbeddingUnavailable(f"Could not download {url}: {error}") from error
+            print(f"  retrying {target.name} ({error})", flush=True)
 
 
 class OllamaEmbeddingClient:
