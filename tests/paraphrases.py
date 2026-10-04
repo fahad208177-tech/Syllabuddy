@@ -28,6 +28,7 @@ PARAPHRASES = [
     ("trapezium rule", "H1 Maths", "excluded"),                        # 8865.2.2
     ("differentiation from first principles", "H1 Maths", "excluded"), # 8865.2.1
     ("implicit differentiation", "H1 Maths", "excluded"),
+    ("implicit differentiation", "H2 Maths", "examinable"),            # 9758.5.1 includes it
     ("change of base of logarithms", "H1 Maths", "excluded"),          # 8865.1.1
     ("area below the x-axis", "H1 Maths", "excluded"),                 # 8865.2.2
     ("definite integrals", "H1 Maths", "examinable"),
