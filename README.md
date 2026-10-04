@@ -130,6 +130,8 @@ python scripts/ui_check.py        # drives the UI in Chrome (needs playwright)
 
 **Accuracy.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
 
+**Question-to-objective matching** (`python scripts/eval_retrieval.py`, 51 labelled questions carried over from the original tutor): with the subject given, 86% top-1 and MRR 0.925, and the right objective is in the top 3 every time (`find_objective` returns 3). The remaining top-1 misses are sibling objectives in the same topic, for example "construct and use rate equations" ranked above "explain and use the terms rate of reaction, order...".
+
 The examinability tests are checked against the syllabus itself. For example:
 skew lines are examinable, but the *shortest distance* between them is excluded;
 hypothesis testing is examinable, but Type I and II errors are not. The Bedrock
