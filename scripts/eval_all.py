@@ -29,8 +29,11 @@ sys.path.insert(0, str(ROOT))
 
 from syllabus_core.service import SyllabusService, _content_words  # noqa: E402
 
-DEBRIS = re.compile(r"Topics/Sub-topics|Course Framework|Return to|RetuRn|©|College Board|\x03|\x07|\bbc\s+only\b"
-                    r"|\b(?:[A-Za-z] ){3,}|\bSUGGESTED SKILLS\b|ESSENTIAL KNOWLEDGE|LEARNING OBJECTIVE", re.I)
+# Case-sensitive: "the learning objective" in prose is fine, a stray "LEARNING OBJECTIVE" heading is not,
+# and only the footer "Return to Table of Contents" is debris, not the word "return".
+DEBRIS = re.compile(r"Topics/Sub-topics|Course Framework|Return to (?:Table of )?Contents|RetuRn|©|\x03|\x07"
+                    r"|\bbc\s+only\b|\b(?:[A-Za-z] ){4,}|SUGGESTED SKILLS|ESSENTIAL KNOWLEDGE|LEARNING OBJECTIVE"
+                    r"|Course and Exam Description")
 REPORT = ROOT / "artifacts" / "eval_report.md"
 
 

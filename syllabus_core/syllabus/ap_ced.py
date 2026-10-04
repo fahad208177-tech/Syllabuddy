@@ -45,6 +45,8 @@ STOP_HEADINGS = ("ENDURING UNDERSTANDING", "LEARNING OBJECTIVE", "SUGGESTED SKIL
                  "AVAILABLE RESOURCES", "Required Course Content", "Return to contents", "RetuRn to contents",
                  "return to Contents", "KEY CONCEPT", "ILLUSTRATIVE EXAMPLES") + EK_HEADINGS
 SKILL_NOTE = "This topic is intended to focus"
+OUT_OF_SCOPE = re.compile(r"beyond the scope|outside the scope|not (be )?(assessed|required|expected|included|tested)"
+                          r"|will not be|does not (include|require)|are not (assessed|required|expected)|no longer", re.I)
 
 
 @dataclass
@@ -76,7 +78,43 @@ def _clean(text: str) -> str:
     text = re.sub(r"\b(\w+f) (f\w+)",
                   lambda m: m.group(0) if m.group(1).lower() in {"of", "if", "off", "self", "elf"} else m.group(1) + m.group(2),
                   text)
-    return text.strip()
+    text = FOOTER.sub(" ", text)
+    text = EQUATION_ALT.sub(" ", text)
+    text = _drop_spelled_runs(text)
+    return re.sub(r"\s+", " ", text).strip(" —–-")
+
+
+# Running page furniture that lands inside a column: "Course Framework V.1 | 31",
+# "AP Chemistry Course and Exam Description", "Return to Table of Contents", "© 2026 College Board".
+FOOTER = re.compile(r"\d+\s*\|\s*Course Framework\s*V\.\d+"
+                    r"|(?:AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description\s*)?Course Framework\s*V\.\d+\s*\|\s*\d*"
+                    r"(?:\s*AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description)?"
+                    r"|AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description"
+                    r"|Return to (?:Table of )?Contents|©\s*\d{4}\s*College Board", re.I)
+# Equation images carry accessibility text spelled in fragments ("O p en b rac k et R eq u a l s ...").
+# The equation itself is an image the student sees in the CED, so its alt text is dropped.
+EQUATION_ALT = re.compile(r"\bRELEVANT EQUATIONS?\b.*$", re.S)
+_SHORT_WORDS = {"a", "i", "an", "as", "at", "be", "by", "do", "go", "he", "if", "in", "is", "it", "me", "my", "no",
+                "of", "on", "or", "so", "to", "up", "us", "we", "and", "are", "but", "can", "for", "has", "its", "not",
+                "the", "two", "was", "who", "x", "y", "z", "dx", "dy", "dt"}
+
+
+def _drop_spelled_runs(text: str) -> str:
+    """Remove runs of letter fragments ("f o f x", "o p e n p a r e n t") left by alt text."""
+    words = text.split(" ")
+    keep = [True] * len(words)
+    i = 0
+    while i < len(words):
+        j = i
+        while j < len(words) and re.fullmatch(r"[A-Za-z]{1,3}", words[j] or "x"):
+            j += 1
+        run = words[i:j]
+        junk = sum(1 for w in run if w.lower() not in _SHORT_WORDS)
+        if len(run) >= 4 and junk >= len(run) / 2:
+            for k in range(i, j):
+                keep[k] = False
+        i = max(j, i + 1)
+    return " ".join(w for w, k in zip(words, keep) if k)
 
 
 def _is_prose(text: str) -> bool:
@@ -260,18 +298,32 @@ def _layout(blocks) -> tuple[float, float, float | None, bool] | None:
 def _read_column(blocks: list[tuple[float, str]], topic: _ApTopic) -> None:
     target: _Item | None = None
     in_exclusion = False
+    boundary = False
     exclusion: list[str] = []
 
     def flush_exclusion() -> None:
-        nonlocal exclusion
+        nonlocal exclusion, boundary
         if exclusion:
             text = _clean(" ".join(exclusion))
+            # A physics BOUNDARY STATEMENT sets the scope; only the parts that rule
+            # content out ("...is beyond the scope", "not assessed") are exclusions.
+            if boundary and not OUT_OF_SCOPE.search(text):
+                text = ""
             if text and text not in topic.exclusions:
                 topic.exclusions.append(text)
-        exclusion = []
+        exclusion, boundary = [], False
 
     for _y, text in sorted(blocks):
         stripped = text.strip()
+        if "BOUNDARY STATEMENT" in stripped:
+            before, rest = stripped.split("BOUNDARY STATEMENT", 1)
+            if target is not None and _is_prose(before):
+                target.text = _clean(f"{target.text} {before}")
+            flush_exclusion()
+            in_exclusion, boundary, target = True, True, None
+            if _is_prose(rest):
+                exclusion.append(rest.lstrip(" —–-:\n"))
+            continue
         if "EXCLUSION STATEMENT" in stripped:
             in_exclusion, target = True, None
             rest = stripped.split("EXCLUSION STATEMENT", 1)[1].lstrip(" —–-:\n")
@@ -286,7 +338,7 @@ def _read_column(blocks: list[tuple[float, str]], topic: _ApTopic) -> None:
         # ("LEARNING OBJECTIVE\n1.1.A\nDescribe..."): drop the heading, keep the rest.
         lines = stripped.splitlines()
         dropped = 0
-        while lines and lines[0].strip().startswith(STOP_HEADINGS):
+        while lines and re.sub(r"\s+", " ", lines[0]).strip().startswith(STOP_HEADINGS):
             lines.pop(0)
             dropped += 1
         if dropped:
@@ -340,8 +392,9 @@ def to_subject(topics: list[_ApTopic], *, code: str, name: str, source: str, lev
     for t in topics:
         for item in (*t.objectives, *t.knowledge):
             item.text = re.sub(r"(\s+\d\.[A-Z])+\s*$", "", item.text)  # trailing skill codes: "... process. 1.B"
-        objectives = [o for o in t.objectives if o.text]
-        knowledge = [k for k in t.knowledge if k.text]
+        # An item whose only text is a heading ("LEARNING OBJECTIVE") carries nothing.
+        objectives = [o for o in t.objectives if o.text and not o.text.upper().startswith(STOP_HEADINGS)]
+        knowledge = [k for k in t.knowledge if k.text and not k.text.upper().startswith(STOP_HEADINGS)]
         exclude = list(t.exclusions)
         if bc_handling == "exclude":
             if t.bc_only_title or (objectives and all(o.bc_only for o in objectives)):
@@ -359,7 +412,7 @@ def to_subject(topics: list[_ApTopic], *, code: str, name: str, source: str, lev
         statement = " ".join(o.text for o in objectives) or t.note
         unit.learning_objectives.append(LearningObjective(
             subject_id=code, subject_name=name, topic_id=unit.topic_id, topic_name=unit.name,
-            lo_id=f"{code}-{t.number}", number=t.number, title=t.title, statement=statement,
+            lo_id=f"{code}-{t.number}", number=t.number, title=t.title or _short_title(statement), statement=statement,
             include=tuple(include), exclude=tuple(exclude),
             keywords=derive_keywords(t.title, *include), exam_skills=derive_exam_skills(statement),
             source=source, page=t.page))
