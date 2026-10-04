@@ -50,7 +50,7 @@ getting wrong**, so "what should I revise first?" has a real answer.
 ```mermaid
 flowchart LR
     S((Student)) -- voice --> W["Simulated Alexa+<br/>web app"]
-    W -- "speech to text" --> A["Agent<br/>(Bedrock / Groq / Ollama / offline)"]
+    W -- "speech to text" --> A["Agent<br/>(Groq / Ollama / Bedrock / offline)"]
     A -- "MCP over Streamable HTTP<br/>X-Syllabuddy-Student" --> M["Syllabuddy<br/>MCP server"]
     M --> R["Hybrid retrieval<br/>BM25 + embeddings"]
     R --> J[("syllabus.json<br/>916 objectives")]
@@ -83,11 +83,11 @@ still fully working through MCP. For natural conversation, pick a brain in
 
 | Brain | Set in `.env` |
 |---|---|
-| **Amazon Bedrock** (recommended) | `SYLLABUDDY_BRAIN=bedrock`, AWS credentials, `BEDROCK_MODEL_ID` (default `us.amazon.nova-pro-v1:0`) |
-| Groq / any OpenAI-compatible API | `SYLLABUDDY_BRAIN=openai`, `SYLLABUDDY_LLM_BASE_URL`, `SYLLABUDDY_LLM_API_KEY`, `SYLLABUDDY_LLM_MODEL` |
+| **Groq** / any OpenAI-compatible API (used for the demo) | `SYLLABUDDY_BRAIN=openai`, `SYLLABUDDY_LLM_BASE_URL`, `SYLLABUDDY_LLM_API_KEY`, `SYLLABUDDY_LLM_MODEL` |
+| Amazon Bedrock (optional; implemented and tested with a stubbed client, not yet run against a live account) | `SYLLABUDDY_BRAIN=bedrock`, AWS credentials, `BEDROCK_MODEL_ID` (default `us.amazon.nova-pro-v1:0`) |
 | Ollama (fully local) | `SYLLABUDDY_BRAIN=openai`, `SYLLABUDDY_LLM_BASE_URL=http://localhost:11434/v1`, a tool-calling model |
 
-**Speed.** A turn is about 2 s of model time plus a few milliseconds of MCP. Groq's free tier allows roughly two turns a minute (8,000 tokens per minute), so rapid-fire questions wait. When the model is rate-limited or down, that turn is answered straight from the syllabus by the offline brain instead of failing. Bedrock has no such limit.
+**Speed.** A turn is about 2 s of model time plus a few milliseconds of MCP. Groq's free tier allows roughly two turns a minute (8,000 tokens per minute), so rapid-fire questions wait. When the model is rate-limited, slow or down, that turn is answered straight from the syllabus by the offline brain instead of failing, and no turn waits more than about 40 s.
 
 Voice input needs Chrome or Edge. Hold the mic button, or hold Space, to talk. You can always type instead.
 
@@ -122,13 +122,13 @@ Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", o
 ## Tests
 
 ```bash
-pytest -q                         # 82 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, Bedrock plumbing, web API
+pytest -q                         # 90 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, fallbacks, web API
 python scripts/eval_examinable.py # every Excluded bullet and every objective title in the syllabus (942 cases)
 python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app
 python scripts/ui_check.py        # drives the UI in Chrome (needs playwright)
 python scripts/record_demo.py     # records the demo script as artifacts/demo_capture.mp4
-python scripts/check_bedrock.py   # verifies AWS credentials, model access and a real tool call
+python scripts/check_bedrock.py   # optional: verifies AWS credentials and a real Bedrock tool call
 ```
 
 **Accuracy.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
@@ -166,7 +166,7 @@ tests/             pytest suite
 ## Built before vs during the hackathon
 
 - **Before (31 Aug 2026):** the syllabus parsers, `syllabus.json`, and the hybrid retrieval, from my earlier A-Level tutor project.
-- **During:** the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with Bedrock, OpenAI-compatible and offline brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
+- **During:** the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
 
 ## Notes on data
 

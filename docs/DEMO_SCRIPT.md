@@ -13,7 +13,7 @@ the first answer isn't slow.
 | 0:55–1:10 | "Do I need to know Type II error?" | Excluded, from a bullet that packs three exclusions together. |
 | 1:10–1:45 | "Quiz me on H2 Physics", then answer out loud (get it wrong on purpose) | The quiz card, the spoken marking, and the revision list updating on the right. |
 | 1:45–2:00 | "What should I revise first?" | "Alexa+ remembers your shoe size. Syllabuddy remembers what you got wrong." |
-| 2:00–2:30 | Split screen: `mcp_server/server.py` tool list + `pytest -q` passing | "It's a standard MCP server over Streamable HTTP, spec 2025-11-25. No LLM inside the tools: 916 objectives parsed from the official PDFs. The brain is Amazon Bedrock." Show `.env` with `SYLLABUDDY_BRAIN=bedrock` (hide keys!). |
+| 2:00–2:30 | Split screen: `mcp_server/server.py` tool list + `pytest -q` passing | "It's a standard MCP server over Streamable HTTP, spec 2025-11-25. No LLM inside the tools: 916 objectives parsed from the official PDFs. Any model can be the brain; here it's Groq." Never show `.env` (it holds your key). |
 | 2:30–2:40 | README roadmap | "Next: account linking and a real Alexa+ add-on, and more exams beyond Singapore." |
 
 Shortcut: `python scripts/record_demo.py` (with the app running) records a clean
@@ -22,7 +22,9 @@ Shortcut: `python scripts/record_demo.py` (with the app running) records a clean
 code and test shots on top.
 
 Checklist before recording:
-- [ ] Brain set to Bedrock (for the AWS Builder entry) or Groq. Check the status pill and the "brain:" line.
+- [ ] Status pill shows "MCP connected · 9 tools" and the "brain:" line shows Groq.
+- [ ] Machine idle (close other apps): on a busy 2-core laptop turns slow down and fall back to templated answers.
+- [ ] Ask questions about 20–30 s apart (Groq free tier), or cut the pauses when editing.
 - [ ] Browser zoom 110–125% so text is readable in the video.
 - [ ] No API keys, emails or personal details on screen.
 - [ ] Upload to YouTube or Vimeo as **public**, in English, with no copyrighted music.

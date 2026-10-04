@@ -16,12 +16,6 @@
 - **Used for:** `skills/syllabuddy/SKILL.md`, which teaches agents when to call each tool and how to report verdicts.
 - **Worked well:** a plain Markdown file, so writing it took minutes.
 
-## Amazon Bedrock (Converse API): AWS Builder
-- **Used for:** the "brain" of the simulated Alexa+ (`assistant/agent.py`, `BedrockBrain`), which takes the MCP tool list as Converse `toolConfig` and handles `toolUse` / `toolResult` blocks.
-- **Status:** [fill in after running with real credentials: model used, latency, cost for the demo]
-- **Worked well:** Converse handles tool use natively, so the same agent loop serves every model.
-- **Needs work:** [fill in]
-
 ## Feature requests
 1. **Critical:** public access to the Alexa AI CLI, or a hackathon allow-listing route.
 2. **Important:** a hosted "MCP inspector" in the developer console that connects to a server URL and shows how Alexa+ would choose tools, before any deploy.
