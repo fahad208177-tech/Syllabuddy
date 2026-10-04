@@ -106,3 +106,18 @@ def test_content_words_normalise_type_numerals():
 
     assert _content_words("Do I need to know the Type II error?") == {"type", "2", "error"}
     assert _content_words("concept of Type II error") == {"type", "2", "error"}
+
+
+from paraphrases import PARAPHRASES  # noqa: E402
+
+
+@pytest.mark.parametrize("topic, subject, verdict", PARAPHRASES)
+def test_student_paraphrases(svc, topic, subject, verdict):
+    assert svc.check_examinable(topic, subject)["verdict"] == verdict
+
+
+def test_corrections_replace_mangled_bullets(svc):
+    exclude = svc.by_id["8865.2.1"].exclude
+    assert "use of dy/dx = 1 ÷ (dx/dy)" in exclude
+    assert "derivatives of products and quotients of functions" in exclude
+    assert not any("Topics/Sub-topics" in e for lo in svc.objectives for e in lo.exclude + lo.include)

@@ -119,10 +119,14 @@ Subjects can be named loosely: "H2 Maths", "h1 physics", "econs", "computing", o
 ## Tests
 
 ```bash
-pytest -q                         # 53 tests: syllabus answers, MCP over HTTP, agent loop, Bedrock plumbing, web API
+pytest -q                         # 79 tests: syllabus answers, student paraphrases, MCP over HTTP, agent loop, Bedrock plumbing, web API
+python scripts/eval_examinable.py # every Excluded bullet and every objective title in the syllabus (942 cases)
+python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app
 python scripts/ui_check.py        # drives the UI in Chrome (needs playwright)
 ```
+
+**Accuracy.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
 
 The examinability tests are checked against the syllabus itself. For example:
 skew lines are examinable, but the *shortest distance* between them is excluded;
@@ -137,7 +141,7 @@ mcp_server/        MCP server (Streamable HTTP) and its 8 tools
 syllabus_core/     parsers, retrieval, examinability logic, per-student progress
 assistant/         simulated Alexa+: agent (MCP client + brains) and voice web UI
 skills/syllabuddy/ Agent Skill for any skills-compatible agent
-data/              syllabus.json (916 objectives) and precomputed embeddings
+data/              syllabus.json (916 objectives), corrections.json (6 PDF-mangled bullets, fixed), precomputed embeddings
 scripts/           build_syllabus.py (PDFs → JSON), live and UI checks
 tests/             pytest suite
 ```

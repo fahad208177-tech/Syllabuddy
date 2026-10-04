@@ -1,0 +1,47 @@
+{
+  "_about": "Manual fixes for bullets where PDF extraction mangled maths notation or picked up table headers. Applied on load by syllabus_core/service.py; syllabus.json stays the parser's raw output. Each fix was checked against the official PDF page noted.",
+  "fixes": [
+    {
+      "lo_id": "8865.1.1",
+      "page": "H1Math.pdf p.5",
+      "field": "exclude",
+      "from": "use of notation f : x \uf061 x^2 + 5",
+      "to": "use of notation f : x \u21a6 x\u00b2 + 5"
+    },
+    {
+      "lo_id": "8865.1.1",
+      "page": "H1Math.pdf p.5",
+      "field": "exclude",
+      "from": "change of base of logarithms Topics/Sub-topics Content",
+      "to": "change of base of logarithms"
+    },
+    {
+      "lo_id": "8865.2.1",
+      "page": "H1Math.pdf p.6",
+      "field": "exclude",
+      "from": "derivatives of products and quotients of functions dy 1",
+      "to": "derivatives of products and quotients of functions"
+    },
+    {
+      "lo_id": "8865.2.1",
+      "page": "H1Math.pdf p.6",
+      "field": "exclude",
+      "from": "use of = dx_d^d_y^x",
+      "to": "use of dy/dx = 1 \u00f7 (dx/dy)"
+    },
+    {
+      "lo_id": "8865.2.1",
+      "page": "H1Math.pdf p.6",
+      "field": "exclude",
+      "from": "problems connecting the graph of y\u2009=\u2009f(x) to the graph of y = f \u2032 ( x ) Topics/Sub-topics Content",
+      "to": "problems connecting the graph of y = f(x) to the graph of y = f\u2032(x)"
+    },
+    {
+      "lo_id": "9758.3.2",
+      "page": "H2math.pdf p.8",
+      "field": "exclude",
+      "from": "triple products a \u22c5\u00d7b c and a \u00d7 b \u00d7 c .",
+      "to": "triple products a \u00b7 b \u00d7 c and a \u00d7 b \u00d7 c"
+    }
+  ]
+}

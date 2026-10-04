@@ -98,6 +98,7 @@ def band(confidence: float) -> str:
 class SyllabusService:
     def __init__(self, syllabus_path: str | Path = DEFAULT_SYLLABUS, cache_folder: str | Path = DEFAULT_CACHE) -> None:
         self.subjects: list[Subject] = registry.load(syllabus_path)
+        _apply_corrections(self.subjects, Path(syllabus_path).with_name("corrections.json"))
         self.objectives: list[LearningObjective] = [lo for s in self.subjects for lo in s.objectives]
         self.by_id: dict[str, LearningObjective] = {lo.lo_id: lo for lo in self.objectives}
         self._position = {lo.lo_id: i for i, lo in enumerate(self.objectives)}
@@ -113,6 +114,9 @@ class SyllabusService:
         self.exclusion_retriever = HybridRetriever(self.exclusions, store)
         self.inclusions = [Inclusion(text, lo) for lo in self.objectives for text in (lo.include or (lo.statement,))]
         self.inclusion_retriever = HybridRetriever(self.inclusions, store)
+        # Content words of every bullet plus its objective's topic and title, for literal matching.
+        self._words = {id(item): _content_words(f"{item.text} {item.objective.topic_name} {item.objective.title}")
+                       for item in (*self.exclusions, *self.inclusions)}
         # Load the ONNX model now, so the first student question isn't the slow one.
         self.retriever.confidence("warm up")
 
@@ -303,9 +307,13 @@ class SyllabusService:
         if not words:
             return None
         in_scope = lambda item: not subject_ids or item.objective.subject_id in subject_ids
-        if any(words <= _content_words(inc.text) for inc in self.inclusions if in_scope(inc)):
+        # Each bullet is read in the context of its objective, so "triple products"
+        # under the Vectors topic matches "triple product of vectors". Inclusions get
+        # the same context, which keeps "complex numbers" examinable even though
+        # "complex numbers in polar form" is excluded.
+        if any(words <= self._words[id(inc)] for inc in self.inclusions if in_scope(inc)):
             return None
-        matches = [exc for exc in self.exclusions if in_scope(exc) and words <= _content_words(exc.text)]
+        matches = [exc for exc in self.exclusions if in_scope(exc) and words <= self._words[id(exc)]]
         # The shortest clause is the most specific statement of the exclusion.
         return min(matches, key=lambda exc: len(exc.text)) if matches else None
 
@@ -331,6 +339,45 @@ class SyllabusService:
         fresh = [lo for lo in pool if lo.lo_id not in avoid] or pool
         # Deterministic rotation rather than random, so demos and tests are repeatable.
         return fresh[len(avoid) % len(fresh)]
+
+
+def _apply_corrections(subjects: list[Subject], path: Path) -> None:
+    """Replace bullets the PDF extraction mangled, from data/corrections.json.
+
+    A correction whose original text is no longer found is reported rather than
+    silently skipped, so a re-run of the parser can't quietly drop a fix.
+    """
+    import dataclasses
+    import json
+    import warnings
+
+    if not path.exists():
+        return
+    fixes = json.loads(path.read_text(encoding="utf-8")).get("fixes", [])
+    pending = {(f["lo_id"], f["field"], f["from"]): f["to"] for f in fixes}
+    for subject in subjects:
+        for topic in subject.topics:
+            for i, lo in enumerate(topic.learning_objectives):
+                changes = {}
+                for field in ("include", "exclude"):
+                    values = getattr(lo, field)
+                    fixed = tuple(_strip_furniture(pending.pop((lo.lo_id, field, v), v)) for v in values)
+                    if fixed != values:
+                        changes[field] = fixed
+                if _strip_furniture(lo.statement) != lo.statement:
+                    changes["statement"] = _strip_furniture(lo.statement)
+                if changes:
+                    topic.learning_objectives[i] = dataclasses.replace(lo, **changes)
+    for lo_id, field, text in pending:
+        warnings.warn(f"corrections.json: '{text[:40]}' not found in {lo_id}.{field}", stacklevel=2)
+
+
+_TABLE_HEADER = re.compile(r"\s*Topics/Sub-topics\s+Content\s*$")
+
+
+def _strip_furniture(text: str) -> str:
+    """Drop the repeated table header that H1 Maths bullets pick up at page breaks."""
+    return _TABLE_HEADER.sub("", text)
 
 
 def _seed_cache(cache_folder: Path) -> None:
@@ -402,8 +449,20 @@ _GENERIC = {"need", "know", "learn", "study", "syllabus", "exam", "examinable", 
             "my", "we", "you", "have", "learnt", "covered", "included", "come", "out"}
 
 
+def _stem(word: str) -> str:
+    """Just enough stemming for syllabus wording: "implicitly" ~ "implicit",
+    "derivatives" ~ "differentiation", "vectors" ~ "vector"."""
+    if word.startswith(("differentia", "derivative")):
+        return "differenti"
+    for suffix, keep in (("ically", "ic"), ("ally", "al"), ("ly", ""), ("ations", ""), ("ation", ""),
+                         ("ies", "y"), ("ing", ""), ("s", "")):
+        if word.endswith(suffix) and len(word) - len(suffix) >= 4 and not word.endswith("ss"):
+            return word[: -len(suffix)] + keep
+    return word
+
+
 def _content_words(text: str) -> frozenset[str]:
-    """Content words for literal matching: "Type II errors" and "type 2 error" come out equal."""
+    """Stemmed content words for literal matching: "Type II errors" and "type 2 error" come out equal."""
     from syllabus_core.syllabus.schema import STOPWORDS
 
     text = text.lower().replace("’", "'").replace("‘", "'")
@@ -412,5 +471,5 @@ def _content_words(text: str) -> frozenset[str]:
     for w in re.findall(r"[a-z0-9]+", text):
         if w in STOPWORDS or w in _GENERIC or (len(w) == 1 and not w.isdigit()):
             continue
-        words.append(w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w)
+        words.append(_stem(w))
     return frozenset(words)
