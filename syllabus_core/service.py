@@ -20,6 +20,50 @@ from syllabus_core.syllabus.schema import LearningObjective, Subject
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SYLLABUS = ROOT / "data" / "syllabus.json"
+# Every exam loaded by default, when its file exists.
+DEFAULT_SYLLABI = [DEFAULT_SYLLABUS, ROOT / "data" / "ap_syllabus.json", ROOT / "data" / "alberta_syllabus.json"]
+
+# AP and Alberta course names as students say them, most specific first. Plain
+# "chem", "physics" or "history" stay with the Singapore A-Level unless "AP",
+# "30" or "Alberta" is said.
+AP_ALIASES: list[tuple[str, list[str]]] = [
+    # Alberta Diploma courses are named by grade: "Physics 30", "Chem 30".
+    (r"\bphysics\s*30\b", ["PHYS30"]),
+    (r"\bchem(istry)?\s*30\b", ["CHEM30"]),
+    (r"\b(alberta|diploma)\b.*\bphysics\b|\bphysics\b.*\b(alberta|diploma)\b", ["PHYS30"]),
+    (r"\b(alberta|diploma)\b.*\bchem(istry)?\b|\bchem(istry)?\b.*\b(alberta|diploma)\b", ["CHEM30"]),
+    (r"\bcalc(ulus)?\s*ab\b|\bab\s*calc", ["CALCAB"]),
+    (r"\bcalc(ulus)?\s*bc\b|\bbc\s*calc", ["CALCBC"]),
+    (r"\bprecalc(ulus)?\b", ["PRECALC"]),
+    (r"\bcalc(ulus)?\b", ["CALCAB", "CALCBC"]),
+    (r"\bstat(s|istics)?\b", ["STAT"]),
+    (r"\benv(ironmental)?\.?\s*sci(ence)?\b|\bapes\b", ["ENVSCI"]),
+    (r"\bphysics\s*c\b.*\b(e\s*(&|and)\s*m|e\s*m|electricity|magnetism)\b", ["PHYSCE"]),
+    (r"\bphysics\s*c\b.*\bmech", ["PHYSCM"]),
+    (r"\bphysics\s*c\b", ["PHYSCM", "PHYSCE"]),
+    (r"\bphysics\s*(1|one|i)\b", ["PHYS1"]),
+    (r"\bphysics\s*(2|two|ii)\b", ["PHYS2"]),
+    (r"\b(computer science|comp sci|cs)\s*a\b|\bcsa\b", ["CSA"]),
+    (r"\b(computer science|comp sci|cs)\s*p(rinciples)?\b|\bcsp\b", ["CSP"]),
+    (r"\bmacro(economics|econ)?\b", ["MACRO"]),
+    (r"\bmicro(economics|econ)?\b", ["MICRO"]),
+    (r"\bpsych(ology)?\b", ["PSYCH"]),
+    (r"\bhuman\s*geo(graphy)?\b|\bhug\b", ["HUMGEO"]),
+    (r"\b(us|u\.s\.?|united states|american)\s*gov(ernment|t)?\b|\bapgov\b", ["USGOV"]),
+    (r"\bcomp(arative)?\s*gov(ernment|t)?\b", ["COMPGOV"]),
+    (r"\b(us|u\.s\.?|united states|american)\s*history\b|\bapush\b", ["USHIST"]),
+    (r"\bworld\s*history\b|\bwhap\b", ["WHIST"]),
+    (r"\b(european|euro)\s*history\b|\bapeuro\b", ["EUROHIST"]),
+    (r"\bafrican\s*american\s*studies\b|\baas\b", ["AAS"]),
+    (r"\bmusic\s*theory\b", ["MUSIC"]),
+    (r"\bap\b.*\bbio(logy)?\b", ["BIO"]),
+    (r"\bap\b.*\bchem(istry)?\b", ["CHEM"]),
+    (r"\bap\b.*\bphysics\b", ["PHYS1", "PHYS2", "PHYSCM", "PHYSCE"]),
+    (r"\bap\b.*\b(cs|computer science|comp sci)\b", ["CSA", "CSP"]),
+    (r"\bap\b.*\becon(omics|s)?\b", ["MACRO", "MICRO"]),
+    (r"\bap\b.*\bgov(ernment|t)?\b", ["USGOV", "COMPGOV"]),
+    (r"\bap\b.*\bhistory\b", ["USHIST", "WHIST", "EUROHIST"]),
+]
 DEFAULT_CACHE = ROOT / "cache"
 
 # Confidence bands, carried over from the tutor where they were measured with
@@ -32,6 +76,9 @@ PLAUSIBLE = 0.55
 # put off-syllabus questions as high as 0.58 and genuine ones from 0.59, so the
 # verdict uses the gap rather than the softer PLAUSIBLE band.
 UNCLEAR_MIN = 0.58
+# A meaning match this strong stands on its own, even if keywords disagree
+# (a student's wording can share no words with the syllabus's).
+STRONG = 0.70
 
 # An exclusion bullet is only treated as the answer when it matches the topic
 # at least this well. Calibrated with tests/test_service.py: real exclusions
@@ -96,9 +143,12 @@ def band(confidence: float) -> str:
 
 
 class SyllabusService:
-    def __init__(self, syllabus_path: str | Path = DEFAULT_SYLLABUS, cache_folder: str | Path = DEFAULT_CACHE) -> None:
-        self.subjects: list[Subject] = registry.load(syllabus_path)
-        _apply_corrections(self.subjects, Path(syllabus_path).with_name("corrections.json"))
+    def __init__(self, syllabus_path: str | Path | list[str | Path] | None = None,
+                 cache_folder: str | Path = DEFAULT_CACHE) -> None:
+        paths = [Path(p) for p in syllabus_path] if isinstance(syllabus_path, list) else \
+            [Path(syllabus_path)] if syllabus_path else [p for p in DEFAULT_SYLLABI if p.exists()]
+        self.subjects: list[Subject] = [s for path in paths for s in registry.load(path)]
+        _apply_corrections(self.subjects, paths[0].with_name("corrections.json"))
         self.objectives: list[LearningObjective] = [lo for s in self.subjects for lo in s.objectives]
         self.by_id: dict[str, LearningObjective] = {lo.lo_id: lo for lo in self.objectives}
         self._position = {lo.lo_id: i for i, lo in enumerate(self.objectives)}
@@ -113,7 +163,12 @@ class SyllabusService:
                            for bullet in lo.exclude for clause in _clauses(bullet)]
         self.exclusion_retriever = HybridRetriever(self.exclusions, store)
         self.inclusions = [Inclusion(text, lo) for lo in self.objectives for text in (lo.include or (lo.statement,))]
-        self.inclusion_retriever = HybridRetriever(self.inclusions, store)
+        # The inclusion index only ever weighs an exclusion against what is taught,
+        # so subjects with no exclusions don't need their bullets embedded (most AP
+        # courses: thousands of bullets, minutes of embedding, no answer changes).
+        with_exclusions = {e.objective.subject_id for e in self.exclusions}
+        self.inclusion_retriever = HybridRetriever(
+            [i for i in self.inclusions if i.objective.subject_id in with_exclusions], store)
         # Content words of every bullet plus its objective's topic and title, for literal matching.
         self._words = {id(item): _content_words(f"{item.text} {item.objective.topic_name} {item.objective.title}")
                        for item in (*self.exclusions, *self.inclusions)}
@@ -133,8 +188,15 @@ class SyllabusService:
             return []
         text = subject.lower().strip()
         codes = [code for code in re.findall(r"\b\d{4}\b", text) if code in self.subject_by_id]
+        codes += [c for c in re.findall(r"\b[A-Z][A-Z0-9]{1,7}\b", subject) if c in self.subject_by_id]
         if codes:
             return codes
+        if not re.search(r"\bh[123]\b", text):  # an H1/H2 level means the Singapore A-Level
+            for pattern, ap_codes in AP_ALIASES:
+                if re.search(pattern, text):
+                    loaded = [c for c in ap_codes if c in self.subject_by_id]
+                    if loaded:
+                        return loaded
 
         level = None
         match = re.search(r"\b(h[123])\b", text)
@@ -153,7 +215,10 @@ class SyllabusService:
         if name is None:
             raise ValueError(f"No loaded subject matches '{subject}'.")
 
-        ids = [s.subject_id for s in self.subjects if s.name == name and (level is None or s.level == level)]
+        # Plain names ("chem", "H2 physics") mean the Singapore A-Level; AP and
+        # Alberta courses are reached through AP_ALIASES above.
+        ids = [s.subject_id for s in self.subjects
+               if s.name == name and s.level in ("H1", "H2") and (level is None or s.level == level)]
         if not ids:
             raise ValueError(f"{level or ''} {name} is not loaded.".strip())
         return ids
@@ -245,7 +310,9 @@ class SyllabusService:
         ids = self.resolve_subject(subject)
         predicate = self._predicate(ids)
         confidence = self.retriever.confidence(topic, predicate)
-        hits = self.retriever.search(topic, top_k=2, predicate=predicate)
+        # Five candidates rather than two, so the keyword/meaning agreement check
+        # sees enough of the ranking (sibling objectives often split the top two).
+        hits = self.retriever.search(topic, top_k=5, predicate=predicate)
 
         exclusion_hits = self.exclusion_retriever.search(topic, top_k=3, predicate=predicate)
         # An exclusion only counts inside its own topic: "hypothesis tests" is excluded
@@ -274,13 +341,13 @@ class SyllabusService:
                 "excluded_item": best_exclusion.item.bullet,
                 "objective": self.objective_card(lo),
             }
-        elif hits and confidence >= CONFIDENT:
+        elif hits and confidence >= CONFIDENT and (confidence >= STRONG or self._signals_agree(hits, CONFIDENT)):
             result |= {
                 "verdict": "examinable",
                 "explanation": f"Covered by objective {hits[0].item.lo_id}, {hits[0].item.title}.",
                 "objective": self.objective_card(hits[0].item),
             }
-        elif hits and confidence >= UNCLEAR_MIN and self._has_keyword_support(hits):
+        elif hits and confidence >= UNCLEAR_MIN and self._signals_agree(hits, UNCLEAR_MIN):
             result |= {
                 "verdict": "unclear",
                 "explanation": "Only an approximate match. It may be assumed prior knowledge rather than "
@@ -318,14 +385,17 @@ class SyllabusService:
         return min(matches, key=lambda exc: len(exc.text)) if matches else None
 
     @staticmethod
-    def _has_keyword_support(hits) -> bool:
-        """True when some top match shares actual words with the question.
+    def _signals_agree(hits, minimum: float) -> bool:
+        """True when keyword search and meaning search agree on a top match.
 
-        Off-topic questions phrased in academic language can still reach the
-        approximate band on meaning alone ("who won the world cup" scores 0.55),
-        but they share no syllabus vocabulary, so the lexical index finds nothing.
+        Genuine syllabus topics are found by both. Off-topic questions are not:
+        with 2,381 objectives, "who won the world cup" reaches 0.63 on meaning
+        (some history objective) while keywords alone pull up "African Americans
+        and Sports". When the two signals point at different objectives, the
+        syllabus doesn't really cover the question. The agreed match must also be
+        close in meaning on its own ("world" pulls in World History at 0.57).
         """
-        return any("lexical" in hit.signals for hit in hits)
+        return any({"lexical", "dense"} <= set(hit.signals) and hit.similarity >= minimum for hit in hits)
 
     def pick_quiz_objective(self, subject: str | None, avoid: Iterable[str] = (), prefer: Iterable[str] = ()) -> LearningObjective:
         """An objective to quiz on: the student's weakest one if known, else a fresh one."""

@@ -1,0 +1,837 @@
+{
+ "exam_board": "Alberta Education",
+ "qualification": "Alberta Diploma Examinations (Grade 12)",
+ "generated_by": "scripts/build_alberta.py",
+ "subjects": [
+  {
+   "subject_id": "PHYS30",
+   "name": "Physics 30",
+   "code": "PHYS30",
+   "level": "Alberta Diploma",
+   "source": "Alberta Physics 30 Program of Studies",
+   "topics": [
+    {
+     "topic_id": "PHYS30-A",
+     "number": "A",
+     "name": "Unit A: Momentum and Impulse",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PHYS30-A1",
+       "number": "A1",
+       "title": "Explain how momentum is conserved when objects interact in an isolated system",
+       "statement": "Students will explain how momentum is conserved when objects interact in an isolated system",
+       "include": [
+        "define momentum as a vector quantity equal to the product of the mass and the velocity of an object",
+        "explain, quantitatively, the concepts of impulse and change in momentum, using Newton's laws of motion",
+        "explain, qualitatively, that momentum is conserved in an isolated system",
+        "explain, quantitatively, that momentum is conserved in one- and two-dimensional interactions in an isolated system",
+        "define, compare and contrast elastic and inelastic collisions, using quantitative examples, in terms of conservation of kinetic energy"
+       ],
+       "exclude": [],
+       "keywords": [
+        "momentum",
+        "explain",
+        "conserved",
+        "isolated",
+        "system",
+        "define",
+        "quantitatively",
+        "change",
+        "collisions",
+        "compare",
+        "conservation",
+        "contrast",
+        "elastic",
+        "energy"
+       ],
+       "exam_skills": [
+        "define",
+        "explain",
+        "compare",
+        "contrast"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 43
+      }
+     ]
+    },
+    {
+     "topic_id": "PHYS30-B",
+     "number": "B",
+     "name": "Unit B: Forces and Fields",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PHYS30-B1",
+       "number": "B1",
+       "title": "Explain the behaviour of electric charges, using the laws that govern electrical interactions",
+       "statement": "Students will explain the behaviour of electric charges, using the laws that govern electrical interactions",
+       "include": [
+        "explain electrical interactions in terms of the law of conservation of charge",
+        "explain electrical interactions in terms of the repulsion and attraction of charges",
+        "compare the methods of transferring charge (conduction and induction)",
+        "explain, qualitatively, the distribution of charge on the surfaces of conductors and insulators",
+        "explain, qualitatively, the principles pertinent to Coulomb's torsion balance experiment",
+        "apply Coulomb's law, quantitatively, to analyze the interaction of two point charges",
+        "determine, quantitatively, the magnitude and direction of the electric force on a point charge due to two or more other point charges in a plane",
+        "compare, qualitatively and quantitatively, the inverse square relationship as it is expressed by Coulomb's law and by Newton's universal law of gravitation"
+       ],
+       "exclude": [],
+       "keywords": [
+        "explain",
+        "charge",
+        "charges",
+        "law",
+        "coulomb's",
+        "electrical",
+        "interactions",
+        "point",
+        "qualitatively",
+        "quantitatively",
+        "compare",
+        "electric",
+        "analyze",
+        "apply"
+       ],
+       "exam_skills": [
+        "explain",
+        "compare",
+        "apply",
+        "determine"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 47
+      },
+      {
+       "lo_id": "PHYS30-B2",
+       "number": "B2",
+       "title": "Describe electrical phenomena, using the electric field theory",
+       "statement": "Students will describe electrical phenomena, using the electric field theory",
+       "include": [
+        "define vector fields",
+        "compare forces and fields",
+        "compare, qualitatively, gravitational potential energy and electric potential energy",
+        "define electric potential difference as a change in electric potential energy per unit of charge",
+        "calculate the electric potential difference between two points in a uniform electric field",
+        "explain, quantitatively, electric fields in terms of intensity (strength) and direction, relative to the source of the field and to the effect on an electric charge",
+        "define electric current as the amount of charge passing a reference point per unit of time",
+        "describe, quantitatively, the motion of an electric charge in a uniform electric field",
+        "explain, quantitatively, electrical interactions using the law of conservation of energy",
+        "explain Millikan's oil-drop experiment and its significance relative to charge quantization"
+       ],
+       "exclude": [],
+       "keywords": [
+        "electric",
+        "charge",
+        "potential",
+        "energy",
+        "field",
+        "define",
+        "explain",
+        "fields",
+        "quantitatively",
+        "compare",
+        "describe",
+        "difference",
+        "electrical",
+        "per"
+       ],
+       "exam_skills": [
+        "define",
+        "compare",
+        "calculate",
+        "explain",
+        "describe"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 49
+      },
+      {
+       "lo_id": "PHYS30-B3",
+       "number": "B3",
+       "title": "Explain how the properties of electric and magnetic fields are applied in numerous devices",
+       "statement": "Students will explain how the properties of electric and magnetic fields are applied in numerous devices",
+       "include": [
+        "describe magnetic interactions in terms of forces and fields",
+        "compare gravitational, electric and magnetic fields (caused by permanent magnets and moving charges) in terms of their sources and directions",
+        "describe how the discoveries of Oersted and Faraday form the foundation of the theory relating electricity to magnetism",
+        "describe, qualitatively, a moving charge as the source of a magnetic field and predict the orientation of the magnetic field from the direction of motion",
+        "explain, qualitatively and quantitatively, how a uniform magnetic field affects a moving electric charge, using the relationships among charge, motion, field direction and strength, when motion and field directions are mutually perpendicular",
+        "explain, quantitatively, how uniform magnetic and electric fields affect a moving electric charge, using the relationships among charge, motion, field direction and strength, when motion and field directions are mutually perpendicular",
+        "describe and explain, qualitatively, the interaction between a magnetic field and a moving charge and between a magnetic field and a current-carrying conductor",
+        "explain, quantitatively, the effect of an external magnetic field on a current-carrying conductor",
+        "describe, qualitatively, the effects of moving a conductor in an external magnetic field, in terms of moving charges in a magnetic field"
+       ],
+       "exclude": [],
+       "keywords": [
+        "field",
+        "magnetic",
+        "moving",
+        "charge",
+        "describe",
+        "electric",
+        "explain",
+        "motion",
+        "fields",
+        "qualitatively",
+        "conductor",
+        "direction",
+        "directions",
+        "quantitatively"
+       ],
+       "exam_skills": [
+        "describe",
+        "compare",
+        "predict",
+        "explain"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 51
+      }
+     ]
+    },
+    {
+     "topic_id": "PHYS30-C",
+     "number": "C",
+     "name": "Unit C: Electromagnetic Radiation",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PHYS30-C1",
+       "number": "C1",
+       "title": "Explain the nature and behaviour of EMR, using the wave model",
+       "statement": "Students will explain the nature and behaviour of EMR, using the wave model",
+       "include": [
+        "describe, qualitatively, how all accelerating charges produce EMR",
+        "compare and contrast the constituents of the electromagnetic spectrum on the basis of frequency and wavelength",
+        "explain the propagation of EMR in terms of perpendicular electric and magnetic fields that are varying with time and travelling away from their source at the speed of light",
+        "explain, qualitatively, various methods of measuring the speed of EMR",
+        "calculate the speed of EMR, given data from a Michelson-type experiment",
+        "describe, quantitatively, the phenomena of reflection and refraction, including total internal reflection",
+        "describe, quantitatively, simple optical systems, consisting of only one component, for both lenses and curved mirrors",
+        "describe, qualitatively, diffraction, interference and polarization",
+        "describe, qualitatively, how the results of Young's double-slit experiment support the wave model of light",
+        "solve double-slit and diffraction grating problems using, nl xd = λ , sin d n θ λ =",
+        "describe, qualitatively and quantitatively, how refraction supports the wave model of EMR, using 1 2 1 1 2 1 2 2 sin sin n v n v θ λ θ λ = = =",
+        "compare and contrast the visible spectra produced by diffraction gratings and triangular prisms"
+       ],
+       "exclude": [],
+       "keywords": [
+        "describe",
+        "emr",
+        "qualitatively",
+        "diffraction",
+        "explain",
+        "model",
+        "quantitatively",
+        "sin",
+        "speed",
+        "wave",
+        "compare",
+        "contrast",
+        "double-slit",
+        "experiment"
+       ],
+       "exam_skills": [
+        "describe",
+        "compare",
+        "contrast",
+        "explain",
+        "calculate",
+        "solve"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 55
+      },
+      {
+       "lo_id": "PHYS30-C2",
+       "number": "C2",
+       "title": "Explain the photoelectric effect, using the quantum model",
+       "statement": "Students will explain the photoelectric effect, using the quantum model",
+       "include": [
+        "define the photon as a quantum of EMR and calculate its energy",
+        "classify the regions of the electromagnetic spectrum by photon energy",
+        "describe the photoelectric effect in terms of the intensity and wavelength or frequency of the incident light and surface material",
+        "describe, quantitatively, photoelectric emission, using concepts related to the conservation of energy",
+        "describe the photoelectric effect as a phenomenon that supports the notion of the wave-particle duality of EMR",
+        "explain, qualitatively and quantitatively, the Compton effect as another example of wave-particle duality, applying the laws of mechanics and of conservation of momentum and energy to photons"
+       ],
+       "exclude": [],
+       "keywords": [
+        "effect",
+        "energy",
+        "photoelectric",
+        "describe",
+        "conservation",
+        "duality",
+        "emr",
+        "explain",
+        "photon",
+        "quantitatively",
+        "quantum",
+        "wave-particle",
+        "another",
+        "applying"
+       ],
+       "exam_skills": [
+        "define",
+        "calculate",
+        "describe",
+        "explain",
+        "apply"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 57
+      }
+     ]
+    },
+    {
+     "topic_id": "PHYS30-D",
+     "number": "D",
+     "name": "Unit D: Atomic Physics",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PHYS30-D1",
+       "number": "D1",
+       "title": "Describe the electrical nature of the atom",
+       "statement": "Students will describe the electrical nature of the atom",
+       "include": [
+        "describe matter as containing discrete positive and negative charges",
+        "explain how the discovery of cathode rays contributed to the development of atomic models",
+        "explain J. J. Thomson's experiment and the significance of the results for both science and technology",
+        "explain, qualitatively, the significance of the results of Rutherford's scattering experiment, in terms of scientists' understanding of the relative size and mass of the nucleus and the atom"
+       ],
+       "exclude": [],
+       "keywords": [
+        "explain",
+        "atom",
+        "describe",
+        "experiment",
+        "results",
+        "significance",
+        "atomic",
+        "cathode",
+        "charges",
+        "containing",
+        "contributed",
+        "development",
+        "discovery",
+        "discrete"
+       ],
+       "exam_skills": [
+        "describe",
+        "explain"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 61
+      },
+      {
+       "lo_id": "PHYS30-D2",
+       "number": "D2",
+       "title": "Describe the quantization of energy in atoms and nuclei",
+       "statement": "Students will describe the quantization of energy in atoms and nuclei",
+       "include": [
+        "explain, qualitatively, how emission of EMR by an accelerating charged particle invalidates the classical model of the atom",
+        "describe that each element has a unique line spectrum",
+        "explain, qualitatively, the characteristics of, and the conditions necessary to produce, continuous line-emission and line-absorption spectra",
+        "explain, qualitatively, the concept of stationary states and how they explain the observed spectra of atoms and molecules",
+        "calculate the energy difference between states, using the law of conservation of energy and the observed characteristics of an emitted photon",
+        "explain, qualitatively, how electron diffraction provides experimental support for the de Broglie hypothesis",
+        "describe, qualitatively, how the two-slit electron interference experiment shows that quantum systems, like photons and electrons, may be modelled as particles or waves, contrary to intuition"
+       ],
+       "exclude": [],
+       "keywords": [
+        "explain",
+        "qualitatively",
+        "describe",
+        "energy",
+        "atoms",
+        "characteristics",
+        "electron",
+        "observed",
+        "spectra",
+        "states",
+        "accelerating",
+        "atom",
+        "broglie",
+        "calculate"
+       ],
+       "exam_skills": [
+        "explain",
+        "describe",
+        "calculate"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 63
+      },
+      {
+       "lo_id": "PHYS30-D3",
+       "number": "D3",
+       "title": "Describe nuclear fission and fusion as powerful energy sources in nature",
+       "statement": "Students will describe nuclear fission and fusion as powerful energy sources in nature",
+       "include": [
+        "describe the nature and properties, including the biological effects, of alpha, beta and gamma radiation",
+        "write nuclear equations, using isotope notation, for alpha, beta-negative and beta-positive decays, including the appropriate neutrino and antineutrino",
+        "perform simple, nonlogarithmic half-life calculations",
+        "use the law of conservation of charge and mass number to predict the particles emitted by a nucleus",
+        "compare and contrast the characteristics of fission and fusion reactions",
+        "relate, qualitatively and quantitatively, the mass defect of the nucleus to the energy released in nuclear reactions, using Einstein's concept of mass-energy equivalence"
+       ],
+       "exclude": [],
+       "keywords": [
+        "nuclear",
+        "alpha",
+        "describe",
+        "energy",
+        "fission",
+        "fusion",
+        "mass",
+        "nature",
+        "nucleus",
+        "reactions",
+        "antineutrino",
+        "appropriate",
+        "beta",
+        "beta-negative"
+       ],
+       "exam_skills": [
+        "describe",
+        "write",
+        "use",
+        "predict",
+        "compare",
+        "contrast"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 65
+      },
+      {
+       "lo_id": "PHYS30-D4",
+       "number": "D4",
+       "title": "Describe the ongoing development of models of the structure of matter",
+       "statement": "Students will describe the ongoing development of models of the structure of matter",
+       "include": [
+        "explain how the analysis of particle tracks contributed to the discovery and identification of the characteristics of subatomic particles",
+        "explain, qualitatively, in terms of the strong nuclear force, why high-energy particle accelerators are required to study subatomic particles",
+        "describe the modern model of the proton and neutron as being composed of quarks",
+        "compare and contrast the up quark, the down quark, the electron and the electron neutrino, and their antiparticles, in terms of charge and energy (mass-energy)",
+        "describe beta-positive (β+) and beta-negative (β-) decay, using first-generation elementary fermions and the principle of charge conservation (Feynman diagrams are not required)"
+       ],
+       "exclude": [],
+       "keywords": [
+        "describe",
+        "charge",
+        "electron",
+        "explain",
+        "particle",
+        "particles",
+        "quark",
+        "required",
+        "subatomic",
+        "accelerators",
+        "analysis",
+        "antiparticles",
+        "beta-negative",
+        "beta-positive"
+       ],
+       "exam_skills": [
+        "explain",
+        "describe",
+        "compare",
+        "contrast"
+       ],
+       "source": "Alberta Physics 30 Program of Studies",
+       "page": 67
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "subject_id": "CHEM30",
+   "name": "Chemistry 30",
+   "code": "CHEM30",
+   "level": "Alberta Diploma",
+   "source": "Alberta Chemistry 30 Program of Studies",
+   "topics": [
+    {
+     "topic_id": "CHEM30-A",
+     "number": "A",
+     "name": "Unit A: Thermochemical Changes",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "CHEM30-A1",
+       "number": "A1",
+       "title": "Determine and interpret energy changes in chemical reactions",
+       "statement": "Students will determine and interpret energy changes in chemical reactions",
+       "include": [
+        "recall the application of Q = mc∆t to the analysis of heat transfer",
+        "explain, in a general way, how stored energy in the chemical bonds of hydrocarbons originated from the sun",
+        "define enthalpy and molar enthalpy for chemical reactions",
+        "write balanced equations for chemical reactions that include energy changes",
+        "use and interpret ∆H notation to communicate and calculate energy changes in chemical reactions",
+        "predict the enthalpy change for chemical equations using standard enthalpies of formation",
+        "explain and use Hess' law to calculate energy changes for a net reaction from a series of reactions",
+        "use calorimetry data to determine the enthalpy changes in chemical reactions",
+        "identify that liquid water and carbon dioxide gas are reactants in photosynthesis and products of cellular respiration and that gaseous water and carbon dioxide gas are the products of hydrocarbon combustion in an open system",
+        "classify chemical reactions as endothermic or exothermic, including those for the processes of photosynthesis, cellular respiration and hydrocarbon combustion"
+       ],
+       "exclude": [],
+       "keywords": [
+        "chemical",
+        "reactions",
+        "changes",
+        "energy",
+        "enthalpy",
+        "calculate",
+        "carbon",
+        "cellular",
+        "combustion",
+        "determine",
+        "dioxide",
+        "equations",
+        "explain",
+        "gas"
+       ],
+       "exam_skills": [
+        "recall",
+        "apply",
+        "explain",
+        "define",
+        "write",
+        "use",
+        "interpret",
+        "calculate",
+        "predict",
+        "determine",
+        "identify"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 43
+      },
+      {
+       "lo_id": "CHEM30-A2",
+       "number": "A2",
+       "title": "Explain and communicate energy changes in chemical reactions",
+       "statement": "Students will explain and communicate energy changes in chemical reactions",
+       "include": [
+        "define activation energy as the energy barrier that must be overcome for a chemical reaction to occur",
+        "explain the energy changes that occur during chemical reactions, referring to bonds breaking and forming and changes in potential and kinetic energy",
+        "analyze and label energy diagrams of a chemical reaction, including reactants, products, enthalpy change and activation energy",
+        "explain that catalysts increase reaction rates by providing alternate pathways for changes, without affecting the net amount of energy involved; e.g., enzymes in living systems"
+       ],
+       "exclude": [],
+       "keywords": [
+        "energy",
+        "changes",
+        "chemical",
+        "explain",
+        "reaction",
+        "activation",
+        "occur",
+        "reactions",
+        "affecting",
+        "alternate",
+        "amount",
+        "analyze",
+        "barrier",
+        "bonds"
+       ],
+       "exam_skills": [
+        "define",
+        "explain",
+        "label"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 46
+      }
+     ]
+    },
+    {
+     "topic_id": "CHEM30-B",
+     "number": "B",
+     "name": "Unit B: Electrochemical Changes",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "CHEM30-B1",
+       "number": "B1",
+       "title": "Explain the nature of oxidation-reduction reactions",
+       "statement": "Students will explain the nature of oxidation-reduction reactions",
+       "include": [
+        "define oxidation and reduction operationally and theoretically",
+        "define oxidizing agent, reducing agent, oxidation number, half-reaction, disproportionation",
+        "differentiate between redox reactions and other reactions, using half-reactions and/or oxidation numbers",
+        "identify electron transfer, oxidizing agents and reducing agents in redox reactions that occur in everyday life, in both living systems (e.g., cellular respiration, photosynthesis) and nonliving systems; i.e., corrosion",
+        "compare the relative strengths of oxidizing and reducing agents, using empirical data",
+        "predict the spontaneity of a redox reaction, based on standard reduction potentials, and compare their predictions to experimental results",
+        "write and balance equations for redox reactions in acidic and neutral solutions by • using half-reaction equations obtained from a standard reduction potential table • developing simple half-reaction equations from information provided about redox changes • assigning oxidation numbers, where appropriate, to the species undergoing chemical change",
+        "perform calculations to determine quantities of substances involved in redox titrations"
+       ],
+       "exclude": [],
+       "keywords": [
+        "redox",
+        "reactions",
+        "oxidation",
+        "agents",
+        "equations",
+        "half-reaction",
+        "oxidizing",
+        "reducing",
+        "reduction",
+        "agent",
+        "compare",
+        "define",
+        "numbers",
+        "standard"
+       ],
+       "exam_skills": [
+        "define",
+        "identify",
+        "compare",
+        "predict",
+        "write",
+        "determine"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 50
+      },
+      {
+       "lo_id": "CHEM30-B2",
+       "number": "B2",
+       "title": "Apply the principles of oxidation-reduction to electrochemical cells",
+       "statement": "Students will apply the principles of oxidation-reduction to electrochemical cells",
+       "include": [
+        "define anode, cathode, anion, cation, salt bridge/porous cup, electrolyte, external circuit, power supply, voltaic cell and electrolytic cell",
+        "identify the similarities and differences between the operation of a voltaic cell and that of an electrolytic cell",
+        "predict and write the half-reaction equation that occurs at each electrode in an electrochemical cell",
+        "recognize that predicted reactions do not always occur; e.g., the production of chlorine gas from the electrolysis of brine",
+        "explain that the values of standard reduction potential are all relative to 0 volts, as set for the hydrogen electrode at standard conditions",
+        "calculate the standard cell potential for electrochemical cells",
+        "predict the spontaneity or nonspontaneity of redox reactions, based on standard cell potential, and the relative positions of half-reaction equations on a standard reduction potential table",
+        "calculate mass, amounts, current and time in single voltaic and electrolytic cells by applying Faraday's law and stoichiometry"
+       ],
+       "exclude": [],
+       "keywords": [
+        "cell",
+        "standard",
+        "potential",
+        "cells",
+        "electrochemical",
+        "electrolytic",
+        "voltaic",
+        "calculate",
+        "electrode",
+        "half-reaction",
+        "predict",
+        "reactions",
+        "reduction",
+        "relative"
+       ],
+       "exam_skills": [
+        "define",
+        "identify",
+        "predict",
+        "write",
+        "explain",
+        "calculate",
+        "apply"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 52
+      }
+     ]
+    },
+    {
+     "topic_id": "CHEM30-C",
+     "number": "C",
+     "name": "Unit C: Chemical Changes of Organic Compounds",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "CHEM30-C1",
+       "number": "C1",
+       "title": "Explore organic compounds as a common form of matter",
+       "statement": "Students will explore organic compounds as a common form of matter",
+       "include": [
+        "define organic compounds as compounds containing carbon, recognizing inorganic exceptions such as carbonates, cyanides, carbides and oxides of carbon",
+        "identify and describe significant organic compounds in daily life, demonstrating generalized knowledge of their origins and applications; e.g., methane, methanol, ethane, ethanol, ethanoic acid, propane, benzene, octane, glucose, polyethylene",
+        "name and draw structural, condensed structural and line diagrams and formulas, using International Union of Pure and Applied Chemistry (IUPAC) nomenclature guidelines, for saturated and unsaturated aliphatic (including cyclic) and aromatic carbon compounds • containing up to 10 carbon atoms in the parent chain (e.g., pentane; 3-ethyl-2,4- dimethylpentane) or cyclic structure (e.g., cyclopentane) • containing only one type of a functional group (with multiple bonds categorized as a functional group; e.g., pent-2-ene), including simple halogenated hydrocarbons (e.g., 2- chloropentane), alcohols (e.g., pentan-2-ol), carboxylic acids (e.g., pentanoic acid) and esters (e.g., methyl pentanoate), and with multiple occurrences of the functional group limited to halogens (e.g., 2-bromo-1-chloropentane) and alcohols (e.g., pentane-2,3-diol)",
+        "identify types of compounds from the hydroxyl, carboxyl, ester linkage and halogen functional groups, given the structural formula",
+        "define structural isomerism as compounds having the same molecular formulas, but with different structural formulas, and relate the structures to variations in the properties of the isomers",
+        "compare, both within a homologous series and among compounds with different functional groups, the boiling points and solubility of examples of aliphatics, aromatics, alcohols and carboxylic acids",
+        "describe, in general terms, the physical, chemical and technological processes (fractional distillation and solvent extraction) used to separate organic compounds from natural mixtures or solutions; e.g., petroleum refining, bitumen recovery"
+       ],
+       "exclude": [],
+       "keywords": [
+        "compounds",
+        "functional",
+        "structural",
+        "carbon",
+        "organic",
+        "alcohols",
+        "containing",
+        "formulas",
+        "group",
+        "acid",
+        "acids",
+        "carboxylic",
+        "chloropentane",
+        "cyclic"
+       ],
+       "exam_skills": [
+        "define",
+        "identify",
+        "describe",
+        "name",
+        "draw",
+        "compare"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 56
+      },
+      {
+       "lo_id": "CHEM30-C2",
+       "number": "C2",
+       "title": "Describe chemical reactions of organic compounds",
+       "statement": "Students will describe chemical reactions of organic compounds",
+       "include": [
+        "define, illustrate and provide examples of simple addition, substitution, elimination, esterification and combustion reactions",
+        "predict products and write and interpret balanced equations for the above reactions",
+        "define, illustrate and provide examples of monomers (e.g., ethylene), polymers (e.g., polyethylene) and polymerization in living systems (e.g., carbohydrates, proteins) and nonliving systems (e.g., nylon, polyester, plastics)",
+        "relate the reactions described above to major reactions that produce thermal energy and economically important compounds from fossil fuels"
+       ],
+       "exclude": [],
+       "keywords": [
+        "reactions",
+        "compounds",
+        "define",
+        "examples",
+        "illustrate",
+        "provide",
+        "systems",
+        "addition",
+        "balanced",
+        "carbohydrates",
+        "chemical",
+        "combustion",
+        "describe",
+        "described"
+       ],
+       "exam_skills": [
+        "define",
+        "illustrate",
+        "predict",
+        "write",
+        "interpret"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 59
+      }
+     ]
+    },
+    {
+     "topic_id": "CHEM30-D",
+     "number": "D",
+     "name": "Unit D: Chemical Equilibrium Focusing on Acid-Base Systems",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "CHEM30-D1",
+       "number": "D1",
+       "title": "Explain that there is a balance of opposing reactions in chemical equilibrium systems",
+       "statement": "Students will explain that there is a balance of opposing reactions in chemical equilibrium systems",
+       "include": [
+        "define equilibrium and state the criteria that apply to a chemical system in equilibrium; i.e., closed system, constancy of properties, equal rates of forward and reverse reactions",
+        "identify, write and interpret chemical equations for systems at equilibrium",
+        "predict, qualitatively, using Le Chatelier's principle, shifts in equilibrium caused by changes in temperature, pressure, volume, concentration or the addition of a catalyst and describe how these changes affect the equilibrium constant",
+        "define Kc to predict the extent of the reaction and write equilibrium-law expressions for given chemical equations, using lowest whole-number coefficients",
+        "describe Brønsted–Lowry acids as proton donors and bases as proton acceptors",
+        "write Brønsted–Lowry equations, including indicators, and predict whether reactants or products are favoured for acid-base equilibrium reactions for monoprotic and polyprotic acids and bases",
+        "identify conjugate pairs and amphiprotic substances",
+        "define a buffer as relatively large amounts of a weak acid or base and its conjugate in equilibrium that maintain a relatively constant pH when small amounts of acid or base are added"
+       ],
+       "exclude": [],
+       "keywords": [
+        "equilibrium",
+        "chemical",
+        "define",
+        "equations",
+        "predict",
+        "reactions",
+        "write",
+        "acid",
+        "acids",
+        "amounts",
+        "base",
+        "bases",
+        "changes",
+        "conjugate"
+       ],
+       "exam_skills": [
+        "define",
+        "state",
+        "apply",
+        "identify",
+        "write",
+        "interpret",
+        "predict",
+        "describe"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 63
+      },
+      {
+       "lo_id": "CHEM30-D2",
+       "number": "D2",
+       "title": "Determine quantitative relationships in simple equilibrium systems",
+       "statement": "Students will determine quantitative relationships in simple equilibrium systems",
+       "include": [
+        "recall the concepts of pH and hydronium ion concentration and pOH and hydroxide ion concentration, in relation to acids and bases",
+        "define Kw , Ka , Kb and use these to determine pH, pOH, [H3O+] and [OH–] of acidic and basic solutions",
+        "calculate equilibrium constants and concentrations for homogeneous systems and Brønsted–Lowry acids and bases (excluding buffers) when • concentrations at equilibrium are known • initial concentrations and one equilibrium concentration are known • the equilibrium constant and one equilibrium concentration are known"
+       ],
+       "exclude": [],
+       "keywords": [
+        "equilibrium",
+        "concentration",
+        "concentrations",
+        "known",
+        "acids",
+        "bases",
+        "determine",
+        "ion",
+        "poh",
+        "systems",
+        "acidic",
+        "basic",
+        "buffers",
+        "calculate"
+       ],
+       "exam_skills": [
+        "recall",
+        "define",
+        "use",
+        "determine",
+        "calculate"
+       ],
+       "source": "Alberta Chemistry 30 Program of Studies",
+       "page": 66
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

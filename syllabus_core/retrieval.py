@@ -257,6 +257,11 @@ class HybridRetriever(Generic[ItemT]):
             return []
 
         pool = max(top_k * self.candidate_multiplier, top_k)
+        if predicate is not None:
+            # Rank every item: with thousands of objectives across exams, a small
+            # subject (H2 Maths has 19) rarely reaches a global shortlist, and
+            # filtering afterwards would silently lose its best match.
+            pool = len(self.items)
         rankings: list[tuple[str, list[tuple[int, float]]]] = [
             ("lexical", self.lexical.search(query, pool))
         ]

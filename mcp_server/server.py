@@ -30,13 +30,18 @@ from syllabus_core.progress import ProgressStore
 from syllabus_core.service import ROOT, SyllabusService
 
 INSTRUCTIONS = """\
-Syllabuddy answers questions about the official Singapore-Cambridge GCE A-Level
-syllabus (H1/H2: Physics, Chemistry, Biology, Mathematics, Computing, Economics,
-Geography, History). Use it whenever a student asks whether something is in
-their syllabus or on their exam, which objective a question belongs to, what a
-topic requires, to be quizzed, or what to revise. Always quote the objective id
-(for example 9758.3.3) so the student can check it. Never guess about what is
-examinable: if a tool says 'unclear' or 'not_in_syllabus', say so."""
+Syllabuddy answers questions about official exam syllabuses: the US College Board
+AP courses (Calculus AB/BC, Precalculus, Statistics, Physics 1/2/C, Chemistry,
+Biology, Environmental Science, Computer Science A and Principles, Psychology,
+Macro/Microeconomics, US and Comparative Government, US/World/European History,
+Human Geography, African American Studies, Music Theory), the Canadian
+Alberta Diploma courses (Physics 30, Chemistry 30) and the Singapore-Cambridge
+GCE A-Level (H1/H2). Use it whenever a student asks whether
+something is in their syllabus or on their exam, which objective a question
+belongs to, what a topic requires, to be quizzed, or what to revise. Always quote
+the objective id (Singapore "9758.3.3", AP "CALCBC-10.8" = topic 10.8) so the
+student can check it. Never guess about what is examinable: if a tool says
+'unclear' or 'not_in_syllabus', say so."""
 
 READ_ONLY = ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False)
 RECORDS = ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)
@@ -83,7 +88,7 @@ def _error(error: Exception) -> dict[str, Any]:
 
 @mcp.tool(annotations=READ_ONLY)
 def check_examinable(topic: str, subject: str | None = None, ctx: Context | None = None) -> dict[str, Any]:
-    """Check whether a topic is examinable in the student's A-Level syllabus.
+    """Check whether a topic is examinable in the student's syllabus (AP or Singapore A-Level).
 
     Use for "is X in the syllabus?", "is X on my exam?", "do I need to know X?".
     Returns a verdict: 'excluded' (explicitly listed as not examinable, with the
@@ -96,7 +101,7 @@ def check_examinable(topic: str, subject: str | None = None, ctx: Context | None
 
     Args:
         topic: The topic in the student's words, e.g. "shortest distance between skew lines".
-        subject: Optional subject and level, e.g. "H2 Maths", "H1 Physics", "Computing" or a code like "9758".
+        subject: Optional subject, as the student says it: "AP Calc AB", "APUSH", "AP Chem", "H2 Maths", "H1 Physics" or a code like "9758" or "CALCAB".
     """
     try:
         result = service().check_examinable(topic, subject)
@@ -119,7 +124,7 @@ def find_objective(question: str, subject: str | None = None, ctx: Context | Non
 
     Args:
         question: The student's question or topic.
-        subject: Optional subject and level, e.g. "H2 Chemistry" or "9729".
+        subject: Optional subject, e.g. "AP Physics 1", "AP Statistics" or "H2 Chemistry".
     """
     try:
         result = service().find_objective(question, subject)
@@ -132,7 +137,7 @@ def find_objective(question: str, subject: str | None = None, ctx: Context | Non
 
 @mcp.tool(annotations=READ_ONLY)
 def get_objective(objective_id: str) -> dict[str, Any]:
-    """Get the full details of one syllabus objective by its id, e.g. "9758.3.3" or "9478.9.d"."""
+    """Get the full details of one syllabus objective by its id, e.g. "9758.3.3" or "CALCBC-10.8"."""
     try:
         return service().get_objective(objective_id)
     except ValueError as error:
@@ -141,8 +146,9 @@ def get_objective(objective_id: str) -> dict[str, Any]:
 
 @mcp.tool(annotations=READ_ONLY)
 def list_subjects() -> dict[str, Any]:
-    """List the A-Level subjects and syllabus codes Syllabuddy has loaded."""
-    return {"exam": "Singapore-Cambridge GCE A-Level", "subjects": service().list_subjects()}
+    """List the exams, subjects and syllabus codes Syllabuddy has loaded."""
+    return {"exams": ["College Board AP", "Alberta Diploma", "Singapore-Cambridge GCE A-Level"],
+            "subjects": service().list_subjects()}
 
 
 @mcp.tool(annotations=READ_ONLY)
@@ -168,7 +174,7 @@ def start_quiz(subject: str | None = None, objective_id: str | None = None,
     'syllabus_requires', then call record_quiz_result.
 
     Args:
-        subject: Optional subject and level, e.g. "H2 Maths".
+        subject: Optional subject, e.g. "AP Calc BC" or "H2 Maths".
         objective_id: Optional specific objective to quiz on.
     """
     sid = student_id(ctx)

@@ -41,14 +41,18 @@ MAX_HISTORY = 12
 
 SYSTEM_PROMPT = """\
 You are Alexa+, speaking through a smart speaker with a screen. The student has enabled the \
-Syllabuddy add-on, which knows the official Singapore-Cambridge A-Level syllabus.
+Syllabuddy add-on, which knows official exam syllabuses: the US College Board AP courses \
+(Calculus AB/BC, Physics, Chemistry, Biology, Statistics, CS, History, Government, Economics...), \
+the Canadian Alberta Diploma courses (Physics 30, Chemistry 30) and the Singapore-Cambridge A-Level (H1/H2).
 
 How to answer:
 - Replies are spoken aloud: one to three short, natural sentences. No markdown, no lists, no emojis.
 - Say formulas in words ("a equals minus omega squared x"), never as symbols; the screen shows the syllabus card.
 - For anything about the syllabus, the exam, what to study, topics, quizzes or revision, call a \
 Syllabuddy tool first. Never guess what is examinable.
-- Mention the objective id when you have one, for example "objective 9758.3.3", so the student can check it.
+- Mention the objective id when you have one, for example "objective 9758.3.3" or, for AP, \
+"topic 10.8 of AP Calculus BC" (id CALCBC-10.8), so the student can check it.
+- Pass the subject the way the student said it ("AP Calc AB", "APUSH", "H2 Maths"); the tools understand both exams.
 - If check_examinable says "excluded", say clearly that it is not examinable and quote the syllabus \
 wording briefly. If it says "unclear" or "not_in_syllabus", say that honestly.
 - When explaining a concept, keep to what the syllabus requires; offer more detail rather than giving it all.
@@ -56,8 +60,7 @@ wording briefly. If it says "unclear" or "not_in_syllabus", say that honestly.
 When the student answers, judge it against syllabus_requires, tell them if they were right with a \
 one-line correction if needed, and call record_quiz_result.
 - "What should I revise?" or "how am I doing?": call my_revision_list.
-- The student is preparing for A-Levels unless they say otherwise. If they name a subject \
-without a level, pass it as they said it."""
+- If the student doesn't say which exam, ask once, or search all subjects."""
 
 
 @dataclass
@@ -196,11 +199,20 @@ class OfflineBrain:
 
     name = "offline"
     QUIZ = re.compile(r"\b(quiz|test me|ask me)\b", re.I)
-    OBJECTIVE_ID = re.compile(r"\b\d{4}(?:\.[0-9a-z]+)+\b", re.I)
-    REVISE =re.compile(r"\b(revise|revision|weak|how am i doing|struggl)", re.I)
-    EXAMINABLE = re.compile(r"\b(syllabus|examinable|on (the|my) exam|tested|need to (know|study|learn)|come out)\b", re.I)
-    SUBJECT = re.compile(r"\b((?:h[12]\s+)?(?:maths?|mathematics|physics|chem(?:istry)?|bio(?:logy)?|computing|"
-                         r"econs?|economics|geog(?:raphy)?|history))\b", re.I)
+    # Singapore "9758.3.3" or AP "CALCAB-10.8" / "CSP-3.11" / "CALCAB-BC"
+    OBJECTIVE_ID = re.compile(r"\b(?:\d{4}(?:\.[0-9a-z]+)+|[A-Z][A-Z0-9]{1,7}-(?:\d+(?:\.\d+)*|BC))\b")
+    REVISE = re.compile(r"\b(revise|revision|weak|how am i doing|struggl)", re.I)
+    EXAMINABLE = re.compile(r"\b(syllabus|examinable|on (the|my) ([\w.&:-]+\s+){0,4}exam|tested|assessed|"
+                            r"need to (know|study|learn)|come out|on (apush|the ap\b))", re.I)
+    SUBJECT = re.compile(
+        # AP course names first (they are more specific), then the Singapore A-Level subjects.
+        r"\b((?:ap\s+)?(?:calc(?:ulus)?(?:\s*(?:ab|bc))?|precalc(?:ulus)?|stat(?:istic)?s|psych(?:ology)?|"
+        r"macro(?:economics)?|micro(?:economics)?|apush|(?:us|u\.s\.|world|european)\s+history|"
+        r"human\s+geography|physics\s*(?:1|2|c|30)|chem(?:istry)?\s*30|computer\s+science\s*(?:a|principles)|csa|csp|"
+        r"environmental\s+science|(?:us|u\.s\.|comparative)\s+government|music\s+theory)"
+        r"|ap\s+(?:bio(?:logy)?|chem(?:istry)?|physics)"
+        r"|(?:h[12]\s+)?(?:maths?|mathematics|physics|chem(?:istry)?|bio(?:logy)?|computing|"
+        r"econs?|economics|geog(?:raphy)?|history))\b", re.I)
     FILLER = re.compile(r"^(alexa,?\s*)?(is|are|do i need to know|does|will)\s+|\b(in|on|for)\s+(the|my)\s+"
                         r"(syllabus|exam|a.?levels?)\b|\b(examinable|in the syllabus|on the exam|tested)\b|[?.!]", re.I)
 
@@ -228,7 +240,11 @@ class OfflineBrain:
             return BrainReply(tool_calls=[ToolCall(call_id, "get_objective", {"objective_id": objective.group(0)})])
         if self.REVISE.search(text):
             return BrainReply(tool_calls=[ToolCall(call_id, "my_revision_list", {})])
-        topic = self.SUBJECT.sub(" ", self.FILLER.sub(" ", text)).strip(" ,") or text
+        # Strip the question framing and the subject, twice: removing "AP Calculus AB"
+        # from "on the AP Calculus AB exam" leaves "on the exam" to remove next.
+        topic = re.sub(r"\s+", " ", self.SUBJECT.sub(" ", self.FILLER.sub(" ", text)))
+        topic = re.sub(r"\s+", " ", self.FILLER.sub(" ", topic)).strip(" ,")
+        topic = re.sub(r"^(the|a|an)\s+|\s+(for|in|on|of|the)$", "", topic, flags=re.I).strip() or text
         args = {"subject": subject} if subject else {}
         if self.EXAMINABLE.search(text):
             return BrainReply(tool_calls=[ToolCall(call_id, "check_examinable", {"topic": topic, **args})])

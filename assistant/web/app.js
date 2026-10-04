@@ -70,7 +70,7 @@
     }
     if (tool === "find_objective" && r.objectives && r.objectives.length) {
       const cited = citedIn(answer, r.objectives);
-      if (!cited && answer && /\b\d{4}\.[0-9a-z]+/i.test(answer)) return null;  // cites something not shown here
+      if (!cited && answer && /\b(\d{4}\.[0-9a-z]+|[A-Z][A-Z0-9]{1,7}-\d+\.\d+)/i.test(answer)) return null;  // cites something not shown here
       const o = cited || r.objectives[0];
       // Only the top result carries full requires/excludes; others show the header.
       return objectiveCard(o, r.match, VERDICT_LABEL[r.match], null, !!o.syllabus_requires);
@@ -141,8 +141,11 @@
 
   function forSpeech(text) {
     // "9758.3.3" should be read as "9 7 5 8 point 3 point 3", not "nine thousand...".
-    return text.replace(/\b(\d{4})((?:\.[0-9a-z]+)+)\b/gi, (_, code, rest) =>
-      code.split("").join(" ") + rest.split(".").filter(Boolean).map((p) => " point " + p).join(""));
+    // AP ids ("CALCBC-10.8") are read as "topic 10.8"; the subject is already in the sentence.
+    return text
+      .replace(/\b[A-Z][A-Z0-9]{1,7}-(\d+\.\d+)\b/g, (_, topic) => "topic " + topic)
+      .replace(/\b(\d{4})((?:\.[0-9a-z]+)+)\b/gi, (_, code, rest) =>
+        code.split("").join(" ") + rest.split(".").filter(Boolean).map((p) => " point " + p).join(""));
   }
   function speak(text) {
     if (!window.speechSynthesis || !text) { setState(null); return; }
