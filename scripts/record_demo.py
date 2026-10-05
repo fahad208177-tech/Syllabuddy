@@ -22,13 +22,15 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "artifacts"
 SIZE = {"width": 1600, "height": 900}
+# Follows docs/DEMO_SCRIPT.md.
 SCRIPT = [
     "Is the ratio test on the AP Calculus AB exam?",
     "What about BC?",
     "Do I need the epsilon-delta definition of a limit for AP Calc?",
     "Is Big-O notation on AP Computer Science Principles?",
-    "Is the photoelectric effect on the Physics 30 diploma exam?",
-    "Quiz me on AP Physics 1",
+    "Are circles on the PSAT 8/9?",
+    "I'm taking AP Calc BC and the SAT, my exam is May 11",
+    "Quiz me",
     None,  # answer the quiz (filled in below)
     "What should I revise first?",
 ]
@@ -36,11 +38,17 @@ QUIZ_ANSWER = "I'm not sure, can you tell me?"
 
 
 KEEP_THINKING = 1.5   # seconds of "Thinking..." kept after each question
-WAITS: list[tuple[float, float]] = []   # (sent, answered), seconds since recording began
+# Groq's free tier allows about two turns a minute: pause between questions, then cut the pause out.
+PACE = 30
+WAITS: list[tuple[float, float]] = []   # spans to cut, seconds since recording began
 START = 0.0
 
 
-def say(page, text: str) -> None:
+def say(page, text: str, first: bool = False) -> None:
+    if not first:
+        paused = time.monotonic() - START
+        page.wait_for_timeout(PACE * 1000)
+        WAITS.append((paused - KEEP_THINKING - 0.3, time.monotonic() - START))  # cut the whole pause
     before = page.locator(".turn.answer").count()
     page.click("#text")
     page.keyboard.type(text, delay=45)
@@ -63,11 +71,14 @@ def main() -> int:
         global START
         START = time.monotonic()
         page.goto("http://127.0.0.1:8000")
+        # A fresh student, so the revision list and countdown show only this run.
+        page.evaluate("localStorage.setItem('syllabuddy.student', 'stu-demo-' + Date.now())")
+        page.reload()
         page.wait_for_selector(".dot.ok", timeout=60000)
         page.click("#reset")
         page.wait_for_timeout(2500)
-        for line in SCRIPT:
-            say(page, line or QUIZ_ANSWER)
+        for i, line in enumerate(SCRIPT):
+            say(page, line or QUIZ_ANSWER, first=(i == 0))
         page.wait_for_timeout(2000)
         context.close()
         browser.close()

@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import json
 import os
+import time
+from collections import defaultdict, deque
 from contextlib import AsyncExitStack, asynccontextmanager
 from pathlib import Path
 
@@ -24,6 +26,27 @@ from assistant.agent import Assistant, _result_data
 
 WEB = Path(__file__).parent / "web"
 assistant = Assistant()
+
+
+# A public demo shares one model key, so each visitor gets a few questions a
+# minute (0 = no limit, the default for local runs).
+RATE_LIMIT = int(os.environ.get("SYLLABUDDY_RATE_LIMIT", "0"))
+_recent: dict[str, deque] = defaultdict(deque)
+
+
+def _allowed(request: Request) -> bool:
+    if RATE_LIMIT <= 0:
+        return True
+    forwarded = request.headers.get("x-forwarded-for", "")
+    visitor = forwarded.split(",")[0].strip() or (request.client.host if request.client else "?")
+    now = time.monotonic()
+    times = _recent[visitor]
+    while times and now - times[0] > 60:
+        times.popleft()
+    if len(times) >= RATE_LIMIT:
+        return False
+    times.append(now)
+    return True
 
 
 def _clean_id(value: object, fallback: str) -> str:
@@ -48,6 +71,9 @@ async def ask(request: Request) -> StreamingResponse | JSONResponse:
     text = str(body.get("text", "")).strip()[:500]
     if not text:
         return JSONResponse({"error": "Say something first."}, status_code=400)
+    if not _allowed(request):
+        return JSONResponse({"error": "That's a lot of questions at once. Give it a minute, then ask again."},
+                            status_code=429)
     session = _clean_id(body.get("session"), "default")
     student = _clean_id(body.get("student"), "anonymous")
 

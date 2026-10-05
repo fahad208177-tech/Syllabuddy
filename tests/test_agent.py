@@ -229,3 +229,32 @@ def test_saved_courses_flow_end_to_end(server_url):
     assert "PSAT 8/9 Math" in first[-1]["text"] and "days" in first[-1]["text"]
     later = collect(assistant, "courses", "courses-test", "What should I revise?")
     assert "days" in later[-1]["text"]
+
+
+@pytest.mark.parametrize("utterance, args", [
+    # Two subject names: the exam is the one after "on the", the other is the topic.
+    ("Is calculus on the SAT?", {"topic": "calculus", "subject": "SAT"}),
+    ("Is multiplying matrices on the ACT?", {"topic": "multiplying matrices", "subject": "ACT"}),
+    ("Is the ratio test on the AP Calculus AB exam?", {"topic": "ratio test", "subject": "AP Calculus AB"}),
+])
+def test_offline_brain_finds_the_exam_and_the_topic(utterance, args):
+    reply = asyncio.run(OfflineBrain().chat([{"role": "user", "content": utterance}], []))
+    assert reply.tool_calls[0].name == "check_examinable" and reply.tool_calls[0].arguments == args
+
+
+def test_stalled_tool_call_cannot_stretch_a_turn(server_url, monkeypatch):
+    import assistant.agent as agent_module
+    from mcp import Client
+
+    async def stalled(self, *args, **kwargs):
+        await asyncio.sleep(120)
+
+    monkeypatch.setattr(agent_module, "TURN_DEADLINE", 1.0)
+    monkeypatch.setattr(agent_module, "TOOL_TIMEOUT", 2.0)
+    monkeypatch.setattr(Client, "call_tool", stalled)
+    brain = ScriptedBrain("check_examinable", {"topic": "skew lines", "subject": "H2 Maths"})
+    import time as _time
+    started = _time.perf_counter()
+    events = collect(Assistant(brain, server_url), "stall", "stall-test", "are skew lines examinable?")
+    assert _time.perf_counter() - started < 20
+    assert "too long" in events[1]["result"]["error"]

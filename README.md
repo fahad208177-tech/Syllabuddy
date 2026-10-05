@@ -32,6 +32,15 @@ your exam actually covers. Ask one whether something is examinable and it will
 guess confidently. The real answer is usually one bullet point, on one page of a
 40-page PDF, under *Excluded*.
 
+**Who it's for.** In the US high-school class of 2025 alone, more than 2 million
+students took the SAT ([College Board](https://newsroom.collegeboard.org/sat-participation-class-2025-surpasses-2-million-test-takers-first-time-2020)),
+1,380,130 took the ACT ([ACT](https://www.act.org/content/dam/act/unsecured/documents/2025-act-profile-report-us.pdf)),
+and 1,307,781 public-school graduates took more than 4.8 million AP exams
+([College Board](https://newsroom.collegeboard.org/class-2025-builds-decade-gains-ap-participation-and-performance)).
+Every one of them has a syllabus that says what is, and isn't, on the test.
+Syllabuddy puts that answer one question away, by voice, on a device already in
+millions of homes.
+
 Syllabuddy never guesses about the syllabus. Its tools don't call a language
 model at all: they search **2,883 learning objectives parsed deterministically
 from the official documents**, including every exclusion statement, every "bc
@@ -190,20 +199,51 @@ scripts/           build_syllabus.py (PDFs → JSON), live and UI checks
 tests/             pytest suite
 ```
 
+## Deploy (one container, one port)
+
+`python -m deploy.serve` (or the `Dockerfile`) runs everything on one port, the
+way a public host needs it:
+
+| Path | What |
+|---|---|
+| `/` | the voice web app |
+| `/mcp` | the MCP server, for Alexa+, Claude or any MCP client |
+| `/.well-known/oauth-*`, `/register`, `/authorize`, `/token`, `/revoke` | OAuth 2.1 account linking (PKCE, dynamic client registration) |
+| `/link` | the sign-in page a student sees when linking |
+
+**Hugging Face Spaces (free):** `pip install huggingface_hub`, set `HF_TOKEN` to a
+write token, then `python deploy/publish_space.py`. It creates the Space, uploads
+the code and data (never `.env` or the database), stores the model API key as a
+Space secret, and prints the web app and MCP links. The Space builds in 5 to 10
+minutes. Free Spaces have no persistent disk, so accounts reset on restart.
+
+## Account linking
+
+When `SYLLABUDDY_PUBLIC_URL` is set (or `SPACE_HOST` on Hugging Face), Syllabuddy
+is also an OAuth 2.1 authorization server, built on the MCP SDK's auth support
+(`mcp_server/accounts.py`). A client such as Alexa+ account linking or Claude
+discovers it from the 401 on `/mcp`, registers itself, and sends the student to
+`/link` to sign in with a username and PIN (created on first use; no email or
+real name). Tokens are bound to that account, so **the same revision list and
+saved courses follow the student from Alexa+ to the web app to any other client**.
+Tokens and codes are stored only as SHA-256 hashes, PINs as salted scrypt
+hashes; refresh tokens rotate; "clear my history" also deletes the account.
+`tests/test_accounts.py` runs the whole flow, including a second device.
+
 ## Real Alexa+ add-on package
 
-`alexa-addon/addon.json` follows the MCP Toolkit manifest format: store listing, 4 example phrases, privacy and terms URLs (served at `/privacy` and `/terms`), and icons at all 6 required sizes (`alexa-addon/media/`). Replace `YOUR-SYLLABUDDY-HOST` with the deployed HTTPS host, then `alexa-ai deploy`. That needs Amazon's allow-listed Alexa AI CLI and OAuth 2.1 account linking; see the roadmap and [docs/FRICTION_LOG.md](docs/FRICTION_LOG.md).
+`alexa-addon/addon.json` follows the MCP Toolkit manifest format: store listing, 4 example phrases, privacy and terms URLs (served at `/privacy` and `/terms`), and icons at all 6 required sizes (`alexa-addon/media/`). Replace `YOUR-SYLLABUDDY-HOST` with the deployed HTTPS host, then `alexa-ai deploy`. Account linking is implemented (above); what remains is Amazon's allow-listed Alexa AI CLI, see [docs/FRICTION_LOG.md](docs/FRICTION_LOG.md).
 
 ## Roadmap
 
-- **Real Alexa+ add-on.** Deploy the MCP server (the Dockerfile binds `0.0.0.0:8765`, ready for App Runner or ECS), add OAuth 2.1 with PKCE account linking, and publish with the Alexa AI CLI (`alexa-ai new mcp`, `alexa-ai deploy`). Student identity would come from the OAuth token instead of the header.
+- **Real Alexa+ add-on.** The server, account linking and manifest are ready; publishing needs the allow-listed Alexa AI CLI (`alexa-ai new mcp`, `alexa-ai deploy`).
 - **More exams.** Any exam with a published syllabus fits the same model: GED, CLEP and IB are next.
 - **Past-paper quizzes** tied to each objective.
 
 ## Built before vs during the hackathon
 
 - **Before (31 Aug 2026):** the syllabus parsers, `syllabus.json`, and the hybrid retrieval, from my earlier A-Level tutor project.
-- **During:** the SAT Suite and ACT parsers, the AP parser (24 courses, 1,447 objectives) and Alberta parser; the MCP server, all 10 tools, resources and prompts; saved courses and exam countdown; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
+- **During:** the SAT Suite and ACT parsers, the AP parser (24 courses, 1,447 objectives) and Alberta parser; the MCP server, all 10 tools, resources and prompts; OAuth 2.1 account linking and one-port deployment; saved courses and exam countdown; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
 
 ## Notes on data
 

@@ -7,11 +7,14 @@ per-student SQLite history. None of them call a language model, which keeps
 answers fast enough for voice and impossible to hallucinate: when a tool says
 "excluded", that is a quote from the official document.
 
-Who is asking: the caller identifies the student with an ``X-Syllabuddy-Student``
-header (the simulated Alexa+ app sends a per-browser id). A real Alexa+
-deployment would use the subject of the OAuth access token from account
-linking instead; ``student_id`` below already prefers a bearer token when one
-is present.
+Who is asking:
+
+* Locally (no ``SYLLABUDDY_PUBLIC_URL``), the caller names the student in an
+  ``X-Syllabuddy-Student`` header, as the simulated Alexa+ app does.
+* Deployed (``SYLLABUDDY_PUBLIC_URL`` set), Syllabuddy is also an OAuth 2.1
+  authorization server (``accounts.py``): Alexa+ account linking, Claude or
+  any MCP client signs the student in with PKCE, and the token's subject keys
+  their history. The first-party web app presents ``SYLLABUDDY_APP_TOKEN``.
 """
 
 from __future__ import annotations
@@ -24,8 +27,12 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from mcp.server.auth.middleware.auth_context import get_access_token
+from mcp.server.auth.settings import AuthSettings, ClientRegistrationOptions, RevocationOptions
 from mcp.server.mcpserver import Context, MCPServer
 from mcp_types import ToolAnnotations
+
+from mcp_server.accounts import APP_CLIENT_ID, SCOPE, SyllabuddyOAuthProvider
 
 from syllabus_core.progress import ProgressStore
 from syllabus_core.service import ROOT, SyllabusService
@@ -49,8 +56,31 @@ student can check it. Never guess about what is examinable: if a tool says
 READ_ONLY = ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False)
 RECORDS = ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)
 
+# Hugging Face Spaces sets SPACE_HOST (you-syllabuddy.hf.space), so a Space needs no extra setting.
+PUBLIC_URL = (os.environ.get("SYLLABUDDY_PUBLIC_URL")
+              or (f"https://{os.environ['SPACE_HOST']}" if os.environ.get("SPACE_HOST") else "")).rstrip("/")
+DB_PATH = os.environ.get("SYLLABUDDY_DB", str(ROOT / "data" / "progress.db"))
+
+# Account linking only where it can work: a public HTTPS address that OAuth
+# redirects can come back to. Locally the server stays open, keyed by header.
+accounts: SyllabuddyOAuthProvider | None = None
+_auth: AuthSettings | None = None
+if PUBLIC_URL:
+    accounts = SyllabuddyOAuthProvider(DB_PATH, PUBLIC_URL, os.environ.get("SYLLABUDDY_APP_TOKEN"))
+    _auth = AuthSettings(
+        issuer_url=PUBLIC_URL, resource_server_url=f"{PUBLIC_URL}/mcp", validate_token_resource=False,
+        service_documentation_url=f"{PUBLIC_URL}/",
+        client_registration_options=ClientRegistrationOptions(enabled=True, valid_scopes=[SCOPE], default_scopes=[SCOPE]),
+        revocation_options=RevocationOptions(enabled=True), required_scopes=[SCOPE])
+
 mcp = MCPServer(name="Syllabuddy", title="Syllabuddy: exam syllabus assistant",
-                instructions=INSTRUCTIONS, version="1.0.0")
+                instructions=INSTRUCTIONS, version="1.0.0", website_url=PUBLIC_URL or None,
+                auth_server_provider=accounts, auth=_auth)
+
+if accounts is not None:
+    @mcp.custom_route("/link", methods=["GET", "POST"])
+    async def link_account(request):
+        return await accounts.sign_in_page(request)
 
 _service: SyllabusService | None = None
 _progress: ProgressStore | None = None
@@ -69,12 +99,19 @@ def progress() -> ProgressStore:
     global _progress
     with _lock:
         if _progress is None:
-            _progress = ProgressStore(os.environ.get("SYLLABUDDY_DB", ROOT / "data" / "progress.db"))
+            _progress = ProgressStore(DB_PATH)
         return _progress
 
 
 def student_id(ctx: Context | None) -> str:
     headers = {k.lower(): v for k, v in ((ctx.headers or {}) if ctx is not None else {}).items()}
+    token = get_access_token()
+    if token is not None:
+        if token.subject:                     # a linked account: same history on every device
+            return token.subject
+        if token.client_id == APP_CLIENT_ID:  # the first-party web app names its browser's student
+            sid = headers.get("x-syllabuddy-student", "").strip()
+            return f"web:{sid[:60]}" if sid else "anonymous"
     auth = headers.get("authorization", "")
     if auth.lower().startswith("bearer "):
         # Never store the token itself; a stable hash is enough to key history.
@@ -399,6 +436,8 @@ def clear_my_history(confirm: bool = False, ctx: Context | None = None) -> dict[
                 "say": "Wait for the student to answer before deleting."}
     _pending_deletes.pop(sid, None)
     progress().clear(sid)
+    if accounts is not None and sid.startswith("user:"):
+        accounts.forget_account(sid[5:])  # the linked account itself goes too; linking again starts fresh
     return {"deleted": True, "stats": progress().stats(sid)}
 
 

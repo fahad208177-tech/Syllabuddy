@@ -1,5 +1,9 @@
 # Devpost: About the project (paste into the story field)
 
+**Built With** (paste into the Built With field): `alexa-plus`, `model-context-protocol`, `mcp-python-sdk`, `streamable-http`, `oauth2`, `agent-skills`, `python`, `starlette`, `uvicorn`, `sqlite`, `fastembed`, `onnx`, `pymupdf`, `groq`, `hugging-face-spaces` (only once it's deployed), `javascript`, `web-speech-api`
+
+---
+
 ## Inspiration
 
 Every student I know asks the same question at least once a week: *"Is this even in the syllabus?"*
@@ -8,9 +12,11 @@ When I'm revising for my A Levels, I can get a chatbot to explain almost anythin
 
 I'd already built a tutor that parses the official syllabus. The Alexa+ track made me realise the most useful part wasn't the explanations; it was the facts. Students shouldn't have to dig through PDFs to ask a quick question. They should just be able to ask.
 
+**Who it's for.** In the US class of 2025, more than 2 million students took the SAT, 1,380,130 took the ACT, and 1,307,781 public-school graduates took more than 4.8 million AP exams (College Board and ACT annual reports). Each has an official syllabus that settles what's tested; almost none of them read it.
+
 ## What it does
 
-Syllabuddy is an MCP server that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers the digital SAT and PSAT, the ACT, 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,883 learning objectives across 47 subjects.
+Syllabuddy is an **Alexa+ add-on**: an **MCP server** (Streamable HTTP, with OAuth 2.1 account linking and an Agent Skill) that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers the digital SAT and PSAT, the ACT, 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,883 learning objectives across 47 subjects.
 
 > "Is the ratio test on the AP Calculus AB exam?"
 >
@@ -47,7 +53,7 @@ $$
 
 and only inside its own topic.
 
-**The MCP server.** Ten tools, three resources (`syllabus://objective/{id}` and friends) and two prompts (a revision plan, "is it on my exam?") built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
+**The MCP server.** Ten tools, three resources (`syllabus://objective/{id}` and friends) and two prompts (a revision plan, "is it on my exam?") built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). It is also its own OAuth 2.1 authorization server, the way Alexa+ account linking works: a client registers itself, the student signs in once with a username and PIN, and the same revision list follows them from Alexa+ to the web app to Claude. The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
 
 **The simulated Alexa+.** A web app with voice in and voice out. Behind it, an agent connects to the MCP server as a real MCP client, hands the tool list to a model, runs the tool calls, and speaks a short answer while the screen shows the syllabus card. The model is swappable: any OpenAI-compatible API (I used Groq), Amazon Bedrock's Converse API (implemented, but not run live), or an offline mode that needs no keys at all. If the model is slow or rate-limited, the turn is answered straight from the syllabus instead of failing. There's also an Agent Skill that teaches any agent how to use the tools.
 
@@ -84,6 +90,6 @@ and only inside its own topic.
 
 ## What's next
 
-- Deploy the server and add OAuth account linking to publish a real Alexa+ add-on.
+- Publish it as a real Alexa+ add-on. The server, OAuth account linking and manifest are ready; it needs Amazon's allow-listed Alexa AI CLI.
 - More exams: GED and CLEP next, then Alberta Biology 30 and Mathematics 30-1 and other provinces.
 - Quizzes drawn from past papers for each objective.

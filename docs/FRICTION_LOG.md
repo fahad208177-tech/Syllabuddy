@@ -54,3 +54,21 @@ Edit these into your own words before submitting.
 | **Actual** | `pip install mcp` installed 2.3.0, where `mcp.server.fastmcp.FastMCP` is now `mcp.server.mcpserver.MCPServer`. Most examples online (and in AI assistants' training data) use the v1 API. The SDK does raise a helpful error pointing at the migration guide. |
 | **Severity** | Low |
 | **Suggestion** | Amazon's MCP Toolkit samples could pin an SDK version or show v2 code |
+
+## 6. Account linking: no Alexa+ reference for MCP OAuth
+
+| | |
+|---|---|
+| **Task** | Add OAuth 2.1 account linking so a student's history follows them into Alexa+ |
+| **Actual** | The MCP Python SDK ships a full authorization server (metadata, dynamic client registration, PKCE, token rotation), so the server side took a day. What I couldn't find was how Alexa+ itself behaves as the OAuth client: whether it uses dynamic client registration or a pre-registered client, which redirect URIs to allow, and what `addon.json` needs to declare it. I built to the MCP spec (discovery from the 401 on `/mcp`, then DCR and PKCE) and tested it end to end with a scripted client and a second device, but I couldn't confirm it against Alexa+. |
+| **Severity** | Medium |
+| **Suggestion** | Document Alexa+'s account-linking flow for MCP add-ons (DCR or static client, redirect URIs, required scopes) and the manifest fields, ideally with a sample authorization server |
+
+## 7. MCP SDK auth settings warn on the recommended setup
+
+| | |
+|---|---|
+| **Task** | Turn on auth in `MCPServer` with `AuthSettings(resource_server_url=...)` |
+| **Actual** | Leaving `validate_token_resource` unset logs a deprecation warning saying the default changes in 3.0, so every new server has to make a decision the quick-start examples don't mention |
+| **Severity** | Low |
+| **Suggestion** | Set it in the examples, and explain when a self-issued token should carry the RFC 8707 resource |

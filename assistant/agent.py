@@ -32,12 +32,15 @@ from mcp.client.streamable_http import streamable_http_client
 from mcp.shared._httpx_utils import create_mcp_http_client
 
 MCP_URL = os.environ.get("SYLLABUDDY_MCP_URL", "http://127.0.0.1:8765/mcp")
+APP_TOKEN = os.environ.get("SYLLABUDDY_APP_TOKEN", "")
 MAX_TOOL_ROUNDS = 4
 MAX_RETRY_WAIT = float(os.environ.get("SYLLABUDDY_MAX_RETRY_WAIT", "12"))
 # A voice turn must never hang: one slow model call times out, and a whole turn
 # that runs long finishes from the syllabus via the fallback brain.
 MODEL_TIMEOUT = float(os.environ.get("SYLLABUDDY_MODEL_TIMEOUT", "20"))
 TURN_DEADLINE = float(os.environ.get("SYLLABUDDY_TURN_DEADLINE", "40"))
+# Grace for one syllabus lookup past the deadline (lookups normally take milliseconds).
+TOOL_TIMEOUT = float(os.environ.get("SYLLABUDDY_TOOL_TIMEOUT", "15"))
 MAX_HISTORY = 12
 
 SYSTEM_PROMPT = """\
@@ -204,6 +207,7 @@ class OfflineBrain:
 
     name = "offline"
     QUIZ = re.compile(r"\b(quiz|test me|ask me)\b", re.I)
+    EXAM_CONTEXT = re.compile(r"\b(on|in|for|from)\s+(the|my)?\s*$", re.I)
     COURSES = re.compile(r"\b(i'?m|i am)\s+(taking|doing|studying|sitting)\b|\bmy (courses|subjects|exams?) (are|is)\b", re.I)
     DATE = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})\b", re.I)
     # Singapore "9758.3.3" or AP "CALCAB-10.8" / "CSP-3.11" / "CALCAB-BC"
@@ -234,7 +238,11 @@ class OfflineBrain:
         if last["role"] == "tool":
             return BrainReply(text=self._speak(last["name"], _as_json(last["content"])))
         text = last["content"]
-        subject_match = self.SUBJECT.search(text)
+        # "Is calculus on the SAT?" names two subjects: the exam is the one after
+        # "on/in/for the", the other is the topic being asked about.
+        matches = list(self.SUBJECT.finditer(text))
+        subject_match = next((m for m in matches if self.EXAM_CONTEXT.search(text[:m.start()])),
+                             matches[0] if matches else None)
         subject = subject_match.group(1) if subject_match else None
         call_id = uuid.uuid4().hex[:12]
         if self.pending_quiz is not None:
@@ -258,9 +266,10 @@ class OfflineBrain:
             return BrainReply(tool_calls=[ToolCall(call_id, "my_revision_list", {})])
         # Strip the question framing and the subject, twice: removing "AP Calculus AB"
         # from "on the AP Calculus AB exam" leaves "on the exam" to remove next.
-        topic = re.sub(r"\s+", " ", self.SUBJECT.sub(" ", self.FILLER.sub(" ", text)))
+        without_subject = text[:subject_match.start()] + " " + text[subject_match.end():] if subject_match else text
+        topic = re.sub(r"\s+", " ", self.FILLER.sub(" ", without_subject))
         topic = re.sub(r"\s+", " ", self.FILLER.sub(" ", topic)).strip(" ,")
-        topic = re.sub(r"^(the|a|an)\s+|\s+(for|in|on|of|the)$", "", topic, flags=re.I).strip() or text
+        topic = re.sub(r"^(the|a|an)\s+|(\s+(for|in|on|of|the|my))+$", "", topic, flags=re.I).strip() or text
         args = {"subject": subject} if subject else {}
         if self.EXAMINABLE.search(text):
             return BrainReply(tool_calls=[ToolCall(call_id, "check_examinable", {"topic": topic, **args})])
@@ -381,7 +390,10 @@ class Assistant:
         self.fallback = OfflineBrain()
 
     async def _connect(self, stack: AsyncExitStack, student: str) -> Client:
-        http = await stack.enter_async_context(create_mcp_http_client(headers={"X-Syllabuddy-Student": student}))
+        headers = {"X-Syllabuddy-Student": student}
+        if APP_TOKEN:  # deployed with account linking: the web app is a first-party client
+            headers["Authorization"] = f"Bearer {APP_TOKEN}"
+        http = await stack.enter_async_context(create_mcp_http_client(headers=headers))
         return await stack.enter_async_context(Client(streamable_http_client(self.mcp_url, http_client=http)))
 
     @staticmethod
@@ -405,8 +417,8 @@ class Assistant:
 
         async with AsyncExitStack() as stack:
             try:
-                client = await self._connect(stack, student)
-                tools = self._tool_specs(await client.list_tools())
+                client = await asyncio.wait_for(self._connect(stack, student), timeout=TOOL_TIMEOUT)
+                tools = self._tool_specs(await asyncio.wait_for(client.list_tools(), timeout=TOOL_TIMEOUT))
             except Exception as error:  # noqa: BLE001 - surfaced to the user, not swallowed
                 yield {"type": "error", "message": f"Couldn't reach the Syllabuddy MCP server at {self.mcp_url} ({error})."}
                 return
@@ -445,9 +457,13 @@ class Assistant:
                 for call in reply.tool_calls:
                     yield {"type": "tool_call", "name": call.name, "arguments": call.arguments}
                     t0 = time.perf_counter()
+                    # A starved server must not stretch a voice turn without limit either.
+                    budget = max(TURN_DEADLINE - (time.perf_counter() - started), 0) + TOOL_TIMEOUT
                     try:
-                        result = await client.call_tool(call.name, call.arguments)
+                        result = await asyncio.wait_for(client.call_tool(call.name, call.arguments), timeout=budget)
                         data = _result_data(result)
+                    except TimeoutError:
+                        data = {"error": "Syllabuddy took too long to look that up. Please ask again."}
                     except Exception as error:  # noqa: BLE001
                         data = {"error": str(error)}
                     yield {"type": "tool_result", "name": call.name, "result": data,
