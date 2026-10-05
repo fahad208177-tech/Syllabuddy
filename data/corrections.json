@@ -5,8 +5,8 @@
       "lo_id": "8865.1.1",
       "page": "H1Math.pdf p.5",
       "field": "exclude",
-      "from": "use of notation f : x \uf061 x^2 + 5",
-      "to": "use of notation f : x \u21a6 x\u00b2 + 5"
+      "from": "use of notation f : x  x^2 + 5",
+      "to": "use of notation f : x ↦ x² + 5"
     },
     {
       "lo_id": "8865.1.1",
@@ -27,21 +27,91 @@
       "page": "H1Math.pdf p.6",
       "field": "exclude",
       "from": "use of = dx_d^d_y^x",
-      "to": "use of dy/dx = 1 \u00f7 (dx/dy)"
+      "to": "use of dy/dx = 1 ÷ (dx/dy)"
     },
     {
       "lo_id": "8865.2.1",
       "page": "H1Math.pdf p.6",
       "field": "exclude",
-      "from": "problems connecting the graph of y\u2009=\u2009f(x) to the graph of y = f \u2032 ( x ) Topics/Sub-topics Content",
-      "to": "problems connecting the graph of y = f(x) to the graph of y = f\u2032(x)"
+      "from": "problems connecting the graph of y = f(x) to the graph of y = f ′ ( x ) Topics/Sub-topics Content",
+      "to": "problems connecting the graph of y = f(x) to the graph of y = f′(x)"
     },
     {
       "lo_id": "9758.3.2",
       "page": "H2math.pdf p.8",
       "field": "exclude",
-      "from": "triple products a \u22c5\u00d7b c and a \u00d7 b \u00d7 c .",
-      "to": "triple products a \u00b7 b \u00d7 c and a \u00d7 b \u00d7 c"
+      "from": "triple products a ⋅×b c and a × b × c .",
+      "to": "triple products a · b × c and a × b × c"
+    },
+    {
+      "lo_id": "PRECALC-4.1",
+      "page": "AP Precalculus CED p.116, 4.1.A.2",
+      "field": "include",
+      "from": "Because variables x and y are dependent on the independent variable, t, the coordinates (x y i i , ) at time written as functions of and can be expressed as the single parametric function f ( )t x = ( ( )t y , ( )t ), where in this case x and y are names of two functions.",
+      "to": "Because variables x and y are dependent on the independent variable, t, the coordinates (xᵢ, yᵢ) at time tᵢ can be written as functions of t and can be expressed as the single parametric function f(t) = (x(t), y(t)), where in this case x and y are names of two functions."
+    },
+    {
+      "lo_id": "PRECALC-4.1",
+      "page": "AP Precalculus CED p.116, 4.1.A.3",
+      "field": "include",
+      "from": "A numerical table of values can be generated for the parametric function f ( )t x = ( ( )t y , ( )t ) by evaluating several values of ti within the domain.",
+      "to": "A numerical table of values can be generated for the parametric function f(t) = (x(t), y(t)) by evaluating xᵢ and yᵢ at several values of tᵢ within the domain."
+    },
+    {
+      "lo_id": "PRECALC-4.2",
+      "page": "AP Precalculus CED p.117, 4.2.A.1",
+      "field": "include",
+      "from": "A parametric function given by f ( )t x + ( ( )t y , ( )t ) can be used to model particle motion in the plane. The graph of this function indicates the position of a particle at time t.",
+      "to": "A parametric function given by f(t) = (x(t), y(t)) can be used to model particle motion in the plane. The graph of this function indicates the position of a particle at time t."
+    },
+    {
+      "lo_id": "PRECALC-4.7",
+      "page": "AP Precalculus CED p.122, 4.7.B.1",
+      "field": "include",
+      "from": "A parabola can be parametrized in the same way that any equation that can be solved for x or y can be parametrized. Equations that can be solved for x can be parametrized as ( ) x t( ), , y t( ) = ( f t( ) t) by solving for x and replacing y with t. Equations that can be solved for y can be parametrized as ( ) x t( ), , y t( ) = ( ) t f ( )t by solving for y and replacing x with t.",
+      "to": "A parabola can be parametrized in the same way that any equation that can be solved for x or y can be parametrized. Equations that can be solved for x can be parametrized as (x(t), y(t)) = (f(t), t) by solving for x and replacing y with t. Equations that can be solved for y can be parametrized as (x(t), y(t)) = (t, f(t)) by solving for y and replacing x with t."
+    },
+    {
+      "lo_id": "PRECALC-4.8",
+      "page": "AP Precalculus CED p.124, 4.8.B.3",
+      "field": "include",
+      "from": "The dot product of two vectors is the sum of the products of their corresponding components. That is, a b 1 1 , , . = a b 2 2 a a + 1 2 b b 1 2 .",
+      "to": "The dot product of two vectors is the sum of the products of their corresponding components. That is, ⟨a₁, b₁⟩ · ⟨a₂, b₂⟩ = a₁a₂ + b₁b₂."
+    },
+    {
+      "lo_id": "PRECALC-4.9",
+      "page": "AP Precalculus CED p.125, 4.9.A.1",
+      "field": "include",
+      "from": "The position of a particle moving in a plane that is given by the parametric function   i y + ( )t j or p t( ) = x t( ), y t( ) . The magnitude of the position vector at time t gives the distance of the particle from the origin.",
+      "to": "The position of a particle moving in a plane that is given by the parametric function f(t) = (x(t), y(t)) may be expressed as a vector-valued function, p(t) = x(t)i + y(t)j or p(t) = ⟨x(t), y(t)⟩. The magnitude of the position vector at time t gives the distance of the particle from the origin."
+    },
+    {
+      "lo_id": "PHYSCE-13.6",
+      "page": "AP Physics C: E&M CED p.116, 13.6.A.2",
+      "field": "include",
+      "from": "In LC circuits, the time dependence of the charge stored in the capacitor can be modeled as simple harmonic motion. Derived equation: d q 2 1 q dt 2 =−LC",
+      "to": "In LC circuits, the time dependence of the charge stored in the capacitor can be modeled as simple harmonic motion. Derived equation: d²q/dt² = −q/(LC)"
+    },
+    {
+      "lo_id": "PHYS30-C1",
+      "page": "physics20-30.pdf p.55, 30–C1.11k",
+      "field": "include",
+      "from": "describe, qualitatively and quantitatively, how refraction supports the wave model of EMR, using 1 2 1 1 2 1 2 2 sin sin n v n v θ λ θ λ = = =",
+      "to": "describe, qualitatively and quantitatively, how refraction supports the wave model of EMR, using sin θ₁ / sin θ₂ = n₂ / n₁ = v₁ / v₂ = λ₁ / λ₂"
+    },
+    {
+      "lo_id": "PRECALC-4.3",
+      "page": "AP Precalculus CED p.118, 4.3.B",
+      "field": "include",
+      "from": "Over a given interval [t t 1 2 , ] within the domain, the average rate of change can be computed for x t( and ) y t( ) independently. The ratio of the average rate of change of y to the average rate of change of x gives the slope of the graph between the points on the curve corresponding to t1 and t2, so long as the average rate of change of x t ≠0 ( ) .",
+      "to": "Over a given interval [t₁, t₂] within the domain, the average rate of change can be computed for x(t) and y(t) independently. The ratio of the average rate of change of y to the average rate of change of x gives the slope of the graph between the points on the curve corresponding to t₁ and t₂, so long as the average rate of change of x(t) ≠ 0."
+    },
+    {
+      "lo_id": "PRECALC-4.4",
+      "page": "AP Precalculus CED p.119, 4.4.B",
+      "field": "include",
+      "from": "A linear path along the line segment from the point (x y 1 1 , ) to the point ( ) x y 2 2 , can be parametrized many ways, including using an initial position (x y 1 1 , ) and rates of change for x with respect to t and y with respect to t.",
+      "to": "A linear path along the line segment from the point (x₁, y₁) to the point (x₂, y₂) can be parametrized many ways, including using an initial position (x₁, y₁) and rates of change for x with respect to t and y with respect to t."
     }
   ]
 }

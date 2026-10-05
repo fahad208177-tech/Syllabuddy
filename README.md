@@ -163,8 +163,8 @@ Subjects can be named loosely: "SAT", "SAT math", "PSAT 8/9", "ACT", "ACT scienc
 ## Tests
 
 ```bash
-pytest -q                         # 131 tests: AP, Alberta and A-Level answers, student paraphrases, MCP over HTTP, agent loop, fallbacks, web API
-python scripts/eval_all.py        # tests every one of the 2,381 objectives (writes artifacts/eval_report.md)
+pytest -q                         # 182 tests: SAT, ACT, AP, Alberta and A-Level answers, paraphrases, MCP over HTTP, account linking, agent loop, fallbacks, web API
+python scripts/eval_all.py        # tests every one of the 2,883 objectives (writes artifacts/eval_report.md)
 python scripts/eval_examinable.py # Singapore A-Level only: every Excluded bullet and objective title (942 cases)
 python scripts/eval_examinable.py --paraphrases   # 25 student-style phrasings
 python scripts/live_check.py "Is type II error examinable in H2 maths?"     # against the running app
@@ -173,7 +173,9 @@ python scripts/record_demo.py     # records the demo script as artifacts/demo_ca
 python scripts/check_bedrock.py   # optional: verifies AWS credentials and a real Bedrock tool call
 ```
 
-**Every objective, every exam** (`scripts/eval_all.py`, 2,381 objectives, about 9 minutes): data quality 100% (no PDF debris, empty or duplicate objectives), every objective's title comes back `examinable` (2,265/2,266; "Rivals on the World Stage" is too abstract and returns `unclear`), every exclusion statement comes back `excluded` (131/131), and each objective's own first requirement finds it in the top 3 for 99% (93% first). Most top-3 misses are AP Calculus topics that share identical learning objectives (topics 10.1 to 10.8 all say "Determine whether a series converges or diverges").
+**Every objective, every exam** (`scripts/eval_all.py`, 2,883 objectives in 47 subjects, about 10 to 15 minutes): data quality 100% (no PDF debris, scattered formulas, empty or duplicate objectives), every objective's title comes back `examinable` (2,754/2,754), every exclusion statement comes back `excluded` (164/164), and each objective's own first requirement finds it in the top 3 for 99% (94% first). Most top-3 misses are AP Calculus topics that share identical learning objectives (topics 10.1 to 10.8 all say "Determine whether a series converges or diverges").
+
+**Known limitation.** The AP Precalculus PDF lays out formulas as positioned glyphs, and its text layer scatters them ("x t( )" for x(t), sum identities out of order). 10 such statements across AP Precalculus, AP Physics C and Alberta Physics 30 are corrected by hand in `data/corrections.json` (with 6 earlier A-Level fixes), each checked against its PDF page; about 35 more, mostly in AP Precalculus, still read oddly in the formula part. The words around them are intact, so search and verdicts work, but the formula text on the card is garbled.
 
 **Singapore A-Level detail.** On the full syllabus, 36/36 Excluded bullets come back `excluded` and 906/906 objective titles come back `examinable`. Two bullets ("hypothesis tests", excluded only from correlation) are skipped as ambiguous out of context. On 25 student-style paraphrases, such as "implicit differentiation" (excluded in H1, taught in H2) or "doubly linked lists" next to "linked lists", it scores 25/25.
 
