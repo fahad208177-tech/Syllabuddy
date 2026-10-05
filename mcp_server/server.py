@@ -20,6 +20,7 @@ import hashlib
 import os
 import threading
 import time
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -30,8 +31,10 @@ from syllabus_core.progress import ProgressStore
 from syllabus_core.service import ROOT, SyllabusService
 
 INSTRUCTIONS = """\
-Syllabuddy answers questions about official exam syllabuses: the US College Board
-AP courses (Calculus AB/BC, Precalculus, Statistics, Physics 1/2/C, Chemistry,
+Syllabuddy answers questions about official exam syllabuses: the digital SAT and
+PSAT (Math, Reading and Writing; PSAT 8/9 Math has its own, smaller syllabus), the
+ACT (English, Math, Reading, Science; standards grouped by score range), the
+US College Board AP courses (Calculus AB/BC, Precalculus, Statistics, Physics 1/2/C, Chemistry,
 Biology, Environmental Science, Computer Science A and Principles, Psychology,
 Macro/Microeconomics, US and Comparative Government, US/World/European History,
 Human Geography, African American Studies, Music Theory), the Canadian
@@ -39,7 +42,7 @@ Alberta Diploma courses (Physics 30, Chemistry 30) and the Singapore-Cambridge
 GCE A-Level (H1/H2). Use it whenever a student asks whether
 something is in their syllabus or on their exam, which objective a question
 belongs to, what a topic requires, to be quizzed, or what to revise. Always quote
-the objective id (Singapore "9758.3.3", AP "CALCBC-10.8" = topic 10.8) so the
+the objective id (Singapore "9758.3.3", AP "CALCBC-10.8" = topic 10.8, SAT "SATM-4.3", ACT "ACTM-1.705" = standard N 705) so the
 student can check it. Never guess about what is examinable: if a tool says
 'unclear' or 'not_in_syllabus', say so."""
 
@@ -84,11 +87,37 @@ def _error(error: Exception) -> dict[str, Any]:
     return {"error": str(error)}
 
 
+def _subject_or_courses(subject: str | None, ctx: Context | None) -> str | None:
+    """The subject the student named, or else the courses they told us they take."""
+    if subject and subject.strip():
+        return subject
+    ids = progress().courses(student_id(ctx))["subject_ids"]
+    return " ".join(ids) or None
+
+
+def _upcoming(when: date) -> date:
+    """A student saving an exam date means the next one: "May 11" said in October
+    (or a model that assumed the wrong year) is next May, never a past date."""
+    today = date.today()
+    while when < today:
+        try:
+            when = when.replace(year=when.year + 1)
+        except ValueError:  # 29 February
+            when = when.replace(year=when.year + 1, day=28)
+    return when
+
+
+def _days_until(exam_date: str | None) -> int | None:
+    if not exam_date:
+        return None
+    return (date.fromisoformat(exam_date) - date.today()).days
+
+
 # ---- syllabus lookups -----------------------------------------------------------
 
 @mcp.tool(annotations=READ_ONLY)
 def check_examinable(topic: str, subject: str | None = None, ctx: Context | None = None) -> dict[str, Any]:
-    """Check whether a topic is examinable in the student's syllabus (AP or Singapore A-Level).
+    """Check whether a topic is examinable in the student's syllabus (SAT/PSAT, AP, Alberta or Singapore A-Level).
 
     Use for "is X in the syllabus?", "is X on my exam?", "do I need to know X?".
     Returns a verdict: 'excluded' (explicitly listed as not examinable, with the
@@ -101,10 +130,10 @@ def check_examinable(topic: str, subject: str | None = None, ctx: Context | None
 
     Args:
         topic: The topic in the student's words, e.g. "shortest distance between skew lines".
-        subject: Optional subject, as the student says it: "AP Calc AB", "APUSH", "AP Chem", "H2 Maths", "H1 Physics" or a code like "9758" or "CALCAB".
+        subject: Optional subject, as the student says it: "SAT math", "PSAT 8/9", "AP Calc AB", "APUSH", "H2 Maths" or a code like "9758" or "CALCAB". Leave it out to use the student's saved courses.
     """
     try:
-        result = service().check_examinable(topic, subject)
+        result = service().check_examinable(topic, _subject_or_courses(subject, ctx))
     except ValueError as error:
         return _error(error)
     objective = result.get("objective")
@@ -127,7 +156,7 @@ def find_objective(question: str, subject: str | None = None, ctx: Context | Non
         subject: Optional subject, e.g. "AP Physics 1", "AP Statistics" or "H2 Chemistry".
     """
     try:
-        result = service().find_objective(question, subject)
+        result = service().find_objective(question, _subject_or_courses(subject, ctx))
     except ValueError as error:
         return _error(error)
     if result["objectives"] and result["match"] != "weak":
@@ -147,7 +176,7 @@ def get_objective(objective_id: str) -> dict[str, Any]:
 @mcp.tool(annotations=READ_ONLY)
 def list_subjects() -> dict[str, Any]:
     """List the exams, subjects and syllabus codes Syllabuddy has loaded."""
-    return {"exams": ["College Board AP", "Alberta Diploma", "Singapore-Cambridge GCE A-Level"],
+    return {"exams": ["Digital SAT Suite (SAT, PSAT/NMSQT, PSAT 10, PSAT 8/9)", "ACT", "College Board AP", "Alberta Diploma", "Singapore-Cambridge GCE A-Level"],
             "subjects": service().list_subjects()}
 
 
@@ -184,7 +213,7 @@ def start_quiz(subject: str | None = None, objective_id: str | None = None,
             card = svc.get_objective(objective_id)
         else:
             weak = [row["lo_id"] for row in progress().weakest(sid, limit=10)]
-            lo = svc.pick_quiz_objective(subject, avoid=progress().quizzed_ids(sid), prefer=weak)
+            lo = svc.pick_quiz_objective(_subject_or_courses(subject, ctx), avoid=progress().quizzed_ids(sid), prefer=weak)
             card = svc.objective_card(lo)
     except ValueError as error:
         return _error(error)
@@ -223,13 +252,116 @@ def my_revision_list(ctx: Context | None = None) -> dict[str, Any]:
     items = []
     for row in progress().weakest(sid):
         lo = svc.by_id.get(row["lo_id"])
-        if lo is None:
+        if lo is None or not lo.include:  # e.g. a "not assessed on the PSAT 8/9" list: nothing to revise
             continue
         items.append(svc.objective_card(lo, full=False) | {
             "wrong_answers": int(row["wrong"] or 0), "times_asked": int(row["asked"] or 0)})
     stats = progress().stats(sid)
-    return {"revise_first": items, "stats": stats,
-            "note": None if items else "No history yet. Ask some questions or try a quiz first."}
+    result: dict[str, Any] = {"revise_first": items, "stats": stats,
+                              "note": None if items else "No history yet. Ask some questions or try a quiz first."}
+    result |= _coverage(sid)
+    return result
+
+
+def _coverage(sid: str) -> dict[str, Any]:
+    """For saved courses: how much of each syllabus the student has touched, and the countdown."""
+    saved = progress().courses(sid)
+    if not saved["subject_ids"]:
+        return {}
+    svc = service()
+    touched = set(progress().touched_ids(sid))
+    courses = []
+    for subject_id in saved["subject_ids"]:
+        subject = svc.subject_by_id.get(subject_id)
+        if subject is None:
+            continue
+        ids = [lo.lo_id for lo in subject.objectives if lo.include]
+        untouched = [lo for lo in subject.objectives if lo.include and lo.lo_id not in touched]
+        courses.append({"subject": svc.subject_label(subject_id), "objectives": len(ids),
+                        "practised": len(ids) - len(untouched),
+                        "not_started": [svc.objective_card(lo, full=False) for lo in untouched[:3]]})
+    out: dict[str, Any] = {"my_courses": courses}
+    days = _days_until(saved["exam_date"])
+    if days is not None and days >= 0:  # once the exam has passed, stop counting
+        out |= {"exam_date": saved["exam_date"], "days_to_exam": days}
+    return out
+
+
+@mcp.tool(annotations=RECORDS)
+def set_my_courses(courses: list[str], exam_date: str | None = None, ctx: Context | None = None) -> dict[str, Any]:
+    """Remember which exams the student is taking, and optionally the date of their next exam.
+
+    Use when the student says what they are studying ("I'm taking AP Calc BC and
+    the SAT in March"). Afterwards every question without a subject searches
+    only these courses, and my_revision_list reports progress through each
+    syllabus and the days left. Calling again replaces the list.
+
+    Args:
+        courses: Each course as the student says it, e.g. ["AP Calc BC", "SAT"] or ["H2 Maths", "H2 Physics"].
+        exam_date: Optional date of the next exam as YYYY-MM-DD, e.g. "2027-05-11".
+    """
+    svc = service()
+    ids: list[str] = []
+    try:
+        for course in courses:
+            ids += [i for i in svc.resolve_subject(course) if i not in ids]
+        if exam_date:
+            exam_date = _upcoming(date.fromisoformat(exam_date)).isoformat()
+    except ValueError as error:
+        return _error(error)
+    if not ids:
+        return _error(ValueError("Say which courses, for example 'AP Calc BC' or 'SAT'."))
+    sid = student_id(ctx)
+    progress().set_courses(sid, ids, exam_date)
+    return {"saved": True, "courses": [svc.subject_label(i) for i in ids],
+            "exam_date": exam_date, "days_to_exam": _days_until(exam_date)}
+
+
+# ---- resources and prompts --------------------------------------------------------
+# The same syllabus, for MCP clients that browse resources or offer prompt menus.
+
+@mcp.resource("syllabus://subjects", name="subjects", title="Loaded syllabuses",
+              description="Every exam subject Syllabuddy has loaded, with its code.", mime_type="application/json")
+def subjects_resource() -> dict[str, Any]:
+    return {"subjects": service().list_subjects()}
+
+
+@mcp.resource("syllabus://subject/{subject_id}", name="subject", title="A subject's topics",
+              description="The topics and objective ids of one subject, e.g. syllabus://subject/CALCBC.",
+              mime_type="application/json")
+def subject_resource(subject_id: str) -> dict[str, Any]:
+    svc = service()
+    subject = svc.subject_by_id.get(subject_id)
+    if subject is None:
+        raise ValueError(f"No subject with id '{subject_id}'.")
+    return {"subject": svc.subject_label(subject_id), "source": subject.source,
+            "topics": [{"number": t.number, "name": t.name,
+                        "objectives": [{"id": lo.lo_id, "title": lo.title} for lo in t.learning_objectives]}
+                       for t in subject.topics]}
+
+
+@mcp.resource("syllabus://objective/{objective_id}", name="objective", title="A syllabus objective",
+              description="One learning objective: what it requires, what it excludes, and its source page.",
+              mime_type="application/json")
+def objective_resource(objective_id: str) -> dict[str, Any]:
+    return service().get_objective(objective_id)
+
+
+@mcp.prompt(name="revision_plan", title="Make a revision plan")
+def revision_plan(subject: str, days: int = 7) -> str:
+    """A day-by-day revision plan built from the syllabus and the student's own weak spots."""
+    return (f"Make me a {days}-day revision plan for {subject}. First call my_revision_list to see my weak "
+            f"spots and progress, then list_topics for {subject}. Put my weakest objectives first, cover the "
+            "topics I haven't practised, keep each day to two or three objectives, and quote each objective id. "
+            "End each day with one quick quiz question from start_quiz.")
+
+
+@mcp.prompt(name="is_it_on_my_exam", title="Is it on my exam?")
+def is_it_on_my_exam(topic: str, subject: str = "") -> str:
+    """Check a topic against the official syllabus and explain the answer."""
+    where = f" for {subject}" if subject else ""
+    return (f"Is \"{topic}\" on my exam{where}? Call check_examinable and answer in one or two sentences, "
+            "quoting the objective id, and the syllabus wording if it is excluded.")
 
 
 # Deletion is confirmed by the server, not by trusting the model: the first call

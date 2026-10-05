@@ -23,6 +23,7 @@ import time
 import uuid
 from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any, AsyncIterator, Protocol
 
 import httpx
@@ -41,7 +42,8 @@ MAX_HISTORY = 12
 
 SYSTEM_PROMPT = """\
 You are Alexa+, speaking through a smart speaker with a screen. The student has enabled the \
-Syllabuddy add-on, which knows official exam syllabuses: the US College Board AP courses \
+Syllabuddy add-on, which knows official exam syllabuses: the digital SAT and PSAT (Math, Reading and \
+Writing), the ACT (English, Math, Reading, Science, by score range), the US College Board AP courses \
 (Calculus AB/BC, Physics, Chemistry, Biology, Statistics, CS, History, Government, Economics...), \
 the Canadian Alberta Diploma courses (Physics 30, Chemistry 30) and the Singapore-Cambridge A-Level (H1/H2).
 
@@ -59,7 +61,10 @@ wording briefly. If it says "unclear" or "not_in_syllabus", say that honestly.
 - Quizzes: call start_quiz, then ask exactly one short question that can be answered out loud in a sentence or two (never ask for code, a diagram or working on paper), and stop. \
 When the student answers, judge it against syllabus_requires, tell them if they were right with a \
 one-line correction if needed, and call record_quiz_result.
-- "What should I revise?" or "how am I doing?": call my_revision_list.
+- "What should I revise?" or "how am I doing?": call my_revision_list. If it returns days_to_exam, mention the countdown.
+- When the student says which exams they are taking or when their exam is ("I'm doing AP Calc BC and the SAT, \
+my exam is May 11"), call set_my_courses (exam_date as YYYY-MM-DD; assume the next such date). After that you can \
+leave out subject and the tools use their saved courses.
 - If the student doesn't say which exam, ask once, or search all subjects."""
 
 
@@ -199,14 +204,19 @@ class OfflineBrain:
 
     name = "offline"
     QUIZ = re.compile(r"\b(quiz|test me|ask me)\b", re.I)
+    COURSES = re.compile(r"\b(i'?m|i am)\s+(taking|doing|studying|sitting)\b|\bmy (courses|subjects|exams?) (are|is)\b", re.I)
+    DATE = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})\b", re.I)
     # Singapore "9758.3.3" or AP "CALCAB-10.8" / "CSP-3.11" / "CALCAB-BC"
     OBJECTIVE_ID = re.compile(r"\b(?:\d{4}(?:\.[0-9a-z]+)+|[A-Z][A-Z0-9]{1,7}-(?:\d+(?:\.\d+)*|BC))\b")
     REVISE = re.compile(r"\b(revise|revision|weak|how am i doing|struggl)", re.I)
     EXAMINABLE = re.compile(r"\b(syllabus|examinable|on (the|my) ([\w.&:-]+\s+){0,4}exam|tested|assessed|"
-                            r"need to (know|study|learn)|come out|on (apush|the ap\b))", re.I)
+                            r"need to (know|study|learn)|come out|on (apush|the ap\b|(the|my) ((digital )?p?sat|act)\b))", re.I)
     SUBJECT = re.compile(
-        # AP course names first (they are more specific), then the Singapore A-Level subjects.
-        r"\b((?:ap\s+)?(?:calc(?:ulus)?(?:\s*(?:ab|bc))?|precalc(?:ulus)?|stat(?:istic)?s|psych(?:ology)?|"
+        # SAT and AP course names first (they are more specific), then the Singapore A-Level subjects.
+        r"\b((?:digital\s+)?p?sat(?:\s*8\s*/\s*9|\s*10)?(?:\s+(?:math|reading(?:\s+and\s+writing)?|writing))?"
+        # Capitals only, so "the Stamp Act" in a history question isn't the ACT.
+        r"|(?-i:ACT)(?:\s+(?:math|english|reading|science))?"
+        r"|(?:ap\s+)?(?:calc(?:ulus)?(?:\s*(?:ab|bc))?|precalc(?:ulus)?|stat(?:istic)?s|psych(?:ology)?|"
         r"macro(?:economics)?|micro(?:economics)?|apush|(?:us|u\.s\.|world|european)\s+history|"
         r"human\s+geography|physics\s*(?:1|2|c|30)|chem(?:istry)?\s*30|computer\s+science\s*(?:a|principles)|csa|csp|"
         r"environmental\s+science|(?:us|u\.s\.|comparative)\s+government|music\s+theory)"
@@ -233,6 +243,12 @@ class OfflineBrain:
             return BrainReply(tool_calls=[ToolCall(call_id, "record_quiz_result",
                                                    {"objective_id": quiz["objective_id"], "correct": correct})])
         objective = self.OBJECTIVE_ID.search(text)
+        if self.COURSES.search(text) and subject:
+            args = {"courses": [m.group(1) for m in self.SUBJECT.finditer(text)]}
+            when = self.DATE.search(text)
+            if when and _next_date(when.group(1), int(when.group(2))):
+                args["exam_date"] = _next_date(when.group(1), int(when.group(2)))
+            return BrainReply(tool_calls=[ToolCall(call_id, "set_my_courses", args)])
         if self.QUIZ.search(text):
             args = {"objective_id": objective.group(0)} if objective else ({"subject": subject} if subject else {})
             return BrainReply(tool_calls=[ToolCall(call_id, "start_quiz", args)])
@@ -280,12 +296,23 @@ class OfflineBrain:
         if tool == "record_quiz_result":
             s = result.get("stats", {})
             return f"Noted. You've got {s.get('right', 0)} out of {s.get('quizzed', 0)} quiz questions right so far."
+        if tool == "set_my_courses":
+            said = "Got it. I'll check everything against " + _and(result.get("courses") or []) + "."
+            if result.get("days_to_exam") is not None:
+                said += f" Your exam is in {result['days_to_exam']} days."
+            return said
         if tool == "my_revision_list":
             items = result.get("revise_first") or []
+            countdown = f" Your exam is in {result['days_to_exam']} days." if result.get("days_to_exam") is not None else ""
             if not items:
-                return "You don't have any history yet. Ask me some questions or try a quiz first."
+                courses = result.get("my_courses") or []
+                if courses and courses[0]["not_started"]:
+                    o = courses[0]["not_started"][0]
+                    return f"You haven't started {o['objective_id']}, {o['title']}. Want a quiz on it?{countdown}"
+                return "You don't have any history yet. Ask me some questions or try a quiz first." + countdown
             top = items[0]
-            return f"Start with objective {top['objective_id']}, {top['title']}. You've got {len(items)} topics on your list."
+            return (f"Start with objective {top['objective_id']}, {top['title']}. "
+                    f"You've got {len(items)} topics on your list.{countdown}")
         if tool == "get_objective":
             requires = result.get("syllabus_requires") or []
             excluded = result.get("excluded") or []
@@ -298,6 +325,27 @@ class OfflineBrain:
             names = sorted({s["subject"] for s in result.get("subjects", [])})
             return "I know the syllabus for " + ", ".join(names[:-1]) + f" and {names[-1]}."
         return "Done."
+
+
+MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+
+
+def _next_date(month: str, day: int) -> str:
+    """The next occurrence of a spoken date ("May 11") as YYYY-MM-DD, or "" if it isn't a date."""
+    today = date.today()
+    try:
+        when = date(today.year, MONTHS.index(month[:3].lower()) + 1, day)
+        if when < today:
+            when = when.replace(year=today.year + 1)
+    except ValueError:
+        return ""
+    return when.isoformat()
+
+
+def _and(items: list[str]) -> str:
+    if not items:
+        return "your courses"
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + f" and {items[-1]}"
 
 
 def make_brain(choice: str | None = None) -> Brain:
@@ -365,7 +413,9 @@ class Assistant:
 
             brain = self.brain
             for _round in range(MAX_TOOL_ROUNDS + 1):
-                messages = [{"role": "system", "content": SYSTEM_PROMPT}] + _compact(history[-MAX_HISTORY:])
+                # The model can't know today's date, and needs it for "my exam is May 11".
+                system = f"{SYSTEM_PROMPT}\nToday is {date.today():%A %d %B %Y}."
+                messages = [{"role": "system", "content": system}] + _compact(history[-MAX_HISTORY:])
                 if brain is not self.fallback and time.perf_counter() - started > TURN_DEADLINE:
                     yield {"type": "status", "message": "Taking too long, answering from the syllabus directly"}
                     brain = self.fallback

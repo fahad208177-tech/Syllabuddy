@@ -10,7 +10,7 @@ I'd already built a tutor that parses the official syllabus. The Alexa+ track ma
 
 ## What it does
 
-Syllabuddy is an MCP server that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,381 learning objectives across 40 subjects.
+Syllabuddy is an MCP server that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers the digital SAT and PSAT, the ACT, 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,883 learning objectives across 47 subjects.
 
 > "Is the ratio test on the AP Calculus AB exam?"
 >
@@ -18,11 +18,15 @@ Syllabuddy is an MCP server that answers from the official syllabus, plus a simu
 >
 > "What about BC?" / "Yes, it's topic 10.8 of AP Calculus BC, Ratio Test for Convergence."
 
-It tells you whether a topic is examinable, which objective a question belongs to and what that objective requires, quizzes you out loud, and remembers which objectives *you* keep getting wrong, so "what should I revise first?" has a real answer. Alexa+ remembers your shoe size; Syllabuddy remembers your weak spots.
+> "Are circles on the PSAT 8/9?"
+>
+> "No. Circles are on the SAT and PSAT/NMSQT, but the PSAT 8/9 leaves them out."
+
+It tells you whether a topic is examinable, which objective a question belongs to and what that objective requires, and quizzes you out loud. Say "I'm taking AP Calc BC and the SAT, my exam is May 11" once, and every later question is checked against those two syllabuses. It remembers which objectives *you* keep getting wrong and how much of each syllabus you've practised, so "what should I revise first?" comes back with your weak spots and the days left. Alexa+ remembers your shoe size; Syllabuddy remembers your exams.
 
 ## How I built it
 
-**The syllabus, without an LLM.** The syllabus is the one thing that must never be hallucinated, so it's parsed deterministically from the official documents: the College Board's AP Course and Exam Descriptions, Alberta Education's Programs of Study and the SEAB A-Level syllabuses. Each objective keeps its code, what's included, what's excluded, and the source page. One parser reads every AP course, because the College Board uses the same page layout everywhere.
+**The syllabus, without an LLM.** The syllabus is the one thing that must never be hallucinated, so it's parsed deterministically from the official documents: the College Board's SAT Suite assessment framework and AP Course and Exam Descriptions, ACT's College and Career Readiness Standards, Alberta Education's Programs of Study and the SEAB A-Level syllabuses. Each objective keeps its code, what's included, what's excluded, and the source page. One parser reads every AP course, because the College Board uses the same page layout everywhere.
 
 **Matching questions.** A hybrid search (BM25 plus `bge-small` embeddings, fused with Reciprocal Rank Fusion) finds the closest objective. The best cosine similarity $c$ acts as a confidence score, calibrated on real questions:
 
@@ -43,7 +47,7 @@ $$
 
 and only inside its own topic.
 
-**The MCP server.** Nine tools built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
+**The MCP server.** Ten tools, three resources (`syllabus://objective/{id}` and friends) and two prompts (a revision plan, "is it on my exam?") built on the official MCP Python SDK, over Streamable HTTP (spec 2025-11-25). The tools never call a model, so once warm they answer in 14 to 300 ms, inside Alexa+'s 500 ms budget even on my 2-core laptop. Each request carries a student id, which on real Alexa+ would come from account linking.
 
 **The simulated Alexa+.** A web app with voice in and voice out. Behind it, an agent connects to the MCP server as a real MCP client, hands the tool list to a model, runs the tool calls, and speaks a short answer while the screen shows the syllabus card. The model is swappable: any OpenAI-compatible API (I used Groq), Amazon Bedrock's Converse API (implemented, but not run live), or an offline mode that needs no keys at all. If the model is slow or rate-limited, the turn is answered straight from the syllabus instead of failing. There's also an Agent Skill that teaches any agent how to use the tools.
 
@@ -63,9 +67,11 @@ and only inside its own topic.
 
 **Three kinds of AP codes, and one course with no topic headers.** Calculus uses `LIM-1.A`, the newer sciences use `1.1.A`, and the history courses use "Unit 4: Learning Objective H" with `KC-4.1.IV.C` codes. CS Principles prints no topic headers at all, only an at-a-glance table, so its objectives are regrouped from that table.
 
-**Hidden text.** Formula images carry accessibility text spelled in fragments ("O p en b rac k et R eq u a l s..."), and one PDF uses a control character instead of spaces. Checking every one of the 2,381 objectives for debris is what found these.
+**Hidden text.** Formula images carry accessibility text spelled in fragments ("O p en b rac k et R eq u a l s..."), and one PDF uses a control character instead of spaces. Checking every one of the 2,883 objectives for debris is what found these.
 
 **"BC only" is a real exclusion.** The Calculus document marks content "bc only", so for AP Calculus AB those topics are excluded; that's the most useful answer an AB student can get.
+
+**One table, three exams.** The SAT framework lists every math skill in a table with three description columns: SAT, PSAT/NMSQT and PSAT 8/9. Text extraction merged the columns on shared baselines, the column positions change from page to page, and bullets nest two levels deep. The parser now works span by span, finds each page's column edges from its most common left margins, rebuilds bullets from indentation, and then compares the SAT and PSAT 8/9 columns bullet by bullet. Whatever the PSAT 8/9 drops (circles, margin of error, trig ratios) becomes a PSAT 8/9 exclusion.
 
 **A live bug: Big-O.** Testing by voice, "Is Big-O notation on AP CS Principles?" came back examinable, though the document says formal Big-O analysis is out of scope. The words didn't match ("notation" isn't in the exclusion, and "big" also appears in "big data"). Now a distinctive term that a subject mentions only in an exclusion decides the answer.
 
@@ -79,5 +85,5 @@ and only inside its own topic.
 ## What's next
 
 - Deploy the server and add OAuth account linking to publish a real Alexa+ add-on.
-- More exams: Alberta Biology 30 and Mathematics 30-1, Cambridge International A Levels, and other provinces.
+- More exams: GED and CLEP next, then Alberta Biology 30 and Mathematics 30-1 and other provinces.
 - Quizzes drawn from past papers for each objective.

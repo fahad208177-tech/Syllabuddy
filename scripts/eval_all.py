@@ -33,7 +33,7 @@ from syllabus_core.service import SyllabusService, _content_words  # noqa: E402
 # and only the footer "Return to Table of Contents" is debris, not the word "return".
 DEBRIS = re.compile(r"Topics/Sub-topics|Course Framework|Return to (?:Table of )?Contents|RetuRn|©|\x03|\x07"
                     r"|\bbc\s+only\b|\b(?:[A-Za-z] ){4,}|SUGGESTED SKILLS|ESSENTIAL KNOWLEDGE|LEARNING OBJECTIVE"
-                    r"|Course and Exam Description")
+                    r"|Course and Exam Description|continued on (?:the )?next page|Content \(continued\)")
 REPORT = ROOT / "artifacts" / "eval_report.md"
 
 

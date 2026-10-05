@@ -90,7 +90,7 @@ FOOTER = re.compile(r"\d+\s*\|\s*Course Framework\s*V\.\d+"
                     r"|(?:AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description\s*)?Course Framework\s*V\.\d+\s*\|\s*\d*"
                     r"(?:\s*AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description)?"
                     r"|AP [A-Z][\w:&,. -]{0,60}?Course and Exam Description"
-                    r"|Return to (?:Table of )?Contents|©\s*\d{4}\s*College Board", re.I)
+                    r"|Return to (?:Table of )?Contents|©\s*\d{4}\s*College Board|continued on (?:the )?next page", re.I)
 # Equation images carry accessibility text spelled in fragments ("O p en b rac k et R eq u a l s ...").
 # The equation itself is an image the student sees in the CED, so its alt text is dropped.
 EQUATION_ALT = re.compile(r"\bRELEVANT EQUATIONS?\b.*$", re.S)

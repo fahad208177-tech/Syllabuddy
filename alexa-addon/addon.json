@@ -10,12 +10,12 @@
         "name": {
           "value": "Syllabuddy"
         },
-        "shortDescription": "Ask what's on your A-Level exam. Answers come from the official syllabus, with the objective code.",
-        "fullDescription": "Syllabuddy answers the question every A-Level student asks: is this even in the syllabus? It checks the official Singapore-Cambridge syllabus (916 learning objectives across Physics, Chemistry, Biology, Mathematics, Computing, Economics, Geography and History) and tells you whether a topic is examinable, explicitly excluded, or not covered, quoting the syllabus wording and objective code. It can also quiz you out loud and remember which objectives you keep getting wrong, so 'what should I revise first?' has a real answer.",
+        "shortDescription": "Ask what's on your SAT, ACT, AP or diploma exam. Answers come from the official syllabus, with the objective code.",
+        "fullDescription": "Syllabuddy answers the question every student asks: is this even on my exam? It checks the official syllabus (2,883 learning objectives: the digital SAT and PSAT, the ACT, 24 AP courses, the Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level) and tells you whether a topic is examinable, explicitly excluded, or not covered, quoting the syllabus wording and objective code. Tell it which exams you're taking and when, and it checks every question against those syllabuses, quizzes you out loud, remembers which objectives you keep getting wrong, and counts down to exam day, so 'what should I revise first?' has a real answer.",
         "examplePhrases": [
-          "Ask Syllabuddy if the shortest distance between skew lines is on the H2 Maths exam",
-          "Do I need to know Type II error for H2 Maths?",
-          "Quiz me on H2 Physics",
+          "Ask Syllabuddy if the ratio test is on the AP Calculus AB exam",
+          "Are circles on the PSAT 8/9?",
+          "I'm taking AP Calc BC and the SAT, my exam is May 11",
           "What should I revise first?"
         ],
         "privacyAndCompliance": {

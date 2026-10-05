@@ -14,9 +14,10 @@ the first answer isn't slow.
 | 0:35–0:50 | Follow-up: "What about BC?" | Examinable, topic 10.8, Ratio Test for Convergence. "It knows AB from BC." |
 | 0:50–1:05 | "Do I need the epsilon-delta definition of a limit?" | Excluded, quoting the CED's exclusion statement. |
 | 1:05–1:20 | "Is Big-O notation on AP CS Principles?" | Excluded: "formal analysis of algorithms (Big-O)... outside the scope". |
-| 1:20–1:35 | "Is the photoelectric effect on the Physics 30 diploma?" | Examinable, Alberta outcome C2. "24 AP courses, Alberta's diploma exams, and the Singapore A-Level: 2,381 objectives." |
-| 1:35–2:00 | "Quiz me on AP Physics 1", answer out loud (get it wrong on purpose), then "What should I revise first?" | Quiz card, spoken marking, revision list updates. "Alexa+ remembers your shoe size. Syllabuddy remembers what you got wrong." |
-| 2:00–2:30 | Split screen: `mcp_server/server.py` + `python scripts/eval_all.py` summary + `pytest -q` | "A standard MCP server over Streamable HTTP, spec 2025-11-25. No LLM inside the tools. Every one of the 2,381 objectives is tested." |
+| 1:20–1:35 | "Are circles on the PSAT 8/9?" | Excluded: SAT and PSAT/NMSQT only. "The SAT, the PSAT, the ACT, 24 AP courses, Alberta's diploma exams and the Singapore A-Level: 2,883 objectives." |
+| 1:35–1:45 | "I'm taking AP Calc BC and the SAT, my exam is May 11" | "My courses" card; the side panel shows the countdown and a progress bar per syllabus. |
+| 1:45–2:00 | "Quiz me", answer out loud (get it wrong on purpose), then "What should I revise first?" | Quiz card, spoken marking, revision list and countdown. "Alexa+ remembers your shoe size. Syllabuddy remembers your exams." |
+| 2:00–2:30 | Split screen: `mcp_server/server.py` + `python scripts/eval_all.py` summary + `pytest -q` | "A standard MCP server over Streamable HTTP, spec 2025-11-25. No LLM inside the tools. Every one of the 2,883 objectives is tested." |
 | 2:30–2:40 | README roadmap | "Next: account linking and a real Alexa+ add-on, and more exams." |
 
 Shortcut: `python scripts/record_demo.py` (with the app running) records a clean
@@ -25,7 +26,7 @@ Shortcut: `python scripts/record_demo.py` (with the app running) records a clean
 code and test shots on top.
 
 Checklist before recording:
-- [ ] Status pill shows "MCP connected · 9 tools" and the "brain:" line shows Groq.
+- [ ] Status pill shows "MCP connected · 10 tools" and the "brain:" line shows Groq.
 - [ ] Machine idle (close other apps): on a busy 2-core laptop turns slow down and fall back to templated answers.
 - [ ] Ask questions about 20–30 s apart (Groq free tier), or cut the pauses when editing.
 - [ ] Browser zoom 110–125% so text is readable in the video.

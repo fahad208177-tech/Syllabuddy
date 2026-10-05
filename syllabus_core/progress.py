@@ -12,6 +12,7 @@ the OAuth token that account linking issues.
 
 from __future__ import annotations
 
+import json
 import sqlite3
 import threading
 from datetime import datetime, timezone
@@ -28,6 +29,12 @@ CREATE TABLE IF NOT EXISTS events (
     detail      TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_events_student ON events(student_id, lo_id);
+CREATE TABLE IF NOT EXISTS courses (
+    student_id  TEXT PRIMARY KEY,
+    subject_ids TEXT NOT NULL,    -- JSON list, e.g. ["CALCBC", "SATM"]
+    exam_date   TEXT,             -- ISO date of the next exam, if the student said it
+    updated     TEXT NOT NULL
+);
 """
 
 
@@ -96,11 +103,29 @@ class ProgressStore:
         return [r["lo_id"] for r in self._read(
             "SELECT DISTINCT lo_id FROM events WHERE student_id = ? AND kind = 'quiz'", (student_id,))]
 
+    def touched_ids(self, student_id: str) -> list[str]:
+        return [r["lo_id"] for r in self._read(
+            "SELECT DISTINCT lo_id FROM events WHERE student_id = ?", (student_id,))]
+
     def stats(self, student_id: str) -> dict:
         row = self._read(
             "SELECT SUM(kind='asked') AS asked, SUM(kind='quiz') AS quizzed, SUM(kind='quiz' AND correct=1) AS right "
             "FROM events WHERE student_id = ?", (student_id,))[0]
         return {k: int(row[k] or 0) for k in ("asked", "quizzed", "right")}
 
+    def set_courses(self, student_id: str, subject_ids: list[str], exam_date: str | None = None) -> None:
+        self._write("INSERT INTO courses (student_id, subject_ids, exam_date, updated) VALUES (?, ?, ?, ?) "
+                    "ON CONFLICT(student_id) DO UPDATE SET subject_ids = excluded.subject_ids, "
+                    "exam_date = excluded.exam_date, updated = excluded.updated",
+                    (student_id, json.dumps(subject_ids), exam_date, _now()))
+
+    def courses(self, student_id: str) -> dict:
+        """The student's courses: {"subject_ids": [...], "exam_date": "2027-05-11" or None}."""
+        rows = self._read("SELECT subject_ids, exam_date FROM courses WHERE student_id = ?", (student_id,))
+        if not rows:
+            return {"subject_ids": [], "exam_date": None}
+        return {"subject_ids": json.loads(rows[0]["subject_ids"]), "exam_date": rows[0]["exam_date"]}
+
     def clear(self, student_id: str) -> None:
         self._write("DELETE FROM events WHERE student_id = ?", (student_id,))
+        self._write("DELETE FROM courses WHERE student_id = ?", (student_id,))

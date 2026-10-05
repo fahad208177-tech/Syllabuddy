@@ -12,7 +12,7 @@ from mcp.shared._httpx_utils import create_mcp_http_client
 from assistant.agent import _result_data
 
 EXPECTED_TOOLS = {"check_examinable", "find_objective", "get_objective", "list_subjects", "list_topics",
-                  "start_quiz", "record_quiz_result", "my_revision_list", "clear_my_history"}
+                  "start_quiz", "record_quiz_result", "my_revision_list", "clear_my_history", "set_my_courses"}
 
 
 async def _call(url, student, calls):
@@ -23,6 +23,12 @@ async def _call(url, student, calls):
         for name, args in calls:
             if name == "__list__":
                 out.append(await client.list_tools())
+            elif name == "__read__":
+                out.append(await client.read_resource(args))
+            elif name == "__resources__":
+                out.append((await client.list_resources(), await client.list_resource_templates(), await client.list_prompts()))
+            elif name == "__prompt__":
+                out.append(await client.get_prompt(*args))
             else:
                 t = time.perf_counter()
                 result = await client.call_tool(name, args)
@@ -98,3 +104,40 @@ def test_clear_history_can_be_cancelled(server_url):
     assert armed["needs_confirmation"] and cancelled["cancelled"]
     [(after, _)] = run(_call(server_url, "dave", [("my_revision_list", {})]))
     assert after["stats"]["quizzed"] == 1
+
+
+def test_saved_courses_scope_questions_and_track_progress(server_url):
+    (saved, _), (plain, _), (revision, _) = run(_call(server_url, "carol", [
+        ("set_my_courses", {"courses": ["PSAT 8/9"], "exam_date": "2099-10-15"}),
+        # no subject: the saved course is used, where circles are left out
+        ("check_examinable", {"topic": "circles"}),
+        ("my_revision_list", {}),
+    ]))
+    assert saved["courses"] == ["PSAT 8/9 Math (PSAT89M)"] and saved["days_to_exam"] > 0
+    assert plain["verdict"] == "excluded"
+    [course] = revision["my_courses"]
+    assert course["objectives"] > 10 and len(course["not_started"]) == 3
+    assert revision["days_to_exam"] == saved["days_to_exam"]
+
+
+def test_set_my_courses_rejects_unknown_courses(server_url):
+    [(result, _)] = run(_call(server_url, "dave", [("set_my_courses", {"courses": ["basket weaving"]})]))
+    assert "error" in result
+
+
+def test_resources_and_prompts(server_url):
+    [(resources, templates, prompts), objective] = run(_call(server_url, "erin", [
+        ("__resources__", None), ("__read__", "syllabus://objective/CALCBC-10.8")]))
+    assert "syllabus://subjects" in {str(r.uri) for r in resources.resources}
+    assert {t.uri_template if hasattr(t, "uri_template") else t.uriTemplate for t in templates.resource_templates} >= {
+        "syllabus://subject/{subject_id}", "syllabus://objective/{objective_id}"}
+    assert {p.name for p in prompts.prompts} >= {"revision_plan", "is_it_on_my_exam"}
+    assert "CALCBC-10.8" in objective.contents[0].text
+    [plan] = run(_call(server_url, "erin", [("__prompt__", ("revision_plan", {"subject": "SAT math", "days": "5"}))]))
+    assert "5-day" in plan.messages[0].content.text
+
+
+def test_past_exam_date_means_the_next_one(server_url):
+    # "May 11" said in October, or a model that assumed last year: the next May 11
+    [(saved, _)] = run(_call(server_url, "frank", [("set_my_courses", {"courses": ["SAT"], "exam_date": "2020-05-11"})]))
+    assert saved["exam_date"].endswith("-05-11") and 0 <= saved["days_to_exam"] <= 366

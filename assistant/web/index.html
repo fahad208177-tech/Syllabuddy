@@ -29,11 +29,10 @@
         <div class="welcome" id="welcome">
           <div class="orb" id="orb" aria-hidden="true"><span></span></div>
           <h1>Ask what's on your exam.</h1>
-          <p>Answers come straight from the official syllabus, not a guess. US AP, Alberta Diploma and Singapore A-Level.</p>
+          <p>Answers come straight from the official syllabus, not a guess. SAT, PSAT, ACT, AP, Alberta Diploma and Singapore A-Level.</p>
           <div class="try" id="try">
-            
             <button class="chip" data-say="Is the ratio test on the AP Calculus AB exam?">“Is the ratio test on AP Calc AB?”</button>
-            <button class="chip" data-say="Is the shortest distance between two skew lines in the H2 Maths syllabus?">“Is the distance between skew lines on the exam?”</button>
+            <button class="chip" data-say="Are circles on the PSAT 8/9?">“Are circles on the PSAT 8/9?”</button>
             <button class="chip" data-say="Quiz me on AP Physics 1">“Quiz me on AP Physics 1”</button>
             <button class="chip" data-say="What should I revise first?">“What should I revise first?”</button>
           </div>
@@ -59,6 +58,7 @@
           <h2>Your revision list</h2>
           <button class="ghost" id="refresh" title="Refresh">↻</button>
         </div>
+        <div class="courses" id="courses" hidden></div>
         <div class="stats" id="stats">
           <div><b id="statAsked">0</b><span>questions</span></div>
           <div><b id="statQuiz">0/0</b><span>quiz right</span></div>
@@ -70,13 +70,13 @@
         <ol class="steps">
           <li><b>You ask</b> Alexa+ out loud.</li>
           <li><b>Alexa+ calls Syllabuddy</b>, an MCP server, over Streamable HTTP.</li>
-          <li><b>Syllabuddy answers from the syllabus</b>: 916 objectives parsed from the official PDFs, no AI guessing.</li>
+          <li><b>Syllabuddy answers from the syllabus</b>: 2,883 objectives from official syllabus documents (SAT, ACT, AP, Alberta, Singapore), no AI guessing.</li>
           <li><b>Alexa+ speaks</b> the answer and shows the source.</li>
         </ol>
         <div class="meta" id="meta"></div>
       </div>
       <button class="ghost wide" id="reset">Start a new conversation</button>
-      <p class="legal"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · Not affiliated with Amazon or SEAB</p>
+      <p class="legal"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · Not affiliated with Amazon, College Board, ACT, Alberta Education or SEAB</p>
     </aside>
   </main>
 </div>

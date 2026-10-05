@@ -17,3 +17,6 @@ syllabus_pdfs/
 
 # demo/test artefacts
 artifacts/
+
+# launch video build
+brag-output/

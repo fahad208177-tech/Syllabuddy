@@ -4,9 +4,11 @@
 
 Syllabuddy is an MCP server that answers students' most common question,
 *"is this even on my exam?"*, straight from the official syllabus. It covers
-**24 US AP courses** (College Board Course and Exam Descriptions), **Canada's
-Alberta Diploma** Physics 30 and Chemistry 30, and the **Singapore-Cambridge
-A-Level**: 2,381 learning objectives across 40 subjects. It ships with a
+the **digital SAT and PSAT** (College Board assessment framework), **the ACT**
+(College and Career Readiness Standards), **24 US AP
+courses** (Course and Exam Descriptions), **Canada's Alberta Diploma** Physics 30
+and Chemistry 30, and the **Singapore-Cambridge A-Level**: 2,883 learning
+objectives across 47 subjects. It ships with a
 simulated Alexa+ experience: you speak, Alexa+ calls Syllabuddy over MCP
 (Streamable HTTP), and it answers out loud with the objective code and the
 syllabus's own wording on screen.
@@ -31,13 +33,15 @@ guess confidently. The real answer is usually one bullet point, on one page of a
 40-page PDF, under *Excluded*.
 
 Syllabuddy never guesses about the syllabus. Its tools don't call a language
-model at all: they search **2,381 learning objectives parsed deterministically
+model at all: they search **2,883 learning objectives parsed deterministically
 from the official documents**, including every exclusion statement, every "bc
 only" marker and every boundary statement, and return the exact wording with its
 source page. The assistant only does the talking.
 
 | Exam | Subjects | Objectives | Source |
 |---|---|---|---|
+| **SAT Suite** (US, College Board) | 3: SAT Reading and Writing, SAT Math (also used for PSAT/NMSQT and PSAT 10), PSAT 8/9 Math | 46 skills, 200 testing points | Assessment Framework for the Digital SAT Suite, Appendix B |
+| **ACT** (US) | 4: English, Math, Reading, Science | 456 coded standards, each its own objective, grouped by strand and score range | College and Career Readiness Standards |
 | **AP** (US, College Board) | 24: Calculus AB and BC, Precalculus, Statistics, Physics 1, 2, C: Mechanics, C: E&M, Chemistry, Biology, Environmental Science, CS A, CS Principles, Psychology, Macro, Micro, US Gov, Comparative Gov, US History, World History, European History, Human Geography, African American Studies, Music Theory | 1,447 | Course and Exam Descriptions |
 | **Alberta Diploma** (Canada) | Physics 30, Chemistry 30 | 18 general outcomes, 124 knowledge outcomes | Alberta Education Programs of Study |
 | **Singapore-Cambridge A-Level** | 14 (H1/H2 sciences, maths, computing, humanities) | 916 | SEAB syllabus PDFs |
@@ -47,13 +51,19 @@ Literature, Seminar, Research, Art and Design) and Art History (a list of
 artworks rather than objectives) are not included. Alberta Biology 30 and
 Mathematics 30-1 are not included yet: their documents refuse automated download.
 
-It also remembers what Alexa+ can't: **which objectives you personally keep
-getting wrong**, so "what should I revise first?" has a real answer.
+It also remembers what Alexa+ can't: **which exams you're taking and when**, and
+**which objectives you personally keep getting wrong**. Say "I'm taking AP Calc
+BC and the SAT, my exam is May 11" once; after that every question is checked
+against those syllabuses, and "what should I revise first?" comes back with your
+weak spots, how much of each syllabus you've practised, and the days left.
 
 ## What you can ask
 
 | Say | Syllabuddy tool | What happens |
 |---|---|---|
+| "Is calculus on the SAT?" | `check_examinable` | **Not in the syllabus**: the SAT stops before calculus |
+| "Is multiplying matrices on the ACT?" | `check_examinable` | **Examinable**: ACTM-1.705, "N 705: Multiply matrices", Number and Quantity, score 33–36 |
+| "Are circles on the PSAT 8/9?" | `check_examinable` | **Excluded**: SAT and PSAT/NMSQT only (SATM-4.4 is examinable on the SAT) |
 | "Is the ratio test on the AP Calculus AB exam?" | `check_examinable` | **Excluded**: BC only (the CED marks it "bc only") |
 | "Do I need the epsilon-delta definition of a limit for AP Calc?" | `check_examinable` | **Excluded**, quoting the CED's exclusion statement (CALCAB-1.2) |
 | "Is Big-O notation on AP CS Principles?" | `check_examinable` | **Excluded**: "formal analysis of algorithms (Big-O)... outside the scope" |
@@ -63,7 +73,8 @@ getting wrong**, so "what should I revise first?" has a real answer.
 | "Is hypothesis testing examinable?" | `check_examinable` | **Examinable**, objective 9758.6.5 |
 | "Explain simple harmonic motion for H2 Physics" | `find_objective` | Explains within objective 9478.9.d |
 | "Quiz me on H2 Computing" | `start_quiz` → `record_quiz_result` | One spoken question, marked, saved |
-| "What should I revise first?" | `my_revision_list` | Your weakest objectives, from your history |
+| "I'm taking AP Calc BC and the SAT, my exam is May 11" | `set_my_courses` | Saved; later questions without a subject use these courses |
+| "What should I revise first?" | `my_revision_list` | Your weakest objectives, syllabus progress per course, and days to the exam |
 
 ## How it works
 
@@ -73,15 +84,15 @@ flowchart LR
     W -- "speech to text" --> A["Agent<br/>(Groq / Ollama / Bedrock / offline)"]
     A -- "MCP over Streamable HTTP<br/>X-Syllabuddy-Student" --> M["Syllabuddy<br/>MCP server"]
     M --> R["Hybrid retrieval<br/>BM25 + embeddings"]
-    R --> J[("syllabus.json<br/>916 objectives")]
+    R --> J[("SAT, ACT, AP, Alberta, A-Level<br/>2,883 objectives")]
     M --> P[("progress.db<br/>per student")]
     A -- "spoken reply + card" --> W
 ```
 
-1. **Parsing (deterministic).** `syllabus_core/syllabus/` has one parser per document layout. `ap_ced.py` reads every AP Course and Exam Description: it locates the learning-objective and essential-knowledge columns on each page from their headings (facing pages are mirrored), handles three generations of codes (`LIM-1.A`, `1.1.A`, history `KC-4.1.IV.C`), captures exclusion and physics boundary statements, turns "bc only" content into AP Calculus AB exclusions, regroups CS Principles by its at-a-glance tables, and strips footers, formula alt text and letter-spacing damage. `alberta.py` reads the 30-level general and knowledge outcomes. For the Singapore A-Level, Single-column science and maths syllabuses are read line by line. Multi-column History, Geography and Economics tables are split back into columns before parsing. `syllabus_core/pdf_text.py` repairs scrambled glyph order and recovers super- and subscripts (`ax^2`, `u_{n+1}`) from font size and baseline.
+1. **Parsing (deterministic).** `syllabus_core/syllabus/` has one parser per document layout. `ap_ced.py` reads every AP Course and Exam Description: it locates the learning-objective and essential-knowledge columns on each page from their headings (facing pages are mirrored), handles three generations of codes (`LIM-1.A`, `1.1.A`, history `KC-4.1.IV.C`), captures exclusion and physics boundary statements, turns "bc only" content into AP Calculus AB exclusions, regroups CS Principles by its at-a-glance tables, and strips footers, formula alt text and letter-spacing damage. `alberta.py` reads the 30-level general and knowledge outcomes. `act.py` reads ACT's coded standards (`N 705. Multiply matrices`), where the hundreds digit is the score range, and keeps each standard as an objective under its strand and score range. `sat.py` reads the SAT Suite framework's testing-point tables: it finds each page's column edges from the header row and the most common left margins, rebuilds statements, bullets and sub-bullets from indentation, keeps exponents (`k^2`), and compares the SAT and PSAT 8/9 columns bullet by bullet, so content the PSAT 8/9 leaves out becomes a PSAT 8/9 exclusion. For the Singapore A-Level, Single-column science and maths syllabuses are read line by line. Multi-column History, Geography and Economics tables are split back into columns before parsing. `syllabus_core/pdf_text.py` repairs scrambled glyph order and recovers super- and subscripts (`ax^2`, `u_{n+1}`) from font size and baseline.
 2. **Retrieval.** BM25 and dense embeddings (`BAAI/bge-small-en-v1.5`, in-process ONNX) are fused with Reciprocal Rank Fusion. The best cosine similarity gives a calibrated confidence: below 0.58 is treated as off-syllabus.
 3. **Examinability.** Every "Excluded" bullet is indexed on its own, and packed bullets are split into clauses. An exclusion wins only when it matches the question better than anything *included*, and only inside its own topic. That is why "hypothesis testing" is examinable even though correlation's objective excludes "hypothesis tests". Short technical terms ("Type II error") are also matched word for word, because they embed poorly.
-4. **MCP server.** `mcp_server/server.py` exposes 9 tools via the official MCP Python SDK. It negotiates spec **2025-11-25** over Streamable HTTP (2026-07-28 is also supported). Once warm, tool calls took 14 to 300 ms in testing on a 2-core laptop, inside Alexa+'s 500 ms budget. Query embedding dominates that time, so a normal server is faster.
+4. **MCP server.** `mcp_server/server.py` exposes 10 tools, 3 resources (`syllabus://subjects`, `syllabus://subject/{id}`, `syllabus://objective/{id}`) and 2 prompts (`revision_plan`, `is_it_on_my_exam`) via the official MCP Python SDK. It negotiates spec **2025-11-25** over Streamable HTTP (2026-07-28 is also supported). Once warm, tool calls took 14 to 300 ms in testing on a 2-core laptop, inside Alexa+'s 500 ms budget. Query embedding dominates that time, so a normal server is faster.
 5. **Simulated Alexa+.** `assistant/` is a Starlette app with a voice UI (Web Speech API), an agent that connects to the MCP server as a real MCP client, and a swappable model ("brain").
 
 ## Quick start
@@ -134,10 +145,11 @@ only as a hash.
 | `list_subjects()` / `list_topics(subject)` | What's loaded |
 | `start_quiz(subject?, objective_id?)` | Picks your weakest (or an unseen) objective to quiz on |
 | `record_quiz_result(objective_id, correct, note?)` | Saves the result to your history |
-| `my_revision_list()` | Objectives to revise first, ranked by wrong answers, then repeated questions |
-| `clear_my_history(confirm?)` | Deletes everything stored about the student. Two steps enforced by the server, so a model can't delete without the student confirming |
+| `set_my_courses(courses, exam_date?)` | Remembers the student's exams and exam date; questions without a subject then search only those |
+| `my_revision_list()` | Objectives to revise first (wrong answers, then repeated questions), progress through each saved course, days to the exam |
+| `clear_my_history(confirm?)` | Deletes everything stored about the student, including saved courses. Two steps enforced by the server, so a model can't delete without the student confirming |
 
-Subjects can be named loosely: "AP Calc AB", "APUSH", "AP Chem", "stats", "Physics C E&M", "Physics 30", "H2 Maths", "econs", or a code like "9729" or "CALCBC". Plain names ("chem", "physics") mean the Singapore A-Level unless "AP", "30" or "Alberta" is said.
+Subjects can be named loosely: "SAT", "SAT math", "PSAT 8/9", "ACT", "ACT science", "AP Calc AB", "APUSH", "AP Chem", "stats", "Physics C E&M", "Physics 30", "H2 Maths", "econs", or a code like "9729" or "CALCBC". Plain names ("chem", "physics") mean the Singapore A-Level unless "AP", "30" or "Alberta" is said.
 
 ## Tests
 
@@ -167,11 +179,12 @@ tool-result message shapes.
 ## Project layout
 
 ```
-mcp_server/        MCP server (Streamable HTTP) and its 9 tools
+mcp_server/        MCP server (Streamable HTTP): 10 tools, 3 resources, 2 prompts
 syllabus_core/     parsers, retrieval, examinability logic, per-student progress
 assistant/         simulated Alexa+: agent (MCP client + brains) and voice web UI
 skills/syllabuddy/ Agent Skill for any skills-compatible agent
 data/              syllabus.json (Singapore, 916), ap_syllabus.json (AP, 1,447), alberta_syllabus.json (18),
+                   sat_syllabus.json (SAT Suite, 46), act_syllabus.json (ACT, 456),
                    corrections.json (6 PDF-mangled bullets, fixed), precomputed embeddings
 scripts/           build_syllabus.py (PDFs → JSON), live and UI checks
 tests/             pytest suite
@@ -184,19 +197,20 @@ tests/             pytest suite
 ## Roadmap
 
 - **Real Alexa+ add-on.** Deploy the MCP server (the Dockerfile binds `0.0.0.0:8765`, ready for App Runner or ECS), add OAuth 2.1 with PKCE account linking, and publish with the Alexa AI CLI (`alexa-ai new mcp`, `alexa-ai deploy`). Student identity would come from the OAuth token instead of the header.
-- **More exams.** Any exam with a published syllabus fits the same model, for example Cambridge International A Levels and AP courses.
+- **More exams.** Any exam with a published syllabus fits the same model: GED, CLEP and IB are next.
 - **Past-paper quizzes** tied to each objective.
 
 ## Built before vs during the hackathon
 
 - **Before (31 Aug 2026):** the syllabus parsers, `syllabus.json`, and the hybrid retrieval, from my earlier A-Level tutor project.
-- **During:** the AP parser (24 courses, 1,447 objectives) and Alberta parser; the MCP server and all 9 tools; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
+- **During:** the SAT Suite and ACT parsers, the AP parser (24 courses, 1,447 objectives) and Alberta parser; the MCP server, all 10 tools, resources and prompts; saved courses and exam countdown; the examinability engine (exclusion and inclusion indexes, clause splitting, parent-topic check, literal matching); per-student progress and quizzes; the agent with OpenAI-compatible (Groq), offline and optional Bedrock brains; the simulated Alexa+ voice UI; the Agent Skill; the tests; deployment files.
 
 ## Notes on data
 
 The data files are derived from publicly available documents, for educational
 use: SEAB A-Level syllabuses, College Board AP Course and Exam Descriptions (©
-College Board) and Alberta Education Programs of Study. The PDFs themselves are
+College Board), the Assessment Framework for the Digital SAT Suite (© College Board),
+ACT's College and Career Readiness Standards (© ACT, Inc.) and Alberta Education Programs of Study. The PDFs themselves are
 not redistributed; objectives keep their source page so every answer can be
 checked. To rebuild, download the PDFs into `syllabus_pdfs/` (see the docstrings
 of `scripts/build_syllabus.py`, `build_ap.py` and `build_alberta.py`) and run those

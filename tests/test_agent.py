@@ -205,3 +205,27 @@ def test_offline_brain_understands_follow_up_chips(utterance, tool, args):
 def test_offline_get_objective_speech(server_url):
     events = collect(Assistant(OfflineBrain(), server_url), "go", "go-test", "What does 9758.3.3 require?")
     assert events[-1]["text"].startswith("Objective 9758.3.3") and "skew" in events[-1]["text"]
+
+
+def test_offline_brain_saves_courses_with_exam_date():
+    reply = asyncio.run(OfflineBrain().chat(
+        [{"role": "user", "content": "I'm taking AP Calc BC and the SAT, my exam is May 11"}], []))
+    [call] = reply.tool_calls
+    assert call.name == "set_my_courses"
+    assert call.arguments["courses"] == ["AP Calc BC", "SAT"]
+    assert call.arguments["exam_date"].endswith("-05-11")
+
+
+def test_offline_sat_question_end_to_end(server_url):
+    events = collect(Assistant(OfflineBrain(), server_url), "sat", "sat-test", "Are circles on the PSAT 8/9?")
+    result = next(e for e in events if e["type"] == "tool_result")["result"]
+    assert result["verdict"] == "excluded"
+    assert "not examinable" in events[-1]["text"] or "excluded" in events[-1]["text"]
+
+
+def test_saved_courses_flow_end_to_end(server_url):
+    assistant = Assistant(OfflineBrain(), server_url)
+    first = collect(assistant, "courses", "courses-test", "I'm doing the PSAT 8/9, my exam is Oct 15")
+    assert "PSAT 8/9 Math" in first[-1]["text"] and "days" in first[-1]["text"]
+    later = collect(assistant, "courses", "courses-test", "What should I revise?")
+    assert "days" in later[-1]["text"]

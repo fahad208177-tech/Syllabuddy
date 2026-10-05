@@ -33,7 +33,9 @@ def svc():
     ("testing the difference between two population means", "H2 Maths", "excluded"),
     ("simple harmonic motion", "H2 Physics", "examinable"),
     ("binary search trees", "Computing", "examinable"),
-    ("monopoly pricing", "econs", "examinable"),
+    # The A-Level Economics syllabus never uses the word "monopoly" (only "market structures"),
+    # so this is an approximate match, not a confirmed one.
+    ("monopoly pricing", "econs", "unclear"),
     ("photosynthesis", "H2 Biology", "examinable"),
     ("who won the world cup", None, "not_in_syllabus"),
     ("how to bake sourdough", None, "not_in_syllabus"),

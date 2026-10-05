@@ -21,12 +21,25 @@ from syllabus_core.syllabus.schema import LearningObjective, Subject
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SYLLABUS = ROOT / "data" / "syllabus.json"
 # Every exam loaded by default, when its file exists.
-DEFAULT_SYLLABI = [DEFAULT_SYLLABUS, ROOT / "data" / "ap_syllabus.json", ROOT / "data" / "alberta_syllabus.json"]
+DEFAULT_SYLLABI = [DEFAULT_SYLLABUS, ROOT / "data" / "ap_syllabus.json", ROOT / "data" / "alberta_syllabus.json",
+                   ROOT / "data" / "sat_syllabus.json", ROOT / "data" / "act_syllabus.json"]
 
-# AP and Alberta course names as students say them, most specific first. Plain
-# "chem", "physics" or "history" stay with the Singapore A-Level unless "AP",
-# "30" or "Alberta" is said.
+# SAT, AP and Alberta course names as students say them, most specific first.
+# Plain "chem", "physics" or "history" stay with the Singapore A-Level unless
+# "AP", "30" or "Alberta" is said.
 AP_ALIASES: list[tuple[str, list[str]]] = [
+    # Digital SAT Suite. PSAT/NMSQT and PSAT 10 test the SAT's skills; the PSAT 8/9
+    # has its own math subject (it leaves some SAT content out) but SAT reading.
+    (r"\b(p?sat|nmsqt)\b.*\b(reading|writing|english|grammar|verbal|r\s*&\s*w|rw|ebrw)\b", ["SATRW"]),
+    (r"\bpsat\s*(8\s*/?\s*9|8|9)\b|\bpsat89\b", ["PSAT89M"]),
+    (r"\b(p?sat|nmsqt)\b.*\bmath", ["SATM"]),
+    (r"\b(p?sat|nmsqt)\b", ["SATM", "SATRW"]),
+    # The ACT: four tests, standards by score band.
+    (r"\bact\b.*\bmath", ["ACTM"]),
+    (r"\bact\b.*\benglish", ["ACTE"]),
+    (r"\bact\b.*\breading", ["ACTR"]),
+    (r"\bact\b.*\bscience", ["ACTS"]),
+    (r"\bact\b", ["ACTE", "ACTM", "ACTR", "ACTS"]),
     # Alberta Diploma courses are named by grade: "Physics 30", "Chem 30".
     (r"\bphysics\s*30\b", ["PHYS30"]),
     (r"\bchem(istry)?\s*30\b", ["CHEM30"]),
@@ -79,6 +92,9 @@ UNCLEAR_MIN = 0.58
 # A meaning match this strong stands on its own, even if keywords disagree
 # (a student's wording can share no words with the syllabus's).
 STRONG = 0.70
+# ...but when the question uses a word the syllabus never does ("limits" on ACT
+# Math), a meaning match must be this close before it counts as covered.
+NOVEL_STRONG = 0.80
 
 # An exclusion bullet is only treated as the answer when it matches the topic
 # at least this well. Calibrated with tests/test_service.py: real exclusions
@@ -172,6 +188,11 @@ class SyllabusService:
         # Content words of every bullet plus its objective's topic and title, for literal matching.
         self._words = {id(item): _content_words(f"{item.text} {item.objective.topic_name} {item.objective.title}")
                        for item in (*self.exclusions, *self.inclusions)}
+        # Every word each subject teaches, to spot questions about something it never mentions.
+        self._vocab: dict[str, frozenset[str]] = {}
+        for inc in self.inclusions:
+            sid = inc.objective.subject_id
+            self._vocab[sid] = self._vocab.get(sid, frozenset()) | self._words[id(inc)]
         # Load the ONNX model now, so the first student question isn't the slow one.
         self.retriever.confidence("warm up")
 
@@ -259,7 +280,8 @@ class SyllabusService:
             "subject": self.subject_label(lo.subject_id),
             "topic": lo.topic_name,
             "title": lo.title,
-            "source": f"{lo.source} p.{lo.page}",
+            # Lists assembled from several pages (AP Calculus "BC only") have no single page.
+            "source": f"{lo.source} p.{lo.page}" if lo.page > 0 else lo.source,
         }
         if full:
             card["syllabus_requires"] = list(lo.include) or [lo.statement]
@@ -341,7 +363,8 @@ class SyllabusService:
                 "excluded_item": best_exclusion.item.bullet,
                 "objective": self.objective_card(lo),
             }
-        elif hits and confidence >= CONFIDENT and (confidence >= STRONG or self._signals_agree(hits, CONFIDENT)):
+        elif (hits and confidence >= CONFIDENT and (confidence >= STRONG or self._signals_agree(hits, CONFIDENT))
+              and (confidence >= NOVEL_STRONG or not self._novel_words(topic, ids))):
             result |= {
                 "verdict": "examinable",
                 "explanation": f"Covered by objective {hits[0].item.lo_id}, {hits[0].item.title}.",
@@ -402,6 +425,22 @@ class SyllabusService:
         # The shortest clause is the most specific statement of the exclusion.
         return min(matches, key=lambda exc: len(exc.text)) if matches else None
 
+    def _novel_words(self, topic: str, subject_ids: list[str]) -> frozenset[str]:
+        """Words of the topic that the searched syllabuses never use anywhere.
+
+        "Limits of functions" on ACT Math: "functions" is everywhere, "limits"
+        nowhere, so a 0.73 meaning match to "find the range of polynomial
+        functions" is about functions in general, not about limits.
+        """
+        if not subject_ids:
+            return frozenset()
+        vocab = frozenset().union(*(self._vocab.get(sid, frozenset()) for sid in subject_ids))
+        # Compare five-letter stems: the light stemmer turns "monopoly" into "monopo"
+        # but "monopolies" into "monopoly", and "Multiply" into "multip".
+        prefixes = {w[:5] for w in vocab}
+        return frozenset(w for w in _content_words(topic)
+                         if "-" not in w and len(w) > 3 and w.isalpha() and w[:5] not in prefixes)
+
     @staticmethod
     def _signals_agree(hits, minimum: float) -> bool:
         """True when keyword search and meaning search agree on a top match.
@@ -460,12 +499,14 @@ def _apply_corrections(subjects: list[Subject], path: Path) -> None:
         warnings.warn(f"corrections.json: '{text[:40]}' not found in {lo_id}.{field}", stacklevel=2)
 
 
-_TABLE_HEADER = re.compile(r"\s*Topics/Sub-topics\s+Content\s*$")
+# Table headers repeated at page breaks: "Topics/Sub-topics Content" (H1 Maths),
+# "Economics Content (continued)" (H1/H2 Economics).
+_TABLE_HEADER = re.compile(r"\s*(?:Topics/Sub-topics\s+Content|[A-Z][a-z]+\s+Content\s*\(continued\))\s*")
 
 
 def _strip_furniture(text: str) -> str:
-    """Drop the repeated table header that H1 Maths bullets pick up at page breaks."""
-    return _TABLE_HEADER.sub("", text)
+    """Drop repeated table headers that bullets pick up at page breaks."""
+    return _TABLE_HEADER.sub(" ", text).strip()
 
 
 def _seed_cache(cache_folder: Path) -> None:

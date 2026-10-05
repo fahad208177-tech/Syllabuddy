@@ -20,14 +20,29 @@
     if (text != null) node.textContent = text;
     return node;
   }
+  // Cards stay glanceable on a smart-display screen: the first few items, the
+  // highlighted one always visible, and "+N more" to expand.
+  const LIST_LIMIT = 5;
   function list(items, hit) {
     if (!items || !items.length) return el("div", "none", "None listed");
     const ul = el("ul");
-    for (const item of items) {
-      const li = el("li", hit && item === hit ? "hit" : "", item);
+    const hitIndex = hit ? items.indexOf(hit) : -1;
+    items.forEach((item, i) => {
+      const li = el("li", i === hitIndex ? "hit" : "", item);
+      if (items.length > LIST_LIMIT + 1 && i >= LIST_LIMIT && i !== hitIndex) li.hidden = true;
       ul.append(li);
-    }
-    return ul;
+    });
+    const hidden = ul.querySelectorAll("li[hidden]").length;
+    if (!hidden) return ul;
+    const wrap = el("div");
+    const more = el("button", "more", `+ ${hidden} more`);
+    more.type = "button";
+    more.addEventListener("click", () => {
+      ul.querySelectorAll("li[hidden]").forEach((li) => { li.hidden = false; });
+      more.remove();
+    });
+    wrap.append(ul, more);
+    return wrap;
   }
   function scrollDown() { screen.scrollTop = screen.scrollHeight; }
   function setState(state) {
@@ -80,10 +95,22 @@
       // Don't reveal what the answer should contain.
       return objectiveCard(r.quiz_objective, "quiz", "Quiz", null, false);
     }
+    if (tool === "set_my_courses" && r.courses) {
+      const card = el("div", "card revise-card");
+      const head = el("div", "card-head");
+      head.append(el("span", "verdict v-matched", "My courses"));
+      if (r.days_to_exam != null) head.append(el("span", "countdown", `${r.days_to_exam} days to go`));
+      card.append(head);
+      const ul = el("ul");
+      for (const c of r.courses) ul.append(el("li", null, c));
+      card.append(ul);
+      return card;
+    }
     if (tool === "my_revision_list") {
       const card = el("div", "card revise-card");
       const head = el("div", "card-head");
       head.append(el("span", "verdict v-quiz", "Revise first"));
+      if (r.days_to_exam != null) head.append(el("span", "countdown", `${r.days_to_exam} days to go`));
       card.append(head);
       const items = r.revise_first || [];
       if (!items.length) { card.append(el("div", "crumb", r.note || "No history yet.")); return card; }
@@ -113,7 +140,9 @@
       case "record_quiz_result":
         return ["Quiz me again", "What should I revise first?"];
       case "my_revision_list":
-        return (r.revise_first || []).length ? ["Quiz me on my weakest topic"] : ["Quiz me on H2 Physics"];
+        return (r.revise_first || []).length ? ["Quiz me on my weakest topic"] : ["Quiz me"];
+      case "set_my_courses":
+        return ["Quiz me", "What should I revise first?"];
       default:
         return [];
     }
@@ -305,6 +334,7 @@
       if (r.error) return;
       $("#statAsked").textContent = r.stats.asked;
       $("#statQuiz").textContent = `${r.stats.right}/${r.stats.quizzed}`;
+      renderCourses(r);
       const ol = $("#revise");
       ol.replaceChildren();
       if (!r.revise_first.length) {
@@ -318,6 +348,32 @@
         ol.append(li);
       }
     } catch { /* side panel is optional */ }
+  }
+
+  // Saved courses: a countdown and how much of each syllabus has been practised.
+  function renderCourses(r) {
+    const box = $("#courses");
+    box.replaceChildren();
+    const courses = r.my_courses || [];
+    box.hidden = !courses.length;
+    if (!courses.length) return;
+    if (r.days_to_exam != null) {
+      const cd = el("div", "exam-countdown");
+      cd.append(el("b", null, String(r.days_to_exam)), el("span", null, r.days_to_exam === 1 ? "day to your exam" : "days to your exam"));
+      box.append(cd);
+    }
+    for (const c of courses) {
+      const pct = c.objectives ? Math.round((100 * c.practised) / c.objectives) : 0;
+      const label = el("div", "course-label");
+      label.append(el("span", null, c.subject.replace(/\s*\([^)]*\)$/, "")), el("span", "course-num", `${c.practised}/${c.objectives}`));
+      const bar = el("div", "bar");
+      const fill = el("span");
+      fill.style.width = `${pct}%`;
+      bar.append(fill);
+      const row = el("div", "course");
+      row.append(label, bar);
+      box.append(row);
+    }
   }
 
   async function health() {

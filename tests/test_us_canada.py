@@ -89,3 +89,84 @@ def test_every_exam_is_loaded(svc):
 ])
 def test_distinctive_terms(svc, topic, subject, verdict):
     assert svc.check_examinable(topic, subject)["verdict"] == verdict
+
+
+# ---- Digital SAT Suite (College Board assessment framework, Appendix B) ----
+
+@pytest.mark.parametrize("text, ids", [
+    ("SAT", ["SATM", "SATRW"]),
+    ("digital SAT", ["SATM", "SATRW"]),
+    ("SAT math", ["SATM"]),
+    ("SAT reading and writing", ["SATRW"]),
+    ("PSAT/NMSQT", ["SATM", "SATRW"]),     # the PSAT/NMSQT tests the SAT's skills
+    ("PSAT 8/9", ["PSAT89M"]),
+    ("psat 8/9 reading", ["SATRW"]),
+])
+def test_resolve_sat(svc, text, ids):
+    assert sorted(svc.resolve_subject(text)) == sorted(ids)
+
+
+@pytest.mark.parametrize("topic, subject, verdict", [
+    # The SAT stops before calculus, matrices and logarithms
+    ("calculus", "SAT", "not_in_syllabus"),
+    ("matrices", "SAT math", "not_in_syllabus"),
+    ("logarithms", "SAT math", "not_in_syllabus"),
+    ("who won the world cup", "SAT", "not_in_syllabus"),
+    # PSAT 8/9 leaves out circles, margin of error, trig ratios and exponential models
+    ("circles", "PSAT 8/9", "excluded"),
+    ("equation of a circle", "SAT math", "examinable"),
+    ("margin of error", "PSAT 8/9", "excluded"),
+    ("sine and cosine of complementary angles", "PSAT 8/9", "excluded"),
+    ("sine and cosine of complementary angles", "SAT math", "examinable"),
+    ("special right triangles", "PSAT 8/9", "excluded"),
+    ("the Pythagorean theorem", "PSAT 8/9", "examinable"),
+    ("quadratic formula", "PSAT 8/9", "examinable"),
+    # Reading and Writing skills
+    ("subject verb agreement", "SAT", "examinable"),
+    ("vocabulary in context", "SAT", "examinable"),
+    ("transition words", "SAT", "examinable"),
+])
+def test_examinable_sat(svc, topic, subject, verdict):
+    assert svc.check_examinable(topic, subject)["verdict"] == verdict
+
+
+def test_sat_cites_the_skill(svc):
+    result = svc.check_examinable("sine and cosine of complementary angles", "PSAT 8/9")
+    assert result["objective"]["objective_id"] == "PSAT89M-4.3"
+    assert "not PSAT 8/9" in result["excluded_item"]
+
+
+
+# ---- ACT (College and Career Readiness Standards) ----
+
+@pytest.mark.parametrize("text, ids", [
+    ("ACT", ["ACTE", "ACTM", "ACTR", "ACTS"]),
+    ("ACT math", ["ACTM"]),
+    ("act science", ["ACTS"]),
+])
+def test_resolve_act(svc, text, ids):
+    assert sorted(svc.resolve_subject(text)) == sorted(ids)
+
+
+@pytest.mark.parametrize("topic, subject, verdict", [
+    ("multiplying matrices", "ACT math", "examinable"),
+    ("complex numbers", "ACT math", "examinable"),     # on the ACT, unlike the SAT
+    ("derivatives", "ACT math", "not_in_syllabus"),
+    ("logarithms", "ACT math", "examinable"),
+    ("vertical asymptotes", "ACT math", "examinable"),
+    ("semicolons", "ACT English", "examinable"),
+    ("who won the world cup", "ACT", "not_in_syllabus"),
+])
+def test_examinable_act(svc, topic, subject, verdict):
+    assert svc.check_examinable(topic, subject)["verdict"] == verdict
+
+
+def test_act_cites_the_score_band(svc):
+    result = svc.check_examinable("multiplying matrices", "ACT math")
+    assert result["objective"]["objective_id"] == "ACTM-1.705"   # N 705: Multiply matrices
+    assert "33–36" in result["objective"]["topic"]
+
+
+def test_word_the_syllabus_never_uses_is_not_covered(svc):
+    # ACT Math is full of "functions" but never mentions limits.
+    assert svc.check_examinable("limits of functions", "ACT math")["verdict"] != "examinable"

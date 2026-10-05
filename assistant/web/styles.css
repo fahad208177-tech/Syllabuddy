@@ -113,6 +113,8 @@ body.speaking .lightbar { background: var(--cyan); box-shadow: 0 0 18px var(--cy
 .cols ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.5; color: #d7e0f0; }
 .cols li.hit { color: var(--red); font-weight: 600; }
 .cols .none { color: var(--muted); font-size: 14px; }
+.cols .more { margin-top: 6px; background: none; border: 0; padding: 2px 0; color: var(--cyan); font-size: 13px; }
+.cols .more:hover { text-decoration: underline; }
 .revise-card li { margin-bottom: 6px; }
 
 /* side panels */
@@ -168,3 +170,16 @@ body.listening .mic { background: linear-gradient(180deg, #ff7a8a, #ff3d57); box
   .cols { grid-template-columns: 1fr; }
   .welcome h1 { font-size: 27px; }
 }
+
+/* saved courses: exam countdown and syllabus progress */
+.countdown { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--amber); }
+.courses { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.courses[hidden] { display: none; }
+.exam-countdown { display: flex; align-items: baseline; gap: 8px; padding: 12px 14px; border-radius: 14px;
+  background: rgba(255, 194, 92, .08); border: 1px solid rgba(255, 194, 92, .25); }
+.exam-countdown b { font-size: 26px; color: var(--amber); }
+.exam-countdown span { color: var(--muted); font-size: 13px; }
+.course-label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 4px; }
+.course-num { color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 6px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+.bar span { display: block; height: 100%; min-width: 2px; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }

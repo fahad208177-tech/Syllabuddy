@@ -1,0 +1,1858 @@
+{
+ "exam_board": "College Board",
+ "qualification": "Digital SAT Suite (SAT, PSAT/NMSQT, PSAT 10, PSAT 8/9)",
+ "generated_by": "scripts/build_sat.py",
+ "subjects": [
+  {
+   "subject_id": "SATRW",
+   "name": "Reading and Writing",
+   "code": "SATRW",
+   "level": "SAT",
+   "source": "SAT Suite Assessment Framework",
+   "topics": [
+    {
+     "topic_id": "SATRW-1",
+     "number": "1",
+     "name": "Information and Ideas",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATRW-1.1",
+       "number": "1.1",
+       "title": "Central Ideas and Details",
+       "statement": "Students will determine the central idea of a text and/or interpret the key details supporting that idea.",
+       "include": [
+        "Students will determine the central idea of a text and/or interpret the key details supporting that idea."
+       ],
+       "exclude": [],
+       "keywords": [
+        "central",
+        "details",
+        "determine",
+        "interpret",
+        "key",
+        "students",
+        "supporting",
+        "text"
+       ],
+       "exam_skills": [
+        "determine",
+        "interpret"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      },
+      {
+       "lo_id": "SATRW-1.2",
+       "number": "1.2",
+       "title": "Command of Evidence",
+       "statement": "Students will determine the evidence in a text that best supports a specified claim or point.",
+       "include": [
+        "Students will determine the evidence in a text that best supports a specified claim or point.",
+        "Textual: Students will determine the textual evidence (e.g., a fact, detail, or example from a text) that best supports a specified claim or point.",
+        "Quantitative: Students will determine the quantitative evidence (i.e., data from an informational graphic) that best supports a specified claim or point."
+       ],
+       "exclude": [],
+       "keywords": [
+        "evidence",
+        "best",
+        "claim",
+        "determine",
+        "point",
+        "specified",
+        "students",
+        "supports",
+        "quantitative",
+        "text",
+        "textual",
+        "command",
+        "data",
+        "detail"
+       ],
+       "exam_skills": [
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      },
+      {
+       "lo_id": "SATRW-1.3",
+       "number": "1.3",
+       "title": "Inferences",
+       "statement": "Students will draw reasonable inferences based on explicit and/or implicit information and ideas in a text.",
+       "include": [
+        "Students will draw reasonable inferences based on explicit and/or implicit information and ideas in a text."
+       ],
+       "exclude": [],
+       "keywords": [
+        "inferences",
+        "based",
+        "draw",
+        "explicit",
+        "implicit",
+        "information",
+        "reasonable",
+        "students",
+        "text"
+       ],
+       "exam_skills": [
+        "draw"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      }
+     ]
+    },
+    {
+     "topic_id": "SATRW-2",
+     "number": "2",
+     "name": "Craft and Structure",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATRW-2.1",
+       "number": "2.1",
+       "title": "Words in Context",
+       "statement": "Students will determine the meaning of a high-utility academic word or phrase in context or use such vocabulary in a contextually appropriate way.",
+       "include": [
+        "Students will determine the meaning of a high-utility academic word or phrase in context or use such vocabulary in a contextually appropriate way."
+       ],
+       "exclude": [],
+       "keywords": [
+        "context",
+        "academic",
+        "appropriate",
+        "contextually",
+        "determine",
+        "high-utility",
+        "meaning",
+        "phrase",
+        "students",
+        "vocabulary",
+        "way",
+        "word",
+        "words"
+       ],
+       "exam_skills": [
+        "determine",
+        "use"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      },
+      {
+       "lo_id": "SATRW-2.2",
+       "number": "2.2",
+       "title": "Text Structure and Purpose",
+       "statement": "Students will analyze the structure of a text or determine the main rhetorical purpose of a text.",
+       "include": [
+        "Students will analyze the structure of a text or determine the main rhetorical purpose of a text."
+       ],
+       "exclude": [],
+       "keywords": [
+        "text",
+        "purpose",
+        "structure",
+        "analyze",
+        "determine",
+        "main",
+        "rhetorical",
+        "students"
+       ],
+       "exam_skills": [
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      },
+      {
+       "lo_id": "SATRW-2.3",
+       "number": "2.3",
+       "title": "Cross-Text Connections",
+       "statement": "Students will draw reasonable connections between two texts on related topics.",
+       "include": [
+        "Students will draw reasonable connections between two texts on related topics."
+       ],
+       "exclude": [],
+       "keywords": [
+        "connections",
+        "cross-text",
+        "draw",
+        "reasonable",
+        "related",
+        "students",
+        "texts",
+        "topics"
+       ],
+       "exam_skills": [
+        "draw"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 194
+      }
+     ]
+    },
+    {
+     "topic_id": "SATRW-3",
+     "number": "3",
+     "name": "Expression of Ideas",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATRW-3.1",
+       "number": "3.1",
+       "title": "Rhetorical Synthesis",
+       "statement": "Students will strategically integrate information and ideas on a topic to form an effective sentence achieving a specified rhetorical aim.",
+       "include": [
+        "Students will strategically integrate information and ideas on a topic to form an effective sentence achieving a specified rhetorical aim."
+       ],
+       "exclude": [],
+       "keywords": [
+        "rhetorical",
+        "achieving",
+        "aim",
+        "effective",
+        "information",
+        "integrate",
+        "sentence",
+        "specified",
+        "strategically",
+        "students",
+        "synthesis",
+        "topic"
+       ],
+       "exam_skills": [],
+       "source": "SAT Suite Assessment Framework",
+       "page": 195
+      },
+      {
+       "lo_id": "SATRW-3.2",
+       "number": "3.2",
+       "title": "Transitions",
+       "statement": "Students will determine the most effective transition word or phrase to logically connect information and ideas in a text.",
+       "include": [
+        "Students will determine the most effective transition word or phrase to logically connect information and ideas in a text."
+       ],
+       "exclude": [],
+       "keywords": [
+        "connect",
+        "determine",
+        "effective",
+        "information",
+        "logically",
+        "phrase",
+        "students",
+        "text",
+        "transition",
+        "transitions",
+        "word"
+       ],
+       "exam_skills": [
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 195
+      }
+     ]
+    },
+    {
+     "topic_id": "SATRW-4",
+     "number": "4",
+     "name": "Standard English Conventions",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATRW-4.1",
+       "number": "4.1",
+       "title": "Boundaries",
+       "statement": "Students will edit text to ensure that sentences are conventionally complete.",
+       "include": [
+        "Students will edit text to ensure that sentences are conventionally complete.",
+        "Between Sentences: Students will use contextually appropriate punctuation to properly mark the end of a sentence.",
+        "Within Sentences: Students will coordinate clauses within a sentence or elements in a series using appropriate punctuation and, in some cases, a conjunction or conjunctive adverb; incorporate supplementary information (e.g., appositives, parentheticals) using appropriate punctuation; and recognize circumstances in which no punctuation is needed to set off sentence elements."
+       ],
+       "exclude": [],
+       "keywords": [
+        "punctuation",
+        "appropriate",
+        "sentence",
+        "sentences",
+        "students",
+        "elements",
+        "within",
+        "adverb",
+        "appositives",
+        "boundaries",
+        "circumstances",
+        "clauses",
+        "complete",
+        "conjunction"
+       ],
+       "exam_skills": [
+        "use"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 195
+      },
+      {
+       "lo_id": "SATRW-4.2",
+       "number": "4.2",
+       "title": "Form, Structure, and Sense",
+       "statement": "Students will edit text to conform to conventional usage.",
+       "include": [
+        "Students will edit text to conform to conventional usage.",
+        "Subject-Verb Agreement: Students will ensure agreement in number between a subject and a verb.",
+        "Pronoun-Antecedent Agreement: Students will ensure agreement in number between a pronoun and its antecedent.",
+        "Verb Finiteness: Students will use verbs and verbals (i.e., gerunds, participles, infinitives) in contextually appropriate ways.",
+        "Verb Tense and Aspect: Students will use contextually appropriate tenses and aspects of verbs.",
+        "Subject-Modifier Placement: Students will place modifying elements in sentences (e.g., participles) in contextually appropriate ways.",
+        "Genitives and Plurals: Students will make contextually appropriate choices among singular, plural, singular possessive, and plural possessive nouns and pronouns and among possessive determiners (its, their, your), contractions (it’s, they’re, you’re), and adverbs (there)."
+       ],
+       "exclude": [],
+       "keywords": [
+        "students",
+        "agreement",
+        "appropriate",
+        "contextually",
+        "possessive",
+        "verb",
+        "among",
+        "ensure",
+        "number",
+        "participles",
+        "plural",
+        "singular",
+        "verbs",
+        "ways"
+       ],
+       "exam_skills": [
+        "use"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 195
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "subject_id": "SATM",
+   "name": "Math",
+   "code": "SATM",
+   "level": "SAT",
+   "source": "SAT Suite Assessment Framework",
+   "topics": [
+    {
+     "topic_id": "SATM-1",
+     "number": "1",
+     "name": "Algebra",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATM-1.1",
+       "number": "1.1",
+       "title": "Linear equations in one variable",
+       "statement": "Create and use linear equations in one variable to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use linear equations in one variable to solve problems in a variety of contexts.",
+        "Identify or create a linear equation in one variable that represents a context.",
+        "For a linear equation in one variable, interpret a constant, variable, factor, term, or the solution in a context.",
+        "Solve a linear equation in one variable, making strategic use of algebraic structure.",
+        "For a linear equation in one variable, determine the conditions under which the equation has no solution, a unique solution, or infinitely many solutions.",
+        "Fluently solve a linear equation in one variable."
+       ],
+       "exclude": [],
+       "keywords": [
+        "variable",
+        "linear",
+        "equation",
+        "solution",
+        "solve",
+        "context",
+        "create",
+        "equations",
+        "algebraic",
+        "conditions",
+        "constant",
+        "contexts",
+        "determine",
+        "factor"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 196
+      },
+      {
+       "lo_id": "SATM-1.2",
+       "number": "1.2",
+       "title": "Linear functions",
+       "statement": "Algebraically, a linear function can be defined by a linear expression in one variable or by a linear equation in two variables. In the first case, the variable is the input and the value of the expression is the output. In the second case, one of the variables is designated as the input and determines a unique value of the other variable, which is the output.",
+       "include": [
+        "Algebraically, a linear function can be defined by a linear expression in one variable or by a linear equation in two variables. In the first case, the variable is the input and the value of the expression is the output. In the second case, one of the variables is designated as the input and determines a unique value of the other variable, which is the output.",
+        "Create and use linear functions to solve problems in a variety of contexts.",
+        "Identify or create a linear function to model a relationship between two quantities.",
+        "For a linear function that represents a context, interpret the meaning of an input/ output pair, constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage.",
+        "Interpret the graph of a linear function in a context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear function not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear function in context.",
+        "For a linear function that represents a context, given an input value, find and interpret the output value using the given representation, or given an output value, find and interpret the input value using the given representation, if it exists.",
+        "Write the rule for a linear function given two input/output pairs or one input/output pair and the rate of change.",
+        "Evaluate a linear function given an input value, or find the input value for a corresponding output."
+       ],
+       "exclude": [],
+       "keywords": [
+        "linear",
+        "function",
+        "input",
+        "output",
+        "value",
+        "context",
+        "interpret",
+        "representation",
+        "variable",
+        "find",
+        "graph",
+        "algebraic",
+        "connections",
+        "create"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "represent",
+        "find",
+        "write",
+        "evaluate"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 197
+      },
+      {
+       "lo_id": "SATM-1.3",
+       "number": "1.3",
+       "title": "Linear equations in two variables",
+       "statement": "A linear equation in two variables can be used to represent a constraint or condition on two variable quantities in situations where neither of the variables is regarded as an input or an output. A linear equation can also be used to represent a straight line in the coordinate plane.",
+       "include": [
+        "A linear equation in two variables can be used to represent a constraint or condition on two variable quantities in situations where neither of the variables is regarded as an input or an output. A linear equation can also be used to represent a straight line in the coordinate plane.",
+        "Create and use a linear equation in two variables to solve problems in a variety of contexts.",
+        "Identify or create a linear equation in two variables to model a constraint or condition on two quantities.",
+        "For a linear equation in two variables that represents a context, interpret a solution, constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage.",
+        "Interpret the graph of a linear equation in the form Ax + By = C in a context.",
+        "Make connections between: an algebraic representation and a graph of a linear equation in two variables not in context. a table and an algebraic representation or between a table and a graph of a linear equation in two variables not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear equation in two variables in a context.",
+        "For a linear equation in two variables that represents a context, given a value of one quantity in the relationship, find a value of the other, if it exists.",
+        "Write an equation for a line given two points on the line, one point and the slope of the line, or one point and a parallel or perpendicular line."
+       ],
+       "exclude": [],
+       "keywords": [
+        "equation",
+        "linear",
+        "variables",
+        "context",
+        "line",
+        "graph",
+        "algebraic",
+        "representation",
+        "table",
+        "condition",
+        "connections",
+        "constraint",
+        "create",
+        "interpret"
+       ],
+       "exam_skills": [
+        "represent",
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "find",
+        "write"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 198
+      },
+      {
+       "lo_id": "SATM-1.4",
+       "number": "1.4",
+       "title": "Systems of two linear equations in two variables",
+       "statement": "Create and use a system of two linear equations in two variables to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use a system of two linear equations in two variables to solve problems in a variety of contexts.",
+        "Identify or create a system of linear equations in two variables to model constraints or conditions on two quantities.",
+        "Solve a system of two linear equations in two variables, making strategic use of algebraic structure.",
+        "For a system of linear equations in two variables, determine the conditions under which the system has no solution, a unique solution, or infinitely many solutions.",
+        "Make connections between an algebraic representation and a graph of a system of linear equations in two variables not in context.",
+        "Make connections between an algebraic representation and a graph of a system of linear equations in two variables in a context.",
+        "Fluently solve a system of linear equations in two variables."
+       ],
+       "exclude": [],
+       "keywords": [
+        "equations",
+        "linear",
+        "system",
+        "variables",
+        "algebraic",
+        "solve",
+        "conditions",
+        "connections",
+        "context",
+        "create",
+        "graph",
+        "make",
+        "representation",
+        "solution"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "determine",
+        "represent"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 199
+      },
+      {
+       "lo_id": "SATM-1.5",
+       "number": "1.5",
+       "title": "Linear inequalities in one or two variables",
+       "statement": "Create and use linear inequalities in one or two variables to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use linear inequalities in one or two variables to solve problems in a variety of contexts.",
+        "Identify or create linear inequalities in one or two variables to model constraints or conditions on two quantities.",
+        "For linear inequalities in one or two variables, interpret a constant, variable, factor, term, or solution, including situations where seeing structure provides an advantage.",
+        "Given a linear inequality or system of linear inequalities, interpret a point in the xy -plane in terms of the solution set.",
+        "Make connections between tabular, algebraic, and graphical representations of linear inequalities in one or two variables by deriving one from the other."
+       ],
+       "exclude": [],
+       "keywords": [
+        "linear",
+        "inequalities",
+        "variables",
+        "create",
+        "interpret",
+        "solution",
+        "advantage",
+        "algebraic",
+        "conditions",
+        "connections",
+        "constant",
+        "constraints",
+        "contexts",
+        "deriving"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "derive"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 199
+      }
+     ]
+    },
+    {
+     "topic_id": "SATM-2",
+     "number": "2",
+     "name": "Advanced Math",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATM-2.1",
+       "number": "2.1",
+       "title": "Equivalent expressions",
+       "statement": "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions: by factoring polynomials limited to finding a common factor, rewriting binomials that represent a difference of two squares, and rewriting trinomials as the product of two binomials.",
+       "include": [
+        "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions: by factoring polynomials limited to finding a common factor, rewriting binomials that represent a difference of two squares, and rewriting trinomials as the product of two binomials.",
+        "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions: including rewriting simple rational expressions, rewriting expressions with rational exponents in radical form, and factoring polynomials not included in the preceding bullet.",
+        "Fluently add, subtract, and multiply polynomials."
+       ],
+       "exclude": [],
+       "keywords": [
+        "expressions",
+        "rewriting",
+        "equivalent",
+        "polynomials",
+        "algebraic",
+        "binomials",
+        "create",
+        "factoring",
+        "identify",
+        "make",
+        "operations",
+        "properties",
+        "rational",
+        "strategic"
+       ],
+       "exam_skills": [
+        "use",
+        "identify",
+        "create",
+        "find",
+        "represent"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 200
+      },
+      {
+       "lo_id": "SATM-2.2",
+       "number": "2.2",
+       "title": "Nonlinear equations in one variable and systems of equations in two variables",
+       "statement": "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: quadratic equations in one variable presented in a wide variety of forms.",
+       "include": [
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: quadratic equations in one variable presented in a wide variety of forms.",
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: linear absolute value equations in one variable or simple rational and radical equations in one variable.",
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: polynomial equations in one variable that are written in factored form.",
+        "Make strategic use of algebraic structure, the properties of operations, and reasoning about equality to solve systems of linear and nonlinear equations in two variables.",
+        "Determine the conditions under which a quadratic equation has no real solutions, one real solution, or two real solutions.",
+        "Relate the solutions of a system of a linear and a nonlinear equation in two variables to the graphs of the equations in the system.",
+        "Given an equation or formula in two or more variables, view it as an equation in a single variable of interest where the other variables are parameters, and solve for the variable of interest.",
+        "Fluently solve quadratic equations in one variable, written as a quadratic expression in standard form, where using the quadratic formula or completing the square is the most efficient method for solving the equation."
+       ],
+       "exclude": [],
+       "keywords": [
+        "equations",
+        "variable",
+        "solve",
+        "equation",
+        "quadratic",
+        "variables",
+        "algebraic",
+        "equality",
+        "make",
+        "operations",
+        "properties",
+        "reasoning",
+        "strategic",
+        "structure"
+       ],
+       "exam_skills": [
+        "use",
+        "solve",
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 200
+      },
+      {
+       "lo_id": "SATM-2.3",
+       "number": "2.3",
+       "title": "Nonlinear functions",
+       "statement": "Create and use quadratic or exponential functions to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use quadratic or exponential functions to solve problems in a variety of contexts.",
+        "Identify or create an appropriate quadratic or exponential function to model a relationship between quantities.",
+        "For a quadratic or exponential function that represents a context: interpret the meaning of an input/output pair including an intercept or initial value, including situations where seeing structure provides an advantage.",
+        "For a quadratic or exponential function that represents a context: interpret the meaning of a constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage.",
+        "For a quadratic or exponential function in a context: interpret a point on the graph.",
+        "For a quadratic or exponential function in a context: interpret parts of the graph (other than a point or intercept).",
+        "Make connections between a table, an algebraic representation, or a graph of a: quadratic or exponential function that does not involve a transformation, not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a: polynomial function, simple rational function, or quadratic or exponential function that involves a transformation, not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a: quadratic or exponential function that does not involve a transformation, in a context.",
+        "Make connections between a table, an algebraic representation, or a graph of a: polynomial function, simple rational function, or other nonlinear function in a context, or a quadratic or exponential function that involves a transformation in a context.",
+        "Determine the most suitable form of the expression representing the output of the function to display key features for: a quadratic function.",
+        "Determine the most suitable form of the expression representing the output of the function to display key features for: an exponential function.",
+        "Understand and use the fact that for the graph of y = f ( x), the solutions to f ( x) = correspond to x -intercepts of the graph and f () corresponds to the y -intercept of the graph; make connections between the input/ output pairs and points on a graph; interpret this information in a context.",
+        "Use function notation to represent and interpret input/output pairs: evaluate a nonlinear function given an input value; or, for a quadratic function, find the input value for a corresponding output.",
+        "Use function notation to represent and interpret input/output pairs: for exponential, polynomial, radical, and rational functions, find the input value for a corresponding output."
+       ],
+       "exclude": [],
+       "keywords": [
+        "function",
+        "exponential",
+        "quadratic",
+        "context",
+        "graph",
+        "output",
+        "input",
+        "interpret",
+        "connections",
+        "make",
+        "algebraic",
+        "representation",
+        "table",
+        "transformation"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "represent",
+        "determine",
+        "understand",
+        "evaluate",
+        "find"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 201
+      }
+     ]
+    },
+    {
+     "topic_id": "SATM-3",
+     "number": "3",
+     "name": "Problem-Solving and Data Analysis",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATM-3.1",
+       "number": "3.1",
+       "title": "Ratios, rates, proportional relationships, and units",
+       "statement": "Questions will require students to solve problems by using a proportional relationship between quantities, calculating or using a ratio or rate, and/or using units, derived units, and unit conversion.",
+       "include": [
+        "Questions will require students to solve problems by using a proportional relationship between quantities, calculating or using a ratio or rate, and/or using units, derived units, and unit conversion.",
+        "Apply proportional relationships, ratios, and rates in a wide variety of contexts. Examples include, but are not limited to, scale drawings and problems in the natural and social sciences.",
+        "Solve problems involving derived units, including those that arise from products (e.g., kilowatt-hours) and quotients (e.g., population per square kilometer).",
+        "Solve problems involving: a one-step unit conversion. a multistep or multidimensional unit conversion.",
+        "Understand and use the fact that when two quantities are in a proportional relationship, if one changes by a scale factor, then the other also changes by the same scale factor."
+       ],
+       "exclude": [],
+       "keywords": [
+        "problems",
+        "proportional",
+        "units",
+        "conversion",
+        "scale",
+        "solve",
+        "unit",
+        "changes",
+        "derived",
+        "factor",
+        "involving",
+        "quantities",
+        "rates",
+        "ratios"
+       ],
+       "exam_skills": [
+        "solve",
+        "calculate",
+        "convert",
+        "apply",
+        "understand",
+        "use"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 203
+      },
+      {
+       "lo_id": "SATM-3.2",
+       "number": "3.2",
+       "title": "Percentages",
+       "statement": "Use percentages to solve problems in a variety of contexts: including, but not limited to, discounts, interest, taxes, and tips.",
+       "include": [
+        "Use percentages to solve problems in a variety of contexts: including, but not limited to, discounts, interest, taxes, and tips.",
+        "Use percentages to solve problems in a variety of contexts: including those that involve percent increases and decreases for many different quantities.",
+        "Understand and use the relationship between percent change and growth factor (5% and 1.05, for example); include percentages greater than or equal to 100%."
+       ],
+       "exclude": [],
+       "keywords": [
+        "percentages",
+        "contexts",
+        "percent",
+        "problems",
+        "solve",
+        "variety",
+        "change",
+        "decreases",
+        "different",
+        "discounts",
+        "equal",
+        "example",
+        "factor",
+        "greater"
+       ],
+       "exam_skills": [
+        "use",
+        "solve",
+        "understand"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 203
+      },
+      {
+       "lo_id": "SATM-3.3",
+       "number": "3.3",
+       "title": "One-variable data: Distributions and measures of center and spread",
+       "statement": "Analyze and interpret numerical data distributions represented with frequency tables, histograms, dot plots, and box plots.",
+       "include": [
+        "Analyze and interpret numerical data distributions represented with frequency tables, histograms, dot plots, and box plots.",
+        "For quantitative variables, calculate, compare, and interpret mean, median, and range.",
+        "Compare distributions using measures of center and spread, including: distributions with different means and the same standard deviations.",
+        "Compare distributions using measures of center and spread, including: distributions with different standard deviations.",
+        "Understand and describe the effect of outliers on mean and median."
+       ],
+       "exclude": [],
+       "keywords": [
+        "distributions",
+        "center",
+        "compare",
+        "measures",
+        "spread",
+        "data",
+        "deviations",
+        "different",
+        "interpret",
+        "mean",
+        "median",
+        "plots",
+        "standard",
+        "analyze"
+       ],
+       "exam_skills": [
+        "interpret",
+        "calculate",
+        "compare",
+        "understand",
+        "describe"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      },
+      {
+       "lo_id": "SATM-3.4",
+       "number": "3.4",
+       "title": "Two-variable data: Models and scatterplots",
+       "statement": "Analyze and interpret data represented in a scatterplot, but do not make predictions.",
+       "include": [
+        "Analyze and interpret data represented in a scatterplot, but do not make predictions.",
+        "Analyze and interpret data represented in a scatterplot to make predictions.",
+        "Fit linear models to data represented in a scatterplot.",
+        "Fit quadratic and exponential models to data represented in a scatterplot.",
+        "Given a relationship between two quantities, read and interpret graphs modeling the relationship.",
+        "Compare linear and exponential growth."
+       ],
+       "exclude": [],
+       "keywords": [
+        "data",
+        "represented",
+        "scatterplot",
+        "interpret",
+        "models",
+        "analyze",
+        "exponential",
+        "fit",
+        "linear",
+        "make",
+        "predictions",
+        "relationship",
+        "compare",
+        "graphs"
+       ],
+       "exam_skills": [
+        "interpret",
+        "compare"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      },
+      {
+       "lo_id": "SATM-3.5",
+       "number": "3.5",
+       "title": "Probability and conditional probability",
+       "statement": "Use one- and two-way tables, area models, and other representations to find relative frequency, probabilities, and conditional probabilities. Calculate, express, or interpret the probability or conditional probability of an event using a data display showing frequencies for a single variable, a two-way table, an area model, or a description of a situation. Infrequently, given a probability, determine an unknown number in a data display showing frequencies for a single variable, a two-way table, or a description of a situation, including using a probability to determine the frequency of an event.",
+       "include": [
+        "Use one- and two-way tables, area models, and other representations to find relative frequency, probabilities, and conditional probabilities. Calculate, express, or interpret the probability or conditional probability of an event using a data display showing frequencies for a single variable, a two-way table, an area model, or a description of a situation. Infrequently, given a probability, determine an unknown number in a data display showing frequencies for a single variable, a two-way table, or a description of a situation, including using a probability to determine the frequency of an event."
+       ],
+       "exclude": [],
+       "keywords": [
+        "probability",
+        "conditional",
+        "two-way",
+        "area",
+        "data",
+        "description",
+        "determine",
+        "display",
+        "event",
+        "frequencies",
+        "frequency",
+        "probabilities",
+        "showing",
+        "single"
+       ],
+       "exam_skills": [
+        "use",
+        "find",
+        "calculate",
+        "express",
+        "interpret",
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      },
+      {
+       "lo_id": "SATM-3.6",
+       "number": "3.6",
+       "title": "Inference from sample statistics and margin of error",
+       "statement": "Use sample mean and sample proportion to estimate population mean and population proportion.",
+       "include": [
+        "Use sample mean and sample proportion to estimate population mean and population proportion.",
+        "Interpret margin of error. Understand that a larger sample size generally leads to a smaller margin of error."
+       ],
+       "exclude": [],
+       "keywords": [
+        "sample",
+        "error",
+        "margin",
+        "mean",
+        "population",
+        "proportion",
+        "estimate",
+        "generally",
+        "inference",
+        "interpret",
+        "larger",
+        "leads",
+        "size",
+        "smaller"
+       ],
+       "exam_skills": [
+        "use",
+        "estimate",
+        "interpret",
+        "understand"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 205
+      },
+      {
+       "lo_id": "SATM-3.7",
+       "number": "3.7",
+       "title": "Evaluating statistical claims: Observational studies and experiments",
+       "statement": "With random samples, identify or describe which population the results can be extended to. Given a description of a study with or without random assignment, determine whether there is evidence for a causal relationship.",
+       "include": [
+        "With random samples, identify or describe which population the results can be extended to. Given a description of a study with or without random assignment, determine whether there is evidence for a causal relationship.",
+        "Understand why random assignment provides evidence for a causal relationship in an experimental study.",
+        "Understand issues related to sampling methods and why a result can be extended only to the population from which the sample was selected."
+       ],
+       "exclude": [],
+       "keywords": [
+        "random",
+        "assignment",
+        "causal",
+        "evidence",
+        "extended",
+        "population",
+        "relationship",
+        "study",
+        "understand",
+        "claims",
+        "describe",
+        "description",
+        "determine",
+        "evaluating"
+       ],
+       "exam_skills": [
+        "identify",
+        "describe",
+        "determine",
+        "understand"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 205
+      }
+     ]
+    },
+    {
+     "topic_id": "SATM-4",
+     "number": "4",
+     "name": "Geometry and Trigonometry",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "SATM-4.1",
+       "number": "4.1",
+       "title": "Area and volume",
+       "statement": "Solve real-world and mathematical problems about the: area or perimeter of a geometric figure or an object that can be modeled by a geometric figure using given information.",
+       "include": [
+        "Solve real-world and mathematical problems about the: area or perimeter of a geometric figure or an object that can be modeled by a geometric figure using given information.",
+        "Solve real-world and mathematical problems about the: surface area or volume of a geometric figure or an object that can be modeled by a geometric figure using given information such as length, area, surface area, or volume.",
+        "Apply knowledge that changing by a scale factor of k changes all lengths by a factor of k, changes all areas by a factor of k^2, and changes all volumes by a factor of k^3.",
+        "Demonstrate procedural fluency by selecting the correct: area formula and correctly calculating a specified value.",
+        "Demonstrate procedural fluency by selecting the correct: surface area or volume formula and correctly calculating a specified value."
+       ],
+       "exclude": [],
+       "keywords": [
+        "area",
+        "factor",
+        "figure",
+        "geometric",
+        "volume",
+        "changes",
+        "surface",
+        "calculating",
+        "correct",
+        "correctly",
+        "demonstrate",
+        "fluency",
+        "formula",
+        "information"
+       ],
+       "exam_skills": [
+        "solve",
+        "apply",
+        "calculate"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 206
+      },
+      {
+       "lo_id": "SATM-4.2",
+       "number": "4.2",
+       "title": "Lines, angles, and triangles",
+       "statement": "Use concepts and theorems relating to congruence and similarity of triangles to solve problems.",
+       "include": [
+        "Use concepts and theorems relating to congruence and similarity of triangles to solve problems.",
+        "Determine which statements may be required to prove certain relationships or to satisfy a given theorem.",
+        "Apply knowledge that changing by a scale factor of k changes all lengths by a factor of k, but angle measures remain unchanged.",
+        "Know and directly apply relevant theorems such as the: triangle angle sum theorem.",
+        "Know and directly apply relevant theorems such as the: vertical angle theorem and the relationship of angles formed when a transversal cuts parallel lines."
+       ],
+       "exclude": [],
+       "keywords": [
+        "angle",
+        "apply",
+        "theorem",
+        "theorems",
+        "angles",
+        "directly",
+        "factor",
+        "know",
+        "lines",
+        "relevant",
+        "triangles",
+        "certain",
+        "changes",
+        "changing"
+       ],
+       "exam_skills": [
+        "use",
+        "solve",
+        "determine",
+        "prove",
+        "apply",
+        "know"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 206
+      },
+      {
+       "lo_id": "SATM-4.3",
+       "number": "4.3",
+       "title": "Right triangles and trigonometry",
+       "statement": "Solve problems in a variety of contexts using: the Pythagorean theorem.",
+       "include": [
+        "Solve problems in a variety of contexts using: the Pythagorean theorem.",
+        "Solve problems in a variety of contexts using: properties of special right triangles.",
+        "Solve problems in a variety of contexts using: right triangle trigonometry.",
+        "Use similarity to calculate values of sine, cosine, and tangent.",
+        "Solve problems using the relationship between sine and cosine of complementary angles."
+       ],
+       "exclude": [],
+       "keywords": [
+        "problems",
+        "solve",
+        "contexts",
+        "right",
+        "variety",
+        "cosine",
+        "sine",
+        "triangles",
+        "trigonometry",
+        "angles",
+        "calculate",
+        "complementary",
+        "properties",
+        "pythagorean"
+       ],
+       "exam_skills": [
+        "solve",
+        "use",
+        "calculate"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 207
+      },
+      {
+       "lo_id": "SATM-4.4",
+       "number": "4.4",
+       "title": "Circles",
+       "statement": "Use definitions, properties, and theorems relating to circles and parts of circles such as radii, diameters, tangents, angles, arc lengths, and sector areas to solve problems.",
+       "include": [
+        "Use definitions, properties, and theorems relating to circles and parts of circles such as radii, diameters, tangents, angles, arc lengths, and sector areas to solve problems.",
+        "Solve problems using either radian measure or trigonometric ratios in the unit circle.",
+        "Create an equation to represent a circle in the xy -plane.",
+        "Describe how a change to the equation representing a circle affects the graph of the circle in the xy -plane or how a change to the graph of a circle affects the equation that represents the circle.",
+        "Understand that the ordered pairs that satisfy an equation of the form ( x - h)^2 + ( y - k)^2 = r",
+        "form a circle when plotted in the xy -plane.",
+        "Convert between angle measures in degrees and radians.",
+        "Complete the square in an equation representing a circle to determine properties of the circle when it is graphed in the xy -plane and use the distance formula in problems related to circles."
+       ],
+       "exclude": [],
+       "keywords": [
+        "circle",
+        "equation",
+        "circles",
+        "plane",
+        "problems",
+        "affects",
+        "change",
+        "graph",
+        "properties",
+        "representing",
+        "solve",
+        "angle",
+        "angles",
+        "arc"
+       ],
+       "exam_skills": [
+        "use",
+        "solve",
+        "create",
+        "represent",
+        "describe",
+        "understand",
+        "convert",
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 207
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "subject_id": "PSAT89M",
+   "name": "Math",
+   "code": "PSAT89M",
+   "level": "PSAT 8/9",
+   "source": "SAT Suite Assessment Framework",
+   "topics": [
+    {
+     "topic_id": "PSAT89M-1",
+     "number": "1",
+     "name": "Algebra",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PSAT89M-1.1",
+       "number": "1.1",
+       "title": "Linear equations in one variable",
+       "statement": "Create and use linear equations in one variable to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use linear equations in one variable to solve problems in a variety of contexts.",
+        "Identify or create a linear equation in one variable that represents a context.",
+        "For a linear equation in one variable, interpret a constant, variable, factor, term, or the solution in a context.",
+        "Solve a linear equation in one variable, making strategic use of algebraic structure.",
+        "Fluently solve a linear equation in one variable."
+       ],
+       "exclude": [
+        "For a linear equation in one variable, determine the conditions under which the equation has no solution, a unique solution, or infinitely many solutions. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "variable",
+        "linear",
+        "equation",
+        "solve",
+        "context",
+        "create",
+        "equations",
+        "algebraic",
+        "constant",
+        "contexts",
+        "factor",
+        "fluently",
+        "identify",
+        "interpret"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 196
+      },
+      {
+       "lo_id": "PSAT89M-1.2",
+       "number": "1.2",
+       "title": "Linear functions",
+       "statement": "Algebraically, a linear function can be defined by a linear expression in one variable or by a linear equation in two variables. In the first case, the variable is the input and the value of the expression is the output. In the second case, one of the variables is designated as the input and determines a unique value of the other variable, which is the output.",
+       "include": [
+        "Algebraically, a linear function can be defined by a linear expression in one variable or by a linear equation in two variables. In the first case, the variable is the input and the value of the expression is the output. In the second case, one of the variables is designated as the input and determines a unique value of the other variable, which is the output.",
+        "Create and use linear functions to solve problems in a variety of contexts.",
+        "Identify or create a linear function to model a relationship between two quantities.",
+        "For a linear function that represents a context, interpret the meaning of an input/ output pair, constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage.",
+        "Interpret the graph of a linear function in a context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear function not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear function in context.",
+        "For a linear function that represents a context, given an input value, find and interpret the output value using the given representation, or given an output value, find and interpret the input value using the given representation, if it exists.",
+        "Write the rule for a linear function given two input/output pairs or one input/output pair and the rate of change.",
+        "Evaluate a linear function given an input value, or find the input value for a corresponding output."
+       ],
+       "exclude": [],
+       "keywords": [
+        "linear",
+        "function",
+        "input",
+        "output",
+        "value",
+        "context",
+        "interpret",
+        "representation",
+        "variable",
+        "find",
+        "graph",
+        "algebraic",
+        "connections",
+        "create"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "represent",
+        "find",
+        "write",
+        "evaluate"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 197
+      },
+      {
+       "lo_id": "PSAT89M-1.3",
+       "number": "1.3",
+       "title": "Linear equations in two variables",
+       "statement": "A linear equation in two variables can be used to represent a constraint or condition on two variable quantities in situations where neither of the variables is regarded as an input or an output. A linear equation can also be used to represent a straight line in the coordinate plane.",
+       "include": [
+        "A linear equation in two variables can be used to represent a constraint or condition on two variable quantities in situations where neither of the variables is regarded as an input or an output. A linear equation can also be used to represent a straight line in the coordinate plane.",
+        "Create and use a linear equation in two variables to solve problems in a variety of contexts.",
+        "Identify or create a linear equation in two variables to model a constraint or condition on two quantities.",
+        "For a linear equation in two variables that represents a context, interpret a solution, constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage.",
+        "Interpret the graph of a linear equation in the form Ax + By = C in a context.",
+        "Make connections between: an algebraic representation and a graph of a linear equation in two variables not in context. a table and an algebraic representation or between a table and a graph of a linear equation in two variables not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a linear equation in two variables in a context.",
+        "For a linear equation in two variables that represents a context, given a value of one quantity in the relationship, find a value of the other, if it exists.",
+        "Write an equation for a line given two points on the line, one point and the slope of the line, or one point and a parallel or perpendicular line."
+       ],
+       "exclude": [],
+       "keywords": [
+        "equation",
+        "linear",
+        "variables",
+        "context",
+        "line",
+        "graph",
+        "algebraic",
+        "representation",
+        "table",
+        "condition",
+        "connections",
+        "constraint",
+        "create",
+        "interpret"
+       ],
+       "exam_skills": [
+        "represent",
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret",
+        "find",
+        "write"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 198
+      },
+      {
+       "lo_id": "PSAT89M-1.4",
+       "number": "1.4",
+       "title": "Systems of two linear equations in two variables",
+       "statement": "Create and use a system of two linear equations in two variables to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use a system of two linear equations in two variables to solve problems in a variety of contexts.",
+        "Identify or create a system of linear equations in two variables to model constraints or conditions on two quantities.",
+        "Solve a system of two linear equations in two variables, making strategic use of algebraic structure.",
+        "Make connections between an algebraic representation and a graph of a system of linear equations in two variables not in context.",
+        "Make connections between an algebraic representation and a graph of a system of linear equations in two variables in a context.",
+        "Fluently solve a system of linear equations in two variables."
+       ],
+       "exclude": [
+        "For a system of linear equations in two variables, determine the conditions under which the system has no solution, a unique solution, or infinitely many solutions. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "equations",
+        "linear",
+        "variables",
+        "system",
+        "algebraic",
+        "solve",
+        "connections",
+        "context",
+        "create",
+        "graph",
+        "make",
+        "representation",
+        "conditions",
+        "constraints"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "represent"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 199
+      },
+      {
+       "lo_id": "PSAT89M-1.5",
+       "number": "1.5",
+       "title": "Linear inequalities in one or two variables",
+       "statement": "Create and use linear inequalities in one or two variables to solve problems in a variety of contexts.",
+       "include": [
+        "Create and use linear inequalities in one or two variables to solve problems in a variety of contexts.",
+        "Identify or create linear inequalities in one or two variables to model constraints or conditions on two quantities.",
+        "For linear inequalities in one or two variables, interpret a constant, variable, factor, term, or solution, including situations where seeing structure provides an advantage.",
+        "Given a linear inequality or system of linear inequalities, interpret a point in the xy -plane in terms of the solution set."
+       ],
+       "exclude": [
+        "Make connections between tabular, algebraic, and graphical representations of linear inequalities in one or two variables by deriving one from the other. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "linear",
+        "inequalities",
+        "variables",
+        "create",
+        "interpret",
+        "solution",
+        "advantage",
+        "conditions",
+        "constant",
+        "constraints",
+        "contexts",
+        "factor",
+        "identify",
+        "inequality"
+       ],
+       "exam_skills": [
+        "create",
+        "use",
+        "solve",
+        "identify",
+        "interpret"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 199
+      }
+     ]
+    },
+    {
+     "topic_id": "PSAT89M-2",
+     "number": "2",
+     "name": "Advanced Math",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PSAT89M-2.1",
+       "number": "2.1",
+       "title": "Equivalent expressions",
+       "statement": "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions by factoring polynomials limited to finding a common factor, rewriting binomials that represent a difference of two squares, and rewriting trinomials as the product of two binomials.",
+       "include": [
+        "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions by factoring polynomials limited to finding a common factor, rewriting binomials that represent a difference of two squares, and rewriting trinomials as the product of two binomials.",
+        "Fluently add, subtract, and multiply polynomials."
+       ],
+       "exclude": [
+        "Make strategic use of algebraic structure and the properties of operations to identify and create equivalent expressions: including rewriting simple rational expressions, rewriting expressions with rational exponents in radical form, and factoring polynomials not included in the preceding bullet. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "binomials",
+        "equivalent",
+        "expressions",
+        "polynomials",
+        "rewriting",
+        "add",
+        "algebraic",
+        "common",
+        "create",
+        "difference",
+        "factor",
+        "factoring",
+        "finding",
+        "fluently"
+       ],
+       "exam_skills": [
+        "use",
+        "identify",
+        "create",
+        "find",
+        "represent"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 200
+      },
+      {
+       "lo_id": "PSAT89M-2.2",
+       "number": "2.2",
+       "title": "Nonlinear equations in one variable and systems of equations in two variables",
+       "statement": "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve quadratic equations in one variable presented in a wide variety of forms.",
+       "include": [
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve quadratic equations in one variable presented in a wide variety of forms.",
+        "Make strategic use of algebraic structure, the properties of operations, and reasoning about equality to solve systems of linear and nonlinear equations in two variables.",
+        "Relate the solutions of a system of a linear and a nonlinear equation in two variables to the graphs of the equations in the system.",
+        "Given an equation or formula in two or more variables, view it as an equation in a single variable of interest where the other variables are parameters, and solve for the variable of interest.",
+        "Fluently solve quadratic equations in one variable, written as a quadratic expression in standard form, where using the quadratic formula or completing the square is the most efficient method for solving the equation."
+       ],
+       "exclude": [
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: linear absolute value equations in one variable or simple rational and radical equations in one variable. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Make strategic use of algebraic structure, the properties of operations, and/or reasoning about equality to solve: polynomial equations in one variable that are written in factored form. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Determine the conditions under which a quadratic equation has no real solutions, one real solution, or two real solutions. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "equations",
+        "variable",
+        "variables",
+        "equation",
+        "quadratic",
+        "solve",
+        "nonlinear",
+        "algebraic",
+        "equality",
+        "formula",
+        "interest",
+        "linear",
+        "make",
+        "operations"
+       ],
+       "exam_skills": [
+        "use",
+        "solve"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 200
+      },
+      {
+       "lo_id": "PSAT89M-2.3",
+       "number": "2.3",
+       "title": "Nonlinear functions",
+       "statement": "For a quadratic or exponential function that represents a context, interpret the meaning of an input/output pair including an intercept or initial value, including situations where seeing structure provides an advantage.",
+       "include": [
+        "For a quadratic or exponential function that represents a context, interpret the meaning of an input/output pair including an intercept or initial value, including situations where seeing structure provides an advantage.",
+        "For a quadratic or exponential function in a context, interpret a point on the graph.",
+        "Make connections between a table, an algebraic representation, or a graph of a quadratic or exponential function that does not involve a transformation, not in context.",
+        "Make connections between a table, an algebraic representation, or a graph of a quadratic or exponential function that does not involve a transformation, in a context.",
+        "Use function notation to represent and interpret input/output pairs. Evaluate a nonlinear function given an input value; or, for a quadratic function, find the input value for a corresponding output."
+       ],
+       "exclude": [
+        "Create and use quadratic or exponential functions to solve problems in a variety of contexts. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Identify or create an appropriate quadratic or exponential function to model a relationship between quantities. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "For a quadratic or exponential function that represents a context: interpret the meaning of a constant, variable, factor, or term based on the context, including situations where seeing structure provides an advantage. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "For a quadratic or exponential function in a context: interpret parts of the graph (other than a point or intercept). (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Make connections between a table, an algebraic representation, or a graph of a: polynomial function, simple rational function, or quadratic or exponential function that involves a transformation, not in context. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Make connections between a table, an algebraic representation, or a graph of a: polynomial function, simple rational function, or other nonlinear function in a context, or a quadratic or exponential function that involves a transformation in a context. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Determine the most suitable form of the expression representing the output of the function to display key features for: a quadratic function. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Determine the most suitable form of the expression representing the output of the function to display key features for: an exponential function. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Understand and use the fact that for the graph of y = f ( x), the solutions to f ( x) = correspond to x -intercepts of the graph and f () corresponds to the y -intercept of the graph; make connections between the input/ output pairs and points on a graph; interpret this information in a context. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Use function notation to represent and interpret input/output pairs: for exponential, polynomial, radical, and rational functions, find the input value for a corresponding output. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "function",
+        "quadratic",
+        "context",
+        "exponential",
+        "input",
+        "graph",
+        "interpret",
+        "output",
+        "value",
+        "algebraic",
+        "connections",
+        "does",
+        "involve",
+        "make"
+       ],
+       "exam_skills": [
+        "interpret",
+        "represent",
+        "use",
+        "evaluate",
+        "find"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 201
+      }
+     ]
+    },
+    {
+     "topic_id": "PSAT89M-3",
+     "number": "3",
+     "name": "Problem-Solving and Data Analysis",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PSAT89M-3.1",
+       "number": "3.1",
+       "title": "Ratios, rates, proportional relationships, and units",
+       "statement": "Questions will require students to solve problems by using a proportional relationship between quantities, calculating or using a ratio or rate, and/or using units, derived units, and unit conversion.",
+       "include": [
+        "Questions will require students to solve problems by using a proportional relationship between quantities, calculating or using a ratio or rate, and/or using units, derived units, and unit conversion.",
+        "Apply proportional relationships, ratios, and rates in a wide variety of contexts. Examples include, but are not limited to, scale drawings and problems in the natural and social sciences.",
+        "Solve problems involving derived units, including those that arise from products (e.g., kilowatt-hours) and quotients (e.g., population per square kilometer).",
+        "Solve problems involving: a one-step unit conversion. a multistep or multidimensional unit conversion.",
+        "Understand and use the fact that when two quantities are in a proportional relationship, if one changes by a scale factor, then the other also changes by the same scale factor."
+       ],
+       "exclude": [],
+       "keywords": [
+        "problems",
+        "proportional",
+        "units",
+        "conversion",
+        "scale",
+        "solve",
+        "unit",
+        "changes",
+        "derived",
+        "factor",
+        "involving",
+        "quantities",
+        "rates",
+        "ratios"
+       ],
+       "exam_skills": [
+        "solve",
+        "calculate",
+        "convert",
+        "apply",
+        "understand",
+        "use"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 203
+      },
+      {
+       "lo_id": "PSAT89M-3.2",
+       "number": "3.2",
+       "title": "Percentages",
+       "statement": "Use percentages to solve problems in a variety of contexts: including, but not limited to, discounts, interest, taxes, and tips.",
+       "include": [
+        "Use percentages to solve problems in a variety of contexts: including, but not limited to, discounts, interest, taxes, and tips.",
+        "Use percentages to solve problems in a variety of contexts: including those that involve percent increases and decreases for many different quantities.",
+        "Understand and use the relationship between percent change and growth factor (5% and 1.05, for example); include percentages greater than or equal to 100%."
+       ],
+       "exclude": [],
+       "keywords": [
+        "percentages",
+        "contexts",
+        "percent",
+        "problems",
+        "solve",
+        "variety",
+        "change",
+        "decreases",
+        "different",
+        "discounts",
+        "equal",
+        "example",
+        "factor",
+        "greater"
+       ],
+       "exam_skills": [
+        "use",
+        "solve",
+        "understand"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 203
+      },
+      {
+       "lo_id": "PSAT89M-3.3",
+       "number": "3.3",
+       "title": "One-variable data: Distributions and measures of center and spread",
+       "statement": "Analyze and interpret numerical data distributions represented with frequency tables, histograms, dot plots, and box plots.",
+       "include": [
+        "Analyze and interpret numerical data distributions represented with frequency tables, histograms, dot plots, and box plots.",
+        "For quantitative variables, calculate, compare, and interpret mean, median, and range.",
+        "Compare distributions using measures of center and spread, including distributions with different means and the same standard deviations.",
+        "Understand and describe the effect of outliers on mean and median."
+       ],
+       "exclude": [
+        "Compare distributions using measures of center and spread, including: distributions with different standard deviations. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "distributions",
+        "center",
+        "compare",
+        "data",
+        "interpret",
+        "mean",
+        "measures",
+        "median",
+        "plots",
+        "spread",
+        "analyze",
+        "box",
+        "calculate",
+        "describe"
+       ],
+       "exam_skills": [
+        "interpret",
+        "calculate",
+        "compare",
+        "understand",
+        "describe"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      },
+      {
+       "lo_id": "PSAT89M-3.4",
+       "number": "3.4",
+       "title": "Two-variable data: Models and scatterplots",
+       "statement": "Analyze and interpret data represented in a scatterplot, but do not make predictions.",
+       "include": [
+        "Analyze and interpret data represented in a scatterplot, but do not make predictions.",
+        "Fit linear models to data represented in a scatterplot.",
+        "Given a relationship between two quantities, read and interpret graphs modeling the relationship."
+       ],
+       "exclude": [
+        "Analyze and interpret data represented in a scatterplot to make predictions. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Fit quadratic and exponential models to data represented in a scatterplot. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Compare linear and exponential growth. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "data",
+        "interpret",
+        "models",
+        "relationship",
+        "represented",
+        "scatterplot",
+        "analyze",
+        "fit",
+        "graphs",
+        "linear",
+        "make",
+        "modeling",
+        "predictions",
+        "quantities"
+       ],
+       "exam_skills": [
+        "interpret"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      },
+      {
+       "lo_id": "PSAT89M-3.5",
+       "number": "3.5",
+       "title": "Probability and conditional probability",
+       "statement": "Use one- and two-way tables, area models, and other representations to find relative frequency, probabilities, and conditional probabilities. Calculate, express, or interpret the probability or conditional probability of an event using a data display showing frequencies for a single variable, a two-way table, an area model, or a description of a situation. Infrequently, given a probability, determine an unknown number in a data display showing frequencies for a single variable, a two-way table, or a description of a situation, including using a probability to determine the frequency of an event.",
+       "include": [
+        "Use one- and two-way tables, area models, and other representations to find relative frequency, probabilities, and conditional probabilities. Calculate, express, or interpret the probability or conditional probability of an event using a data display showing frequencies for a single variable, a two-way table, an area model, or a description of a situation. Infrequently, given a probability, determine an unknown number in a data display showing frequencies for a single variable, a two-way table, or a description of a situation, including using a probability to determine the frequency of an event."
+       ],
+       "exclude": [],
+       "keywords": [
+        "probability",
+        "conditional",
+        "two-way",
+        "area",
+        "data",
+        "description",
+        "determine",
+        "display",
+        "event",
+        "frequencies",
+        "frequency",
+        "probabilities",
+        "showing",
+        "single"
+       ],
+       "exam_skills": [
+        "use",
+        "find",
+        "calculate",
+        "express",
+        "interpret",
+        "determine"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 204
+      }
+     ]
+    },
+    {
+     "topic_id": "PSAT89M-4",
+     "number": "4",
+     "name": "Geometry and Trigonometry",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PSAT89M-4.1",
+       "number": "4.1",
+       "title": "Area and volume",
+       "statement": "Solve real-world and mathematical problems about the: area or perimeter of a geometric figure or an object that can be modeled by a geometric figure using given information.",
+       "include": [
+        "Solve real-world and mathematical problems about the: area or perimeter of a geometric figure or an object that can be modeled by a geometric figure using given information.",
+        "Solve real-world and mathematical problems about the: surface area or volume of a geometric figure or an object that can be modeled by a geometric figure using given information such as length, area, surface area, or volume.",
+        "Apply knowledge that changing by a scale factor of k changes all lengths by a factor of k, changes all areas by a factor of k^2, and changes all volumes by a factor of k^3.",
+        "Demonstrate procedural fluency by selecting the correct: area formula and correctly calculating a specified value.",
+        "Demonstrate procedural fluency by selecting the correct: surface area or volume formula and correctly calculating a specified value."
+       ],
+       "exclude": [],
+       "keywords": [
+        "area",
+        "factor",
+        "figure",
+        "geometric",
+        "volume",
+        "changes",
+        "surface",
+        "calculating",
+        "correct",
+        "correctly",
+        "demonstrate",
+        "fluency",
+        "formula",
+        "information"
+       ],
+       "exam_skills": [
+        "solve",
+        "apply",
+        "calculate"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 206
+      },
+      {
+       "lo_id": "PSAT89M-4.2",
+       "number": "4.2",
+       "title": "Lines, angles, and triangles",
+       "statement": "Know and directly apply the triangle angle sum theorem.",
+       "include": [
+        "Know and directly apply the triangle angle sum theorem."
+       ],
+       "exclude": [
+        "Use concepts and theorems relating to congruence and similarity of triangles to solve problems. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Determine which statements may be required to prove certain relationships or to satisfy a given theorem. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Apply knowledge that changing by a scale factor of k changes all lengths by a factor of k, but angle measures remain unchanged. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Know and directly apply relevant theorems such as the: triangle angle sum theorem. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Know and directly apply relevant theorems such as the: vertical angle theorem and the relationship of angles formed when a transversal cuts parallel lines. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "angle",
+        "angles",
+        "apply",
+        "directly",
+        "know",
+        "lines",
+        "sum",
+        "theorem",
+        "triangle",
+        "triangles"
+       ],
+       "exam_skills": [
+        "know",
+        "apply"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 206
+      },
+      {
+       "lo_id": "PSAT89M-4.3",
+       "number": "4.3",
+       "title": "Right triangles and trigonometry",
+       "statement": "Solve problems in a variety of contexts using the Pythagorean theorem.",
+       "include": [
+        "Solve problems in a variety of contexts using the Pythagorean theorem."
+       ],
+       "exclude": [
+        "Solve problems in a variety of contexts using: properties of special right triangles. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Solve problems in a variety of contexts using: right triangle trigonometry. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Use similarity to calculate values of sine, cosine, and tangent. (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Solve problems using the relationship between sine and cosine of complementary angles. (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [
+        "contexts",
+        "problems",
+        "pythagorean",
+        "right",
+        "solve",
+        "theorem",
+        "triangles",
+        "trigonometry",
+        "variety"
+       ],
+       "exam_skills": [
+        "solve"
+       ],
+       "source": "SAT Suite Assessment Framework",
+       "page": 207
+      }
+     ]
+    },
+    {
+     "topic_id": "PSAT89M-X",
+     "number": "X",
+     "name": "Not assessed on the PSAT 8/9",
+     "section": "",
+     "statement": "",
+     "learning_objectives": [
+      {
+       "lo_id": "PSAT89M-X",
+       "number": "X",
+       "title": "SAT skills not assessed on the PSAT 8/9",
+       "statement": "These skills are assessed on the SAT and PSAT/NMSQT but not on the PSAT 8/9.",
+       "include": [],
+       "exclude": [
+        "Inference from sample statistics and margin of error (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Evaluating statistical claims: Observational studies and experiments (SAT and PSAT/NMSQT only, not PSAT 8/9)",
+        "Circles (SAT and PSAT/NMSQT only, not PSAT 8/9)"
+       ],
+       "keywords": [],
+       "exam_skills": [],
+       "source": "SAT Suite Assessment Framework",
+       "page": 205
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
