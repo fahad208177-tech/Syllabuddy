@@ -258,3 +258,14 @@ def test_stalled_tool_call_cannot_stretch_a_turn(server_url, monkeypatch):
     events = collect(Assistant(brain, server_url), "stall", "stall-test", "are skew lines examinable?")
     assert _time.perf_counter() - started < 20
     assert "too long" in events[1]["result"]["error"]
+
+
+def test_speech_cleanup_drops_a_draft_repeated_in_the_same_message():
+    # A real gpt-oss reply: a draft and the final answer, run together.
+    raw = ("Focus first on limits and continuity in AP Calculus BC, especially the objective CALCBC-1.1 about "
+           "instantaneous change.Your weakest area right now is limits and continuity in AP Calculus BC, start with "
+           "objective CALCBC-1.1 on instantaneous change before moving on to the other topics.")
+    assert _clean_for_speech(raw).startswith("Your weakest area right now")
+    # Ordinary multi-sentence answers are untouched.
+    normal = "No. The ratio test is BC only. It is topic 10.8 of AP Calculus BC, under infinite sequences and series."
+    assert _clean_for_speech(normal) == normal

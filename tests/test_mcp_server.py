@@ -141,3 +141,15 @@ def test_past_exam_date_means_the_next_one(server_url):
     # "May 11" said in October, or a model that assumed last year: the next May 11
     [(saved, _)] = run(_call(server_url, "frank", [("set_my_courses", {"courses": ["SAT"], "exam_date": "2020-05-11"})]))
     assert saved["exam_date"].endswith("-05-11") and 0 <= saved["days_to_exam"] <= 366
+
+
+def test_revision_list_puts_saved_courses_first(server_url):
+    run(_call(server_url, "gina", [
+        ("check_examinable", {"topic": "multiplying matrices", "subject": "ACT math"}),
+        ("check_examinable", {"topic": "multiplying matrices", "subject": "ACT math"}),
+        ("check_examinable", {"topic": "equation of a circle", "subject": "SAT math"}),
+        ("set_my_courses", {"courses": ["SAT"]}),
+    ]))
+    [(revision, _)] = run(_call(server_url, "gina", [("my_revision_list", {})]))
+    # Asked about ACT twice, but the student is taking the SAT: that comes first.
+    assert revision["revise_first"][0]["objective_id"].startswith("SATM")

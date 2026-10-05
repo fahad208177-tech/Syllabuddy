@@ -62,8 +62,9 @@ Syllabuddy tool first. Never guess what is examinable.
 wording briefly. If it says "unclear" or "not_in_syllabus", say that honestly.
 - When explaining a concept, keep to what the syllabus requires; offer more detail rather than giving it all.
 - Quizzes: call start_quiz, then ask exactly one short question that can be answered out loud in a sentence or two (never ask for code, a diagram or working on paper), and stop. \
-When the student answers, judge it against syllabus_requires, tell them if they were right with a \
-one-line correction if needed, and call record_quiz_result.
+When the student answers, judge only what they actually said against syllabus_requires: "I don't know", \
+"not sure" or asking you for the answer counts as wrong. Tell them if they were right, give a one-line \
+correction or the answer if not, and call record_quiz_result.
 - "What should I revise?" or "how am I doing?": call my_revision_list. If it returns days_to_exam, mention the countdown.
 - When the student says which exams they are taking or when their exam is ("I'm doing AP Calc BC and the SAT, \
 my exam is May 11"), call set_my_courses (exam_date as YYYY-MM-DD; assume the next such date). After that you can \
@@ -566,7 +567,15 @@ def _as_json(content: Any) -> dict[str, Any]:
 def _clean_for_speech(text: str) -> str:
     text = re.sub(r"[*_`#>]+", "", text)
     text = re.sub(r"^\s*[-•]\s+", "", text, flags=re.M)
-    return re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"\s+", " ", text).strip()
+    # Some models occasionally emit a draft and then the final answer in one message,
+    # run together ("...change.Your weakest..."). Split them and keep the final wording.
+    text = re.sub(r"([a-z0-9)][.!?])([A-Z])", r"\1 \2", text)
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    kept = [s for i, s in enumerate(sentences)
+            if len(re.findall(r"[a-z]{4,}", s.lower())) < 5  # short sentences ("No.") are never drafts
+            or not any(_overlap(later, s) >= 0.6 for later in sentences[i + 1:])]
+    return " ".join(kept)
 
 
 def _overlap(answer: str, reference: str) -> float:

@@ -263,9 +263,13 @@ def start_quiz(subject: str | None = None, objective_id: str | None = None,
 def record_quiz_result(objective_id: str, correct: bool, note: str = "", ctx: Context | None = None) -> dict[str, Any]:
     """Record whether the student answered a quiz question correctly.
 
+    Judge only what the student actually said. "I don't know", "not sure",
+    asking you for the answer, or answering a different question is NOT
+    correct: record correct=false, then teach the answer.
+
     Args:
         objective_id: The objective the question tested.
-        correct: True if the answer met what the syllabus requires.
+        correct: True only if the student's own answer states what the syllabus requires.
         note: Optional short note on what was missing.
     """
     sid = student_id(ctx)
@@ -287,12 +291,17 @@ def my_revision_list(ctx: Context | None = None) -> dict[str, Any]:
     sid = student_id(ctx)
     svc = service()
     items = []
-    for row in progress().weakest(sid):
+    for row in progress().weakest(sid, limit=50):
         lo = svc.by_id.get(row["lo_id"])
         if lo is None or not lo.include:  # e.g. a "not assessed on the PSAT 8/9" list: nothing to revise
             continue
         items.append(svc.objective_card(lo, full=False) | {
-            "wrong_answers": int(row["wrong"] or 0), "times_asked": int(row["asked"] or 0)})
+            "wrong_answers": int(row["wrong"] or 0), "times_asked": int(row["asked"] or 0),
+            "_subject_id": lo.subject_id})
+    # The exams the student is actually taking come first; the ranking holds within each group.
+    courses = set(progress().courses(sid)["subject_ids"])
+    items.sort(key=lambda it: it["_subject_id"] not in courses if courses else False)
+    items = [{k: v for k, v in it.items() if k != "_subject_id"} for it in items[:5]]
     stats = progress().stats(sid)
     result: dict[str, Any] = {"revise_first": items, "stats": stats,
                               "note": None if items else "No history yet. Ask some questions or try a quiz first."}
