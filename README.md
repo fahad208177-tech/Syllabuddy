@@ -109,7 +109,7 @@ flowchart LR
 Needs Python 3.11+ (tested on 3.13, Windows 11).
 
 ```bash
-git clone <this repo> syllabuddy && cd syllabuddy
+git clone https://github.com/fahad208177-tech/Syllabuddy.git syllabuddy && cd syllabuddy
 python -m venv .venv
 .venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
@@ -213,7 +213,7 @@ way a public host needs it:
 | `/.well-known/oauth-*`, `/register`, `/authorize`, `/token`, `/revoke` | OAuth 2.1 account linking (PKCE, dynamic client registration) |
 | `/link` | the sign-in page a student sees when linking |
 
-**Hugging Face Spaces (free):** `pip install huggingface_hub`, set `HF_TOKEN` to a
+**Hugging Face Spaces** (Docker Spaces now need a PRO subscription): `pip install huggingface_hub`, set `HF_TOKEN` to a
 write token, then `python deploy/publish_space.py`. It creates the Space, uploads
 the code and data (never `.env` or the database), stores the model API key as a
 Space secret, and prints the web app and MCP links. The Space builds in 5 to 10
