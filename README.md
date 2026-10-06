@@ -25,6 +25,8 @@ Built for the **Alexa+ track** of the Amazon Developer Hackathon (Build, Ship, S
 
 **▶ Demo video (2:30):** https://youtu.be/MyjFnSj65Do
 
+**Open-source spin-off:** the SAT, ACT, AP and Alberta parsers are also published on their own as [syllabus-parsers](https://github.com/fahad208177-tech/syllabus-parsers) (MIT): official syllabus PDFs in, structured learning objectives out, for anyone building study tools.
+
 ---
 
 ## Why
