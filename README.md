@@ -23,6 +23,8 @@ syllabus's own wording on screen.
 
 Built for the **Alexa+ track** of the Amazon Developer Hackathon (Build, Ship, Shape, 2026).
 
+**▶ Demo video (2:30):** https://youtu.be/MyjFnSj65Do
+
 ---
 
 ## Why
