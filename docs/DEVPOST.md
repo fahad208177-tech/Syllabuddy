@@ -1,16 +1,18 @@
 # Devpost: About the project (paste into the story field)
 
-**Built With** (paste into the Built With field): `alexa-plus`, `model-context-protocol`, `mcp-python-sdk`, `streamable-http`, `oauth2`, `agent-skills`, `python`, `starlette`, `uvicorn`, `sqlite`, `fastembed`, `onnx`, `pymupdf`, `groq`, `hugging-face-spaces` (only once it's deployed), `javascript`, `web-speech-api`
+**Built With** (paste into the Built With field): `alexa-plus`, `model-context-protocol`, `mcp-python-sdk`, `streamable-http`, `oauth2`, `agent-skills`, `python`, `starlette`, `uvicorn`, `sqlite`, `fastembed`, `onnx`, `pymupdf`, `groq`, `javascript`, `web-speech-api`
 
 ---
 
 ## Inspiration
 
-Every student I know asks the same question at least once a week: *"Is this even in the syllabus?"*
+A year ago, my teacher told our class something that changed how I study: **stop revising only from the textbook, and study from the syllabus document instead.** The textbook covers whatever its author found interesting. The syllabus is the exam board's own list of exactly what can be tested, and, just as useful, what can't.
 
-When I'm revising for my A Levels, I can get a chatbot to explain almost anything. What it can't do is tell me whether that thing will actually be tested. Ask a general AI whether the shortest distance between two skew lines is examinable in H2 Maths and it will happily guess. The real answer is one bullet point, on page 8 of the official syllabus PDF, under *Excluded*.
+So I tried it. Before starting a topic, I read its learning objectives first, checked the *Excluded* bullets, and only then opened the textbook. I stopped spending hours on things that were never going to come up, and I finally knew what each objective was actually asking me to do. It worked.
 
-I'd already built a tutor that parses the official syllabus. The Alexa+ track made me realise the most useful part wasn't the explanations; it was the facts. Students shouldn't have to dig through PDFs to ask a quick question. They should just be able to ask.
+But it was slow. The syllabus is a long PDF, and the question I kept asking, *"is this even on the exam?"*, meant scrolling through it again every time. A chatbot couldn't help either. Ask a general AI whether the shortest distance between two skew lines is examinable in H2 Maths and it will confidently guess. The real answer is one bullet point, on page 8 of the official syllabus, under *Excluded*.
+
+Then I saw this hackathon's Alexa+ track, and it clicked. What my teacher taught me shouldn't depend on having a teacher who tells you, or the patience to dig through PDFs. It should be something you can just ask, out loud. I had already started parsing my own A-Level syllabus for a small study tool, so I turned that idea into Syllabuddy and extended it to the exams millions of students in the US and Canada take: the SAT, the ACT and AP.
 
 **Who it's for.** In the US class of 2025, more than 2 million students took the SAT, 1,380,130 took the ACT, and 1,307,781 public-school graduates took more than 4.8 million AP exams (College Board and ACT annual reports). Each has an official syllabus that settles what's tested; almost none of them read it.
 
@@ -100,6 +102,7 @@ and only inside its own topic.
 
 ## What I learned
 
+- My teacher was right, and it scales: once the syllabus is structured data, "is this on the exam?" takes milliseconds instead of a PDF search, and five student testers felt the same difference I did.
 - An AI reads each tool's description to decide when and how to call it. Writing "pass the topic as specifically as the student said it" fixed a real bug.
 - Keeping the facts deterministic and letting the model only do the talking is what makes the answers trustworthy.
 - How Streamable HTTP works, and why tools need to stay fast for voice.
@@ -110,3 +113,4 @@ and only inside its own topic.
 - Publish it as a real Alexa+ add-on. The server, OAuth account linking and manifest are ready; it needs Amazon's allow-listed Alexa AI CLI.
 - More exams: GED and CLEP next, then Alberta Biology 30 and Mathematics 30-1 and other provinces.
 - Quizzes drawn from past papers for each objective.
+- Grow [syllabus-parsers](https://github.com/fahad208177-tech/syllabus-parsers), the open-source library I split out of this project, so other study tools can use official syllabus data too.
