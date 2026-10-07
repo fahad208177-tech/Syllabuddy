@@ -52,9 +52,9 @@ Syllabuddy is an Alexa+ add-on built as an MCP server (Streamable HTTP), with OA
 
 - **What I used it for:** an optional "brain" for the simulated Alexa+: the agent can run on Bedrock's Converse API with tool use.
 - **What worked well:** the Converse tool-use message shapes are well documented, so I implemented and tested them against a stubbed client, including several tool results in one turn.
-- **What needs work:** I couldn't run it live. As a student I had no AWS credits, and the free tier doesn't cover the models I needed. **Hackathon credits for students** (or a small free Bedrock quota for registered participants) would let more entrants use Amazon's own models. The demo uses Groq instead.
-- **Onboarding:** reading the docs and implementing was quick; the live hello world was blocked by billing.
-- **Would I build with it again?** Yes, with credits. The code is there and tested; it needs an account.
+- **What needs work:** I haven't run it live. My hackathon AWS credits arrived late in the submission window, and activating an AWS account still needs a payment card on file. As a student, I wasn't comfortable putting a card on a cloud account, so the demo uses Groq instead. **A card-free sandbox for hackathon entrants** (credits that work without a payment method, or a capped Bedrock quota) would let more students use Amazon's own models.
+- **Onboarding:** reading the docs and implementing against them was quick; the live hello world was blocked by the account and payment setup.
+- **Would I build with it again?** Yes. The code is written and tested; it only needs an account I'm comfortable activating.
 
 ## Other tools (not Amazon)
 
