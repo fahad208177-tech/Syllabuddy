@@ -59,6 +59,9 @@ millions of homes.
 > "I didn't even know there were syllabus learning objectives for exams, and after trying this I'm pretty confident that I will do well in my exams."
 > <br>— student tester
 
+> "This new study method is really cool. I have been using it for a week, and my marks on practice papers went from just passing to a high B. Very awesome product."
+> <br>— student tester
+
 Syllabuddy never guesses about the syllabus. Its tools don't call a language
 model at all: they search **2,883 learning objectives parsed deterministically
 from the official documents**, including every exclusion statement, every "bc

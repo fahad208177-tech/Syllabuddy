@@ -28,6 +28,9 @@ I'd already built a tutor that parses the official syllabus. The Alexa+ track ma
 > "I didn't even know there were syllabus learning objectives for exams, and after trying this I'm pretty confident that I will do well in my exams."
 > <br>— student tester
 
+> "This new study method is really cool. I have been using it for a week, and my marks on practice papers went from just passing to a high B. Very awesome product."
+> <br>— student tester
+
 ## What it does
 
 Syllabuddy is an **Alexa+ add-on**: an **MCP server** (Streamable HTTP, with OAuth 2.1 account linking and an Agent Skill) that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers the digital SAT and PSAT, the ACT, 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,883 learning objectives across 47 subjects.
