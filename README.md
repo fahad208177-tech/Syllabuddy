@@ -45,6 +45,20 @@ Every one of them has a syllabus that says what is, and isn't, on the test.
 Syllabuddy puts that answer one question away, by voice, on a device already in
 millions of homes.
 
+**What students said.** Five students tried Syllabuddy before submission. Quotes are lightly edited for spelling and grammar.
+
+> "Pretty shocking that many things I thought were in the syllabus weren't, and I finally understood what I was actually going to be asked on."
+> <br>— student tester
+
+> "I was quite shocked by how it remembered my weaknesses and tested me on those weaknesses to ensure that I don't get it wrong in the exam."
+> <br>— student tester
+
+> "It was really accurate. I look at the syllabus requirements monthly for math, and from what I tested, it was super accurate."
+> <br>— student tester, math
+
+> "I didn't even know there were syllabus learning objectives for exams, and after trying this I'm pretty confident that I will do well in my exams."
+> <br>— student tester
+
 Syllabuddy never guesses about the syllabus. Its tools don't call a language
 model at all: they search **2,883 learning objectives parsed deterministically
 from the official documents**, including every exclusion statement, every "bc

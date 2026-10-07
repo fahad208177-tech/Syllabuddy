@@ -14,6 +14,20 @@ I'd already built a tutor that parses the official syllabus. The Alexa+ track ma
 
 **Who it's for.** In the US class of 2025, more than 2 million students took the SAT, 1,380,130 took the ACT, and 1,307,781 public-school graduates took more than 4.8 million AP exams (College Board and ACT annual reports). Each has an official syllabus that settles what's tested; almost none of them read it.
 
+**What students said.** Five students tried Syllabuddy before submission. Quotes are lightly edited for spelling and grammar.
+
+> "Pretty shocking that many things I thought were in the syllabus weren't, and I finally understood what I was actually going to be asked on."
+> <br>— student tester
+
+> "I was quite shocked by how it remembered my weaknesses and tested me on those weaknesses to ensure that I don't get it wrong in the exam."
+> <br>— student tester
+
+> "It was really accurate. I look at the syllabus requirements monthly for math, and from what I tested, it was super accurate."
+> <br>— student tester, math
+
+> "I didn't even know there were syllabus learning objectives for exams, and after trying this I'm pretty confident that I will do well in my exams."
+> <br>— student tester
+
 ## What it does
 
 Syllabuddy is an **Alexa+ add-on**: an **MCP server** (Streamable HTTP, with OAuth 2.1 account linking and an Agent Skill) that answers from the official syllabus, plus a simulated Alexa+ voice experience to talk to it. It covers the digital SAT and PSAT, the ACT, 24 US AP courses, Canada's Alberta Diploma Physics 30 and Chemistry 30, and the Singapore-Cambridge A-Level I started with: 2,883 learning objectives across 47 subjects.
