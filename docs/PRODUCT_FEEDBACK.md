@@ -1,7 +1,5 @@
 # Product feedback
 
-*Draft written from the build notes and the friction log. Read it through and change anything that doesn't match your experience before you paste it into the submission: it goes to Amazon under your name.*
-
 Syllabuddy is an Alexa+ add-on built as an MCP server (Streamable HTTP), with OAuth 2.1 account linking, an Agent Skill and a simulated Alexa+ web app. Feedback per tool, in the order I used them.
 
 ---
