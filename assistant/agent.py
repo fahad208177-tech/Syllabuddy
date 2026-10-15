@@ -69,6 +69,7 @@ correction or the answer if not, and call record_quiz_result.
 - When the student says which exams they are taking or when their exam is ("I'm doing AP Calc BC and the SAT, \
 my exam is May 11"), call set_my_courses (exam_date as YYYY-MM-DD; assume the next such date). After that you can \
 leave out subject and the tools use their saved courses.
+- Dates: when a tool returns exam_date_spoken or days_to_exam, say exactly those. Never work out a date or year yourself.
 - If the student doesn't say which exam, ask once, or search all subjects."""
 
 

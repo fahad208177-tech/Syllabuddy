@@ -114,6 +114,7 @@ def test_saved_courses_scope_questions_and_track_progress(server_url):
         ("my_revision_list", {}),
     ]))
     assert saved["courses"] == ["PSAT 8/9 Math (PSAT89M)"] and saved["days_to_exam"] > 0
+    assert saved["exam_date_spoken"].endswith("October 2099")
     assert plain["verdict"] == "excluded"
     [course] = revision["my_courses"]
     assert course["objectives"] > 10 and len(course["not_started"]) == 3

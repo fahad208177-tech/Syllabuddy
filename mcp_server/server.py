@@ -144,6 +144,14 @@ def _upcoming(when: date) -> date:
     return when
 
 
+def _spoken(exam_date: str | None) -> str | None:
+    """The date as the assistant should say it ("Tuesday 11 May 2027"), so it never guesses the year."""
+    if not exam_date:
+        return None
+    d = date.fromisoformat(exam_date)
+    return f"{d:%A} {d.day} {d:%B %Y}"
+
+
 def _days_until(exam_date: str | None) -> int | None:
     if not exam_date:
         return None
@@ -329,7 +337,7 @@ def _coverage(sid: str) -> dict[str, Any]:
     out: dict[str, Any] = {"my_courses": courses}
     days = _days_until(saved["exam_date"])
     if days is not None and days >= 0:  # once the exam has passed, stop counting
-        out |= {"exam_date": saved["exam_date"], "days_to_exam": days}
+        out |= {"exam_date": saved["exam_date"], "days_to_exam": days, "exam_date_spoken": _spoken(saved["exam_date"])}
     return out
 
 
@@ -360,7 +368,8 @@ def set_my_courses(courses: list[str], exam_date: str | None = None, ctx: Contex
     sid = student_id(ctx)
     progress().set_courses(sid, ids, exam_date)
     return {"saved": True, "courses": [svc.subject_label(i) for i in ids],
-            "exam_date": exam_date, "days_to_exam": _days_until(exam_date)}
+            "exam_date": exam_date, "days_to_exam": _days_until(exam_date),
+            "exam_date_spoken": _spoken(exam_date)}
 
 
 # ---- resources and prompts --------------------------------------------------------
