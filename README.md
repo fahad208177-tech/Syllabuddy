@@ -23,7 +23,7 @@ syllabus's own wording on screen.
 
 Built for the **Alexa+ track** of the Amazon Developer Hackathon (Build, Ship, Shape, 2026).
 
-**▶ Demo video (2:30):** https://youtu.be/MyjFnSj65Do
+**▶ Demo video (2:46, live footage of the app running):** https://youtu.be/ZKcm1jg6m4Y
 
 **Open-source spin-off:** the SAT, ACT, AP and Alberta parsers are also published on their own as [syllabus-parsers](https://github.com/fahad208177-tech/syllabus-parsers) (MIT): official syllabus PDFs in, structured learning objectives out, for anyone building study tools.
 
